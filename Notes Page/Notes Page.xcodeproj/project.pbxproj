@@ -7,19 +7,32 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		3B162A162CB7A8450010E30B /* NoteShare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NoteShare.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B5121292CE30B86009FC53C /* Notes Page.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Notes Page.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3B51213B2CE30B87009FC53C /* Exceptions for "Notes Page" folder in "Notes Page" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 3B5121282CE30B86009FC53C /* Notes Page */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		3B162A182CB7A8450010E30B /* NoteShare */ = {
+		3B51212B2CE30B86009FC53C /* Notes Page */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = NoteShare;
+			exceptions = (
+				3B51213B2CE30B87009FC53C /* Exceptions for "Notes Page" folder in "Notes Page" target */,
+			);
+			path = "Notes Page";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		3B162A132CB7A8450010E30B /* Frameworks */ = {
+		3B5121262CE30B86009FC53C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -29,18 +42,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3B162A0D2CB7A8450010E30B = {
+		3B5121202CE30B86009FC53C = {
 			isa = PBXGroup;
 			children = (
-				3B162A182CB7A8450010E30B /* NoteShare */,
-				3B162A172CB7A8450010E30B /* Products */,
+				3B51212B2CE30B86009FC53C /* Notes Page */,
+				3B51212A2CE30B86009FC53C /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		3B162A172CB7A8450010E30B /* Products */ = {
+		3B51212A2CE30B86009FC53C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3B162A162CB7A8450010E30B /* NoteShare.app */,
+				3B5121292CE30B86009FC53C /* Notes Page.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,64 +61,64 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3B162A152CB7A8450010E30B /* NoteShare */ = {
+		3B5121282CE30B86009FC53C /* Notes Page */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3B162A242CB7A8460010E30B /* Build configuration list for PBXNativeTarget "NoteShare" */;
+			buildConfigurationList = 3B51213C2CE30B87009FC53C /* Build configuration list for PBXNativeTarget "Notes Page" */;
 			buildPhases = (
-				3B162A122CB7A8450010E30B /* Sources */,
-				3B162A132CB7A8450010E30B /* Frameworks */,
-				3B162A142CB7A8450010E30B /* Resources */,
+				3B5121252CE30B86009FC53C /* Sources */,
+				3B5121262CE30B86009FC53C /* Frameworks */,
+				3B5121272CE30B86009FC53C /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				3B162A182CB7A8450010E30B /* NoteShare */,
+				3B51212B2CE30B86009FC53C /* Notes Page */,
 			);
-			name = NoteShare;
+			name = "Notes Page";
 			packageProductDependencies = (
 			);
-			productName = NoteShare;
-			productReference = 3B162A162CB7A8450010E30B /* NoteShare.app */;
+			productName = "Notes Page";
+			productReference = 3B5121292CE30B86009FC53C /* Notes Page.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		3B162A0E2CB7A8450010E30B /* Project object */ = {
+		3B5121212CE30B86009FC53C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 1600;
+				LastSwiftUpdateCheck = 1610;
+				LastUpgradeCheck = 1610;
 				TargetAttributes = {
-					3B162A152CB7A8450010E30B = {
-						CreatedOnToolsVersion = 16.0;
+					3B5121282CE30B86009FC53C = {
+						CreatedOnToolsVersion = 16.1;
 					};
 				};
 			};
-			buildConfigurationList = 3B162A112CB7A8450010E30B /* Build configuration list for PBXProject "NoteShare" */;
+			buildConfigurationList = 3B5121242CE30B86009FC53C /* Build configuration list for PBXProject "Notes Page" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 3B162A0D2CB7A8450010E30B;
+			mainGroup = 3B5121202CE30B86009FC53C;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 3B162A172CB7A8450010E30B /* Products */;
+			productRefGroup = 3B51212A2CE30B86009FC53C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3B162A152CB7A8450010E30B /* NoteShare */,
+				3B5121282CE30B86009FC53C /* Notes Page */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		3B162A142CB7A8450010E30B /* Resources */ = {
+		3B5121272CE30B86009FC53C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -115,7 +128,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		3B162A122CB7A8450010E30B /* Sources */ = {
+		3B5121252CE30B86009FC53C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -125,7 +138,61 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		3B162A222CB7A8460010E30B /* Debug */ = {
+		3B51213D2CE30B87009FC53C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Notes Page/Info.plist";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Notes-Page";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3B51213E2CE30B87009FC53C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Notes Page/Info.plist";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Notes-Page";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		3B51213F2CE30B87009FC53C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -177,7 +244,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -188,7 +255,7 @@
 			};
 			name = Debug;
 		};
-		3B162A232CB7A8460010E30B /* Release */ = {
+		3B5121402CE30B87009FC53C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -234,7 +301,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -244,84 +311,28 @@
 			};
 			name = Release;
 		};
-		3B162A252CB7A8460010E30B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"NoteShare/Preview Content\"";
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.NoteShare;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		3B162A262CB7A8460010E30B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"NoteShare/Preview Content\"";
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.NoteShare;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3B162A112CB7A8450010E30B /* Build configuration list for PBXProject "NoteShare" */ = {
+		3B5121242CE30B86009FC53C /* Build configuration list for PBXProject "Notes Page" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3B162A222CB7A8460010E30B /* Debug */,
-				3B162A232CB7A8460010E30B /* Release */,
+				3B51213F2CE30B87009FC53C /* Debug */,
+				3B5121402CE30B87009FC53C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3B162A242CB7A8460010E30B /* Build configuration list for PBXNativeTarget "NoteShare" */ = {
+		3B51213C2CE30B87009FC53C /* Build configuration list for PBXNativeTarget "Notes Page" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3B162A252CB7A8460010E30B /* Debug */,
-				3B162A262CB7A8460010E30B /* Release */,
+				3B51213D2CE30B87009FC53C /* Debug */,
+				3B51213E2CE30B87009FC53C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 3B162A0E2CB7A8450010E30B /* Project object */;
+	rootObject = 3B5121212CE30B86009FC53C /* Project object */;
 }
