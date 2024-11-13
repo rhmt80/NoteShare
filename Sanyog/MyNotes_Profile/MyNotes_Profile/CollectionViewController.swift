@@ -1,8 +1,8 @@
 //
 //  CollectionViewController.swift
-//  OnBoarding
+//  MyNotes_Profile
 //
-//  Created by admin24 on 12/11/24.
+//  Created by admin24 on 13/11/24.
 //
 
 import UIKit
@@ -13,7 +13,7 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Collection"
-        label.font = UIFont.boldSystemFont(ofSize: 24)
+        label.font = .systemFont(ofSize: 32, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -99,9 +99,10 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
             navigationController?.pushViewController(profileVC, animated: true)
         }
         
-        if indexPath.row == 1 { 
+        if indexPath.row == 1 {
             let profileVC = ProfileViewController()
             navigationController?.pushViewController(profileVC, animated: true)
         }
     }
 }
+

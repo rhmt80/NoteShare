@@ -19,9 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         
         // Start with LoginViewController
-        let loginVC = CollectionViewController()
-//        let loginVC = ProfileViewController()
-//        let loginVC = LandingViewController()
+
+        let loginVC = LandingViewController()
 
         let navigationController = UINavigationController(rootViewController: loginVC)
         

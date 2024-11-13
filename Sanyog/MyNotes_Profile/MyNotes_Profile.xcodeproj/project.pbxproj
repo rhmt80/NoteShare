@@ -7,32 +7,32 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		3B5121292CE30B86009FC53C /* Notes Page.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Notes Page.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B4D459B2CE46E3500B0F8EA /* MyNotes_Profile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyNotes_Profile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		3B51213B2CE30B87009FC53C /* Exceptions for "Notes Page" folder in "Notes Page" target */ = {
+		3B4D45AD2CE46E3600B0F8EA /* Exceptions for "MyNotes_Profile" folder in "MyNotes_Profile" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 3B5121282CE30B86009FC53C /* Notes Page */;
+			target = 3B4D459A2CE46E3500B0F8EA /* MyNotes_Profile */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		3B51212B2CE30B86009FC53C /* Notes Page */ = {
+		3B4D459D2CE46E3500B0F8EA /* MyNotes_Profile */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				3B51213B2CE30B87009FC53C /* Exceptions for "Notes Page" folder in "Notes Page" target */,
+				3B4D45AD2CE46E3600B0F8EA /* Exceptions for "MyNotes_Profile" folder in "MyNotes_Profile" target */,
 			);
-			path = "Notes Page";
+			path = MyNotes_Profile;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		3B5121262CE30B86009FC53C /* Frameworks */ = {
+		3B4D45982CE46E3500B0F8EA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -42,18 +42,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3B5121202CE30B86009FC53C = {
+		3B4D45922CE46E3500B0F8EA = {
 			isa = PBXGroup;
 			children = (
-				3B51212B2CE30B86009FC53C /* Notes Page */,
-				3B51212A2CE30B86009FC53C /* Products */,
+				3B4D459D2CE46E3500B0F8EA /* MyNotes_Profile */,
+				3B4D459C2CE46E3500B0F8EA /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		3B51212A2CE30B86009FC53C /* Products */ = {
+		3B4D459C2CE46E3500B0F8EA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3B5121292CE30B86009FC53C /* Notes Page.app */,
+				3B4D459B2CE46E3500B0F8EA /* MyNotes_Profile.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,64 +61,64 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3B5121282CE30B86009FC53C /* Notes Page */ = {
+		3B4D459A2CE46E3500B0F8EA /* MyNotes_Profile */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3B51213C2CE30B87009FC53C /* Build configuration list for PBXNativeTarget "Notes Page" */;
+			buildConfigurationList = 3B4D45AE2CE46E3600B0F8EA /* Build configuration list for PBXNativeTarget "MyNotes_Profile" */;
 			buildPhases = (
-				3B5121252CE30B86009FC53C /* Sources */,
-				3B5121262CE30B86009FC53C /* Frameworks */,
-				3B5121272CE30B86009FC53C /* Resources */,
+				3B4D45972CE46E3500B0F8EA /* Sources */,
+				3B4D45982CE46E3500B0F8EA /* Frameworks */,
+				3B4D45992CE46E3500B0F8EA /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				3B51212B2CE30B86009FC53C /* Notes Page */,
+				3B4D459D2CE46E3500B0F8EA /* MyNotes_Profile */,
 			);
-			name = "Notes Page";
+			name = MyNotes_Profile;
 			packageProductDependencies = (
 			);
-			productName = "Notes Page";
-			productReference = 3B5121292CE30B86009FC53C /* Notes Page.app */;
+			productName = MyNotes_Profile;
+			productReference = 3B4D459B2CE46E3500B0F8EA /* MyNotes_Profile.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		3B5121212CE30B86009FC53C /* Project object */ = {
+		3B4D45932CE46E3500B0F8EA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
-					3B5121282CE30B86009FC53C = {
+					3B4D459A2CE46E3500B0F8EA = {
 						CreatedOnToolsVersion = 16.1;
 					};
 				};
 			};
-			buildConfigurationList = 3B5121242CE30B86009FC53C /* Build configuration list for PBXProject "Notes Page" */;
+			buildConfigurationList = 3B4D45962CE46E3500B0F8EA /* Build configuration list for PBXProject "MyNotes_Profile" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 3B5121202CE30B86009FC53C;
+			mainGroup = 3B4D45922CE46E3500B0F8EA;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 3B51212A2CE30B86009FC53C /* Products */;
+			productRefGroup = 3B4D459C2CE46E3500B0F8EA /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3B5121282CE30B86009FC53C /* Notes Page */,
+				3B4D459A2CE46E3500B0F8EA /* MyNotes_Profile */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		3B5121272CE30B86009FC53C /* Resources */ = {
+		3B4D45992CE46E3500B0F8EA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -128,7 +128,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		3B5121252CE30B86009FC53C /* Sources */ = {
+		3B4D45972CE46E3500B0F8EA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -138,7 +138,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		3B51213D2CE30B87009FC53C /* Debug */ = {
+		3B4D45AF2CE46E3600B0F8EA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -146,7 +146,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Notes Page/Info.plist";
+				INFOPLIST_FILE = MyNotes_Profile/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -157,7 +157,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Notes-Page";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.MyNotes-Profile";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -165,7 +165,7 @@
 			};
 			name = Debug;
 		};
-		3B51213E2CE30B87009FC53C /* Release */ = {
+		3B4D45B02CE46E3600B0F8EA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -173,7 +173,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Notes Page/Info.plist";
+				INFOPLIST_FILE = MyNotes_Profile/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -184,7 +184,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Notes-Page";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.MyNotes-Profile";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -192,7 +192,7 @@
 			};
 			name = Release;
 		};
-		3B51213F2CE30B87009FC53C /* Debug */ = {
+		3B4D45B12CE46E3600B0F8EA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -255,7 +255,7 @@
 			};
 			name = Debug;
 		};
-		3B5121402CE30B87009FC53C /* Release */ = {
+		3B4D45B22CE46E3600B0F8EA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -314,25 +314,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3B5121242CE30B86009FC53C /* Build configuration list for PBXProject "Notes Page" */ = {
+		3B4D45962CE46E3500B0F8EA /* Build configuration list for PBXProject "MyNotes_Profile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3B51213F2CE30B87009FC53C /* Debug */,
-				3B5121402CE30B87009FC53C /* Release */,
+				3B4D45B12CE46E3600B0F8EA /* Debug */,
+				3B4D45B22CE46E3600B0F8EA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3B51213C2CE30B87009FC53C /* Build configuration list for PBXNativeTarget "Notes Page" */ = {
+		3B4D45AE2CE46E3600B0F8EA /* Build configuration list for PBXNativeTarget "MyNotes_Profile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3B51213D2CE30B87009FC53C /* Debug */,
-				3B51213E2CE30B87009FC53C /* Release */,
+				3B4D45AF2CE46E3600B0F8EA /* Debug */,
+				3B4D45B02CE46E3600B0F8EA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 3B5121212CE30B86009FC53C /* Project object */;
+	rootObject = 3B4D45932CE46E3500B0F8EA /* Project object */;
 }
