@@ -20,8 +20,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Start with LoginViewController
         let loginVC = CollectionViewController()
-//        let loginVC = SavedViewController()
-//        let loginVC = LoginViewController()
+//        let loginVC = ProfileViewController()
+//        let loginVC = LandingViewController()
 
         let navigationController = UINavigationController(rootViewController: loginVC)
         
