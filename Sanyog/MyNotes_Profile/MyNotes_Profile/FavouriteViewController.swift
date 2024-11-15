@@ -1,18 +1,71 @@
-//
-//  FavouriteViewController.swift
-//  MyNotes_Profile
-//
-//  Created by admin24 on 13/11/24.
-//
-
 import UIKit
 
-class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UISearchBarDelegate {
+class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout,UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+    
+    private let tableView: UITableView = {
+            let tableView = UITableView()
+            tableView.translatesAutoresizingMaskIntoConstraints = false
+            return tableView
+        }()
+    
+
+        
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            
+            setupUI()
+            setupCollectionView()
+            
+            // Set up the table view
+            view.addSubview(tableView)
+            tableView.dataSource = self
+            tableView.delegate = self
+            
+            // Register a cell class
+            tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+            
+//             Set up layout constraints
+//            NSLayoutConstraint.activate([
+//                tableView.topAnchor.constraint(equalTo: view.topAnchor),
+//                tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+//                tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//                tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+//            ])
+            
+            NSLayoutConstraint.activate([
+                tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 20),
+                tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+
+                tableView.centerYAnchor.constraint(equalTo: tableView.centerYAnchor),
+                tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            ])
+        }
+        
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return 1 // Single row
+        }
+        
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+            cell.textLabel?.text = "Hello, this is a single row"
+            return cell
+        }
+        
+        // MARK: - UITableViewDelegate Methods
+        
+        func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+            return 50 // Customize row height
+        }
+    
+    
+    
 
     // Add the title label
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "My Notes"
+        label.backgroundColor = .white
         label.font = .systemFont(ofSize: 32, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -43,7 +96,7 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
     private let collectionsLabel: UILabel = {
         let label = UILabel()
         label.text = "Collections"
-        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.font = .systemFont(ofSize: 28, weight: .semibold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -55,9 +108,10 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
         return button
     }()
     
+    
     private let separatorView: UIView = {
             let view = UIView()
-            view.backgroundColor = .gray
+            view.backgroundColor = .systemGray5
             view.translatesAutoresizingMaskIntoConstraints = false
             return view
         }()
@@ -66,7 +120,7 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
     private let favouritesLabel: UILabel = {
         let label = UILabel()
         label.text = "Favourites"
-        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.font = .systemFont(ofSize: 28, weight: .semibold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -75,28 +129,10 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
 
     private let noteCards: [NoteCard] = [
         NoteCard(
-            title: "World War II",
+            title: "iOS Development",
             author: "By Sanyog",
-            description: "World War II was a global conflict between two coalitions.",
-            coverImage: UIImage(named: "history")
-        ),
-        NoteCard(
-            title: "Trigonometry",
-            author: "By Raj",
-            description: "Advanced Trigonometry Practices and Types",
-            coverImage: UIImage(named: "math")
-        ),
-        NoteCard(
-            title: "DSA Notes",
-            author: "By Sai",
-            description: "Data Structure and Algorithms",
-            coverImage: UIImage(named: "cs")
-        ),
-        NoteCard(
-            title: "DM Notes",
-            author: "By Sanyog",
-            description: "Discrete Mathematics with the advance concepts",
-            coverImage: UIImage(named: "math2")
+            description: "Take a deep dive into the world of iOS",
+            coverImage: UIImage(named: "ios")
         ),
         NoteCard(
             title: "Physics Concepts",
@@ -109,14 +145,27 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
             author: "By Sai",
             description: "Detailed Lab Report on Chemical Reactions",
             coverImage: UIImage(named: "chem")
+        ),
+        NoteCard(
+            title: "Trigonometry",
+            author: "By Raj",
+            description: "Advanced Trigonometry Practices and Types",
+            coverImage: UIImage(named: "math")
+        ),
+    
+        NoteCard(
+            title: "DM Notes",
+            author: "By Sanyog",
+            description: "Discrete Mathematics with the advance concepts",
+            coverImage: UIImage(named: "math2")
         )
     ]
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        setupCollectionView()
-    }
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        setupUI()
+//        setupCollectionView()
+//    }
 
     private func setupUI() {
         view.backgroundColor = .white
@@ -204,12 +253,6 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
         cell.configure(with: noteCard)
         return cell
     }
-
-    // Collection View Delegate Flow Layout
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: (collectionView.frame.width / 2) - 10, height: 220)
-    }
-
     // Button Actions
     @objc private func addNoteTapped() {
         print("Add Note Tapped")
@@ -234,14 +277,14 @@ class NoteCardCell: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 20)
-        label.numberOfLines = 1
+        label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
     private let authorLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 18)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.textColor = .gray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -250,7 +293,7 @@ class NoteCardCell: UICollectionViewCell {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
-        label.numberOfLines = 2
+        label.numberOfLines = 3
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -264,9 +307,20 @@ class NoteCardCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.backgroundColor = .secondarySystemBackground
+        contentView.backgroundColor = .white
         contentView.layer.cornerRadius = 12
         contentView.layer.masksToBounds = true
+        
+        self.layer.shadowColor = UIColor.black.cgColor
+        self.layer.shadowOffset = CGSize(width: 3, height: 4)
+        self.layer.shadowRadius = 6
+        self.layer.shadowOpacity = 0.3
+        self.layer.masksToBounds = false
+        
+        self.contentView.layer.masksToBounds = true
+        self.layer.masksToBounds = false
+        self.layer.cornerRadius = 12
+        self.contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
 
         contentView.addSubview(coverImageView)
         contentView.addSubview(titleLabel)
@@ -274,28 +328,33 @@ class NoteCardCell: UICollectionViewCell {
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(favoriteIcon)
 
-        // Layout constraints
         NSLayoutConstraint.activate([
-            coverImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            // Larger cover image with full width
+            coverImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
             coverImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            coverImageView.widthAnchor.constraint(equalToConstant: 80),
-            coverImageView.heightAnchor.constraint(equalToConstant: 100),
+            coverImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9), // 90% of card width
+            coverImageView.heightAnchor.constraint(equalTo: coverImageView.widthAnchor), // Make it square
 
-            titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            // Title below image
+            titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: 12),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
 
-            favoriteIcon.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            favoriteIcon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            // Favorite icon and author
+            favoriteIcon.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            favoriteIcon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             favoriteIcon.widthAnchor.constraint(equalToConstant: 20),
             favoriteIcon.heightAnchor.constraint(equalToConstant: 20),
 
             authorLabel.centerYAnchor.constraint(equalTo: favoriteIcon.centerYAnchor),
-            authorLabel.leadingAnchor.constraint(equalTo: favoriteIcon.trailingAnchor, constant: 5),
+            authorLabel.leadingAnchor.constraint(equalTo: favoriteIcon.trailingAnchor, constant: 8),
+            authorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
 
-            descriptionLabel.topAnchor.constraint(equalTo: favoriteIcon.bottomAnchor, constant: 4),
-            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            // Description at the bottom
+            descriptionLabel.topAnchor.constraint(equalTo: favoriteIcon.bottomAnchor, constant: 8),
+            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -12)
         ])
     }
 
@@ -307,11 +366,15 @@ class NoteCardCell: UICollectionViewCell {
         titleLabel.text = noteCard.title
         authorLabel.text = noteCard.author
         descriptionLabel.text = noteCard.description
-        if let coverImage = noteCard.coverImage {
-            coverImageView.image = coverImage
-        } else {
-            coverImageView.image = nil
-        }
+        coverImageView.image = noteCard.coverImage
+    }
+}
+
+// Update the collection view cell size in FavouriteViewController
+extension FavouriteViewController {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = (collectionView.frame.width / 2) - 10
+        return CGSize(width: width, height: 330) // Increased height to accommodate larger image
     }
 }
 
@@ -327,4 +390,8 @@ struct NoteCard {
         self.description = description
         self.coverImage = coverImage
     }
+}
+
+#Preview {
+    FavouriteViewController()
 }

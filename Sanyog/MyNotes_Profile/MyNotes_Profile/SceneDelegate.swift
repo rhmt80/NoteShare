@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Start with LoginViewController
 
-        let loginVC = CollectionViewController()
+        let loginVC = FavouriteViewController()
 
         let navigationController = UINavigationController(rootViewController: loginVC)
         
