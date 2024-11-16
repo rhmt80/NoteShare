@@ -1,5 +1,4 @@
 import UIKit
-
 class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout,UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
     
     private let tableView: UITableView = {
@@ -58,14 +57,11 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
             return 50 // Customize row height
         }
     
-    
-    
-
     // Add the title label
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "My Notes"
-        label.backgroundColor = .white
+        label.backgroundColor = .systemGray6
         label.font = .systemFont(ofSize: 32, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -88,6 +84,7 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
 
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
+        searchBar.searchBarStyle = .prominent
         searchBar.placeholder = "Search"
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         return searchBar
@@ -101,9 +98,18 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
         return label
     }()
 
-    private let collectionsButton: UIButton = {
+//    private let collectionsButton: UIButton = {
+//        let button = UIButton(type: .system)
+//        button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
+//        button.translatesAutoresizingMaskIntoConstraints = false
+//        return button
+//    }()
+    
+    
+    private let navigateButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
+        button.addTarget(FavouriteViewController.self, action: #selector(navigateToDetailPage), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -150,7 +156,7 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
             title: "Trigonometry",
             author: "By Raj",
             description: "Advanced Trigonometry Practices and Types",
-            coverImage: UIImage(named: "math")
+            coverImage: UIImage(named: "math1")
         ),
     
         NoteCard(
@@ -168,7 +174,7 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
 //    }
 
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemGray6
 
         // Add the title label
         view.addSubview(titleLabel)
@@ -196,17 +202,32 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+        
+        // Add the buttons
+//        view.addSubview(collectionsButton)
+//        collectionsButton.addTarget(self, action: #selector(navigateToDetailPage), for: .touchUpInside)
+//        
+//        
+
 
         // Add Collections Section
         view.addSubview(collectionsLabel)
-        view.addSubview(collectionsButton)
+        view.addSubview(navigateButton)
+//        collectionsLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(collectionsTapped)))
         NSLayoutConstraint.activate([
             collectionsLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 20),
             collectionsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
 
-            collectionsButton.centerYAnchor.constraint(equalTo: collectionsLabel.centerYAnchor),
-            collectionsButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            navigateButton.centerYAnchor.constraint(equalTo: collectionsLabel.centerYAnchor),
+            navigateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
+        
+//        view.addSubview(navigateButton)
+//        NSLayoutConstraint.activate([
+//            navigateButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            navigateButton.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+//        ])
+        
 
         // Add Favourites Section Label
         view.addSubview(favouritesLabel)
@@ -233,7 +254,7 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
             return
         }
         view.addSubview(favouritesCollectionView)
-
+        view.addSubview(navigateButton)
         NSLayoutConstraint.activate([
             favouritesCollectionView.topAnchor.constraint(equalTo: favouritesLabel.bottomAnchor, constant: 10),
             favouritesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -253,6 +274,7 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
         cell.configure(with: noteCard)
         return cell
     }
+  
     // Button Actions
     @objc private func addNoteTapped() {
         print("Add Note Tapped")
@@ -261,6 +283,22 @@ class FavouriteViewController: UIViewController, UICollectionViewDelegate, UICol
     @objc private func organizeTapped() {
         print("Organize Tapped")
     }
+    
+//    @objc private func collectionsTapped() {
+//        let collectionVC = CollectionViewController()
+//        collectionVC.modalPresentationStyle = .fullScreen
+//            present(collectionVC, animated: true)
+//
+//    }
+    
+    @objc private func navigateToDetailPage() {
+        let detailVC = CollectionViewController()
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+
+    
+
+
 }
 
 // Custom Collection View Cell for Note Card
@@ -327,6 +365,7 @@ class NoteCardCell: UICollectionViewCell {
         contentView.addSubview(authorLabel)
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(favoriteIcon)
+        
 
         NSLayoutConstraint.activate([
             // Larger cover image with full width

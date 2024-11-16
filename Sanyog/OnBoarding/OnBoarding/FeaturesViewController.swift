@@ -145,7 +145,6 @@ class FeaturesViewController: UIViewController {
         // Add button action
         continueButton.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
     }
-    
     // MARK: - Actions
     @objc private func continueTapped() {
         let registrationVC = RegistrationViewController()

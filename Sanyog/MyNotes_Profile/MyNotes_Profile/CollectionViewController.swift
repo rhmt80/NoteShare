@@ -95,14 +95,18 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
         
         // Navigate to ProfileViewController when "Saved" or "Subjects" is tapped
         if indexPath.row == 0 {
-            let profileVC = SavedViewController()
+            let profileVC = NotesViewController()
             navigationController?.pushViewController(profileVC, animated: true)
         }
-        
+    
         if indexPath.row == 1 {
             let profileVC = ProfileViewController()
             navigationController?.pushViewController(profileVC, animated: true)
         }
     }
+}
+
+#Preview {
+    CollectionViewController()
 }
 

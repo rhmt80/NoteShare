@@ -20,16 +20,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Start with LoginViewController
 
-        let loginVC = FavouriteViewController()
+        let loginVC = CollectionViewController()
 
         let navigationController = UINavigationController(rootViewController: loginVC)
         
         // Hide the navigation bar if you want
         navigationController.isNavigationBarHidden = true
         
-        window.rootViewController = navigationController
+//        window.rootViewController = navigationController
+        window.rootViewController = UINavigationController(rootViewController: CollectionViewController())
         self.window = window
         window.makeKeyAndVisible()
+        
     }
 }
 
