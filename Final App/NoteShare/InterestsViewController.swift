@@ -229,7 +229,12 @@ class InterestsViewController: UIViewController {
     
     @objc private func continueButtonTapped() {
         // Handle continue action
-        print("Continue button tapped")
+//        print("Continue button tapped")
+        
+   
+        if let delegate =  self.view.window?.windowScene?.delegate as? SceneDelegate {
+            delegate.gototab() 
+        }
     }
 }
 
