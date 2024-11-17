@@ -3,13 +3,8 @@ import AuthenticationServices
 
 class RegistrationViewController: UIViewController {
     
+
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        navigationController?.isNavigationBarHidden = true
-//    }
-    
-    // MARK: - UI Components
     private let logoLabel: UILabel = {
         let label = UILabel()
         label.text = "NoteShare"
@@ -81,29 +76,7 @@ class RegistrationViewController: UIViewController {
         label.textAlignment = .center
         return label
     }()
-    
-//    private let loginPromptLabel: UILabel = {
-//        let label = UILabel()
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        let regularAttributes: [NSAttributedString.Key: Any] = [
-//            .font: UIFont.systemFont(ofSize: 14),
-//            .foregroundColor: UIColor.gray
-//        ]
-//        
-//        let linkAttributes: [NSAttributedString.Key: Any] = [
-//            .font: UIFont.systemFont(ofSize: 14, weight: .semibold),
-//            .foregroundColor: UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
-//        ]
-//        
-//        let attributedString = NSMutableAttributedString(string: "Have an account? ", attributes: regularAttributes)
-//        attributedString.append(NSAttributedString(string: "Login", attributes: linkAttributes))
-//        
-//        label.attributedText = attributedString
-//        label.isUserInteractionEnabled = true
-//        label.textAlignment = .center
-//        return label
-//    }()
+
     
     
     private let loginPromptButton: UIButton = {
@@ -189,17 +162,17 @@ class RegistrationViewController: UIViewController {
         signInWithAppleButton.addTarget(self, action: #selector(signInWithAppleTapped), for: .touchUpInside)
         loginPromptButton.addTarget(self, action: #selector(loginPromptTapped), for: .touchUpInside)
         
-        // Add tap gesture for login prompt
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(loginPromptTapped))
-//        loginPromptButton.addGestureRecognizer(tapGesture)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+       
     }
     
     // MARK: - Actions
     @objc private func registerTapped() {
         // Handle registration logic
         let collegeSelectionVC = CollegeSelectionViewController()
-        collegeSelectionVC.modalPresentationStyle = .fullScreen
-           present(collegeSelectionVC, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.pushViewController(collegeSelectionVC, animated: true)
     }
     
     @objc private func signInWithAppleTapped() {
@@ -207,11 +180,14 @@ class RegistrationViewController: UIViewController {
     }
     
     @objc private func loginPromptTapped() {
-//        let loginVC = LoginViewController()
-//        navigationController?.pushViewController(loginVC, animated: true)
+        
         let loginVC = LoginViewController()
-        loginVC.modalPresentationStyle = .fullScreen
-           present(loginVC, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.pushViewController(loginVC, animated: true)
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
 
 }

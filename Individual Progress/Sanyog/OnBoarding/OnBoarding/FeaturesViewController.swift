@@ -9,7 +9,7 @@ import UIKit
 
 class FeaturesViewController: UIViewController {
     
-    // MARK: - UI Components
+    
     private let stackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
@@ -22,7 +22,7 @@ class FeaturesViewController: UIViewController {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "What's New!"
-        label.font = .systemFont(ofSize: 40, weight: .bold)
+        label.font = .systemFont(ofSize: 30, weight: .semibold)
         label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -37,18 +37,29 @@ class FeaturesViewController: UIViewController {
         return stack
     }()
     
+//    private lazy var continueButton: UIButton = {
+//        var configuration = UIButton.Configuration.filled()
+//        configuration.title = "Continue"
+//        configuration.baseBackgroundColor = UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
+//        configuration.cornerStyle = .large
+//        
+//        let button = UIButton(configuration: configuration)
+//        button.translatesAutoresizingMaskIntoConstraints = false
+//        return button
+//    }()
+    
     private lazy var continueButton: UIButton = {
-        var configuration = UIButton.Configuration.filled()
-        configuration.title = "Continue"
-        configuration.baseBackgroundColor = UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
-        configuration.cornerStyle = .large
-        
-        let button = UIButton(configuration: configuration)
+        let button = UIButton(type: .system)
+        button.setTitle("Continue", for: .normal)
+        button.backgroundColor = UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        button.layer.cornerRadius = 25
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    // MARK: - Feature Items
+    
     private func createFeatureView(icon: String, title: String, description: String) -> UIView {
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
@@ -107,9 +118,9 @@ class FeaturesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        
     }
-    
-    // MARK: - UI Setup
+   
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
@@ -132,7 +143,7 @@ class FeaturesViewController: UIViewController {
         
         // Setup constraints
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             
@@ -143,12 +154,20 @@ class FeaturesViewController: UIViewController {
         ])
         
         // Add button action
+        view.addSubview(continueButton)
         continueButton.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
+        
     }
-    // MARK: - Actions
+
     @objc private func continueTapped() {
         let registrationVC = RegistrationViewController()
-           registrationVC.modalPresentationStyle = .fullScreen
-           present(registrationVC, animated: true)
+        // If you want to show the navigation bar for this transition
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.pushViewController(registrationVC, animated: true)
     }
 }
+
+#Preview{
+    FeaturesViewController()
+}
+

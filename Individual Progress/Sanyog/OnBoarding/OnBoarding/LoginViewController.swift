@@ -5,28 +5,11 @@
 //  Created by admin24 on 05/11/24.
 //
 
+
 import UIKit
 import AuthenticationServices
 
 class LoginViewController: UIViewController {
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.isNavigationBarHidden = true
-    }
-    
-    // MARK: - UI Components
-    private let scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        return scrollView
-    }()
-    
-    private let contentView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
     
     private let logoLabel: UILabel = {
         let label = UILabel()
@@ -38,34 +21,31 @@ class LoginViewController: UIViewController {
         return label
     }()
     
-    private let emailTextField: UITextField = {
+    private func createTextField(placeholder: String, isSecure: Bool = false) -> UITextField {
         let textField = UITextField()
-        textField.placeholder = "Enter your Email"
+        textField.placeholder = placeholder
         textField.borderStyle = .none
-        textField.backgroundColor = .clear
-        textField.keyboardType = .emailAddress
-        textField.autocapitalizationType = .none
+        textField.backgroundColor = .systemBackground
+        textField.layer.cornerRadius = 25
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = UIColor.systemGray5.cgColor
+        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 0))
+        textField.leftViewMode = .always
+        textField.isSecureTextEntry = isSecure
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
-    }()
+    }
     
-    private let passwordTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Enter your password"
-        textField.borderStyle = .none
-        textField.backgroundColor = .clear
-        textField.isSecureTextEntry = true
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
-    }()
+    private lazy var emailTextField = createTextField(placeholder: "Enter your Email")
+    private lazy var passwordTextField = createTextField(placeholder: "Enter your password", isSecure: true)
     
     private lazy var loginButton: UIButton = {
-        var configuration = UIButton.Configuration.filled()
-        configuration.title = "Login"
-        configuration.baseBackgroundColor = UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
-        configuration.cornerStyle = .large
-        
-        let button = UIButton(configuration: configuration)
+        let button = UIButton(type: .system)
+        button.setTitle("Login", for: .normal)
+        button.backgroundColor = UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        button.layer.cornerRadius = 25
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -77,17 +57,16 @@ class LoginViewController: UIViewController {
         return button
     }()
     
-//    private let signUpPromptLabel: UILabel = {
-//        let label = UILabel()
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        label.text = "Don't have an account? Sign Up"
-//        label.textAlignment = .center
-//        label.font = .systemFont(ofSize: 14)
-//        label.textColor = .label
-//        return label
-//    }()
+    private let forgotPasswordButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Forgot Password?", for: .normal)
+        button.setTitleColor(UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0), for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
-    private let signUpPromptLabel: UIButton = {
+    private let signUpPromptButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         
@@ -101,55 +80,22 @@ class LoginViewController: UIViewController {
             .foregroundColor: UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
         ]
         
-        let attributedString = NSMutableAttributedString(string: "Have an account? ", attributes: regularAttributes)
+        let attributedString = NSMutableAttributedString(string: "Don't have an account? ", attributes: regularAttributes)
         attributedString.append(NSAttributedString(string: "Sign Up", attributes: linkAttributes))
         
         button.setAttributedTitle(attributedString, for: .normal)
         return button
     }()
     
-    // MARK: - TextFields Container Views
-    private func createTextFieldContainer(textField: UITextField) -> UIView {
-        let container = UIView()
-        container.translatesAutoresizingMaskIntoConstraints = false
-        container.backgroundColor = .systemBackground
-        container.layer.borderColor = UIColor.systemGray5.cgColor
-        container.layer.borderWidth = 1
-        container.layer.cornerRadius = 8
-        
-        container.addSubview(textField)
-        
-        let clearButton = UIButton(type: .system)
-        clearButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
-        clearButton.tintColor = .systemGray3
-        clearButton.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(clearButton)
-        
-        NSLayoutConstraint.activate([
-            textField.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
-            textField.trailingAnchor.constraint(equalTo: clearButton.leadingAnchor, constant: -8),
-            textField.topAnchor.constraint(equalTo: container.topAnchor),
-            textField.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            
-            clearButton.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            clearButton.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
-            clearButton.widthAnchor.constraint(equalToConstant: 20),
-            clearButton.heightAnchor.constraint(equalToConstant: 20),
-            
-            container.heightAnchor.constraint(equalToConstant: 50)
-        ])
-        
-        clearButton.addTarget(self, action: #selector(clearTextField(_:)), for: .touchUpInside)
-        clearButton.tag = [emailTextField, passwordTextField].firstIndex(of: textField) ?? 0
-        
-        return container
-    }
-    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupKeyboardHandling()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
     }
     
     // MARK: - UI Setup
@@ -157,116 +103,72 @@ class LoginViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         // Add subviews
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        
-        let emailContainer = createTextFieldContainer(textField: emailTextField)
-        let passwordContainer = createTextFieldContainer(textField: passwordTextField)
-        
-        [logoLabel, emailContainer, passwordContainer, loginButton, signInWithAppleButton, signUpPromptLabel].forEach(contentView.addSubview)
+        [logoLabel, emailTextField, passwordTextField,
+         forgotPasswordButton, loginButton, signInWithAppleButton,
+         signUpPromptButton].forEach { view.addSubview($0) }
         
         // Setup constraints
-        let safeArea = view.safeAreaLayoutGuide
-        
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: safeArea.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            logoLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60),
+            logoLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            emailTextField.topAnchor.constraint(equalTo: logoLabel.bottomAnchor, constant: 60),
+            emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            emailTextField.heightAnchor.constraint(equalToConstant: 50),
             
-            logoLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 60),
-            logoLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 16),
+            passwordTextField.leadingAnchor.constraint(equalTo: emailTextField.leadingAnchor),
+            passwordTextField.trailingAnchor.constraint(equalTo: emailTextField.trailingAnchor),
+            passwordTextField.heightAnchor.constraint(equalToConstant: 50),
             
-            emailContainer.topAnchor.constraint(equalTo: logoLabel.bottomAnchor, constant: 60),
-            emailContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
-            emailContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
+            forgotPasswordButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 16),
+            forgotPasswordButton.trailingAnchor.constraint(equalTo: passwordTextField.trailingAnchor),
             
-            passwordContainer.topAnchor.constraint(equalTo: emailContainer.bottomAnchor, constant: 16),
-            passwordContainer.leadingAnchor.constraint(equalTo: emailContainer.leadingAnchor),
-            passwordContainer.trailingAnchor.constraint(equalTo: emailContainer.trailingAnchor),
-            
-            loginButton.topAnchor.constraint(equalTo: passwordContainer.bottomAnchor, constant: 32),
-            loginButton.leadingAnchor.constraint(equalTo: emailContainer.leadingAnchor),
-            loginButton.trailingAnchor.constraint(equalTo: emailContainer.trailingAnchor),
+            loginButton.topAnchor.constraint(equalTo: forgotPasswordButton.bottomAnchor, constant: 24),
+            loginButton.leadingAnchor.constraint(equalTo: emailTextField.leadingAnchor),
+            loginButton.trailingAnchor.constraint(equalTo: emailTextField.trailingAnchor),
             loginButton.heightAnchor.constraint(equalToConstant: 50),
             
             signInWithAppleButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 16),
-            signInWithAppleButton.leadingAnchor.constraint(equalTo: emailContainer.leadingAnchor),
-            signInWithAppleButton.trailingAnchor.constraint(equalTo: emailContainer.trailingAnchor),
+            signInWithAppleButton.leadingAnchor.constraint(equalTo: emailTextField.leadingAnchor),
+            signInWithAppleButton.trailingAnchor.constraint(equalTo: emailTextField.trailingAnchor),
             signInWithAppleButton.heightAnchor.constraint(equalToConstant: 50),
             
-            signUpPromptLabel.topAnchor.constraint(equalTo: signInWithAppleButton.bottomAnchor, constant: 24),
-            signUpPromptLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            signUpPromptLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -32)
+            signUpPromptButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            signUpPromptButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
         
         // Add targets
         loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
         signInWithAppleButton.addTarget(self, action: #selector(signInWithAppleTapped), for: .touchUpInside)
+        signUpPromptButton.addTarget(self, action: #selector(signUpPromptTapped), for: .touchUpInside)
+        forgotPasswordButton.addTarget(self, action: #selector(forgotPasswordTapped), for: .touchUpInside)
         
-        // Add tap gesture to sign up prompt
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(signUpPromptTapped))
-//        signUpPromptLabel.isUserInteractionEnabled = true
-//        signUpPromptLabel.addGestureRecognizer(tapGesture)
-        
-        signUpPromptLabel.addTarget(self, action: #selector(signUpPromptTapped), for: .touchUpInside)
-    }
-    
-    // MARK: - Keyboard Handling
-    private func setupKeyboardHandling() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow),
-                                             name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide),
-                                             name: UIResponder.keyboardWillHideNotification, object: nil)
-        
+        // Add tap gesture to dismiss keyboard
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
     }
     
     // MARK: - Actions
     @objc private func loginTapped() {
-        // Handle login
         let collegeSelectionVC = CollegeSelectionViewController()
-        collegeSelectionVC.modalPresentationStyle = .fullScreen
-           present(collegeSelectionVC, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.pushViewController(collegeSelectionVC, animated: true)
     }
     
     @objc private func signInWithAppleTapped() {
-        // Handle Apple sign in
-        print("Sign in with Apple tapped")
+        // Handle Sign in with Apple
     }
     
     @objc private func signUpPromptTapped() {
-        // Handle sign up navigation
         let signUpVC = RegistrationViewController()
-        signUpVC.modalPresentationStyle = .fullScreen
-           present(signUpVC, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.pushViewController(signUpVC, animated: true)
     }
     
-    @objc private func clearTextField(_ sender: UIButton) {
-        let textFields = [emailTextField, passwordTextField]
-        textFields[sender.tag].text = ""
-    }
-    
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
-            return
-        }
-        
-        let contentInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardSize.height, right: 0.0)
-        scrollView.contentInset = contentInsets
-        scrollView.scrollIndicatorInsets = contentInsets
-    }
-    
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        scrollView.contentInset = .zero
-        scrollView.scrollIndicatorInsets = .zero
+    @objc private func forgotPasswordTapped() {
+        // Handle forgot password
     }
     
     @objc private func dismissKeyboard() {

@@ -1,27 +1,36 @@
-//
-//  InterestsViewController.swift
-//  OnBoarding
-//
-//  Created by admin24 on 15/11/24.
-//
-
 import UIKit
 
 class InterestsViewController: UIViewController {
+    private let backButton: UIButton = {
+        let button = UIButton(type: .system)
+        let image = UIImage(systemName: "chevron.left")
+        button.setImage(image, for: .normal)
+        button.setTitle("Back", for: .normal)
+        button.tintColor = .systemBlue
+        button.titleLabel?.font = .systemFont(ofSize: 17)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        // Add this line to ensure proper image positioning
+        button.semanticContentAttribute = .forceLeftToRight
+        // Add this line to set the spacing between image and text
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+        return button
+    }()
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Choose your Interests"
-        label.font = .systemFont(ofSize: 28, weight: .bold)
+        label.font = .systemFont(ofSize: 32, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private let backButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-        button.tintColor = .systemBlue
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Select the topics you'd like to explore"
+        label.font = .systemFont(ofSize: 16, weight: .regular)
+        label.textColor = .secondaryLabel
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
     private let continueButton: UIButton = {
@@ -32,6 +41,7 @@ class InterestsViewController: UIViewController {
         button.layer.cornerRadius = 25
         button.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(continueButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -49,54 +59,110 @@ class InterestsViewController: UIViewController {
     }()
     
     private let interests = [
+        // Core Computer Science
         "Mathematics",
-        "Swift Programing",
-        "Python",
-        "Artificial Intelligence",
-        "LLMS",
-        "WebDev",
-        "Android Dev",
-        "Operating system",
-        "Java Devlopment",
-        "Computer Architecture",
-        "Deep Learning",
         "Algorithms",
-        "Machine Learning",
-        "C++",
-        "Computer vision",
-        "NLP",
-        "Graph Theory",
-        "Automata Language",
         "Data Structures",
-        "Database",
+        "Computer Architecture",
+        "Operating Systems",
         "Networking",
-        "Others",
-        "calculus"
+        "Database Systems",
+        "System Design",
+        
+        // Programming Languages
+        "Python",
+        "Java",
+        "C++",
+        "JavaScript",
+        "Swift",
+        "Rust",
+        "Go",
+        "TypeScript",
+        
+        // AI & ML
+        "Artificial Intelligence",
+        "Machine Learning",
+        "Deep Learning",
+        "Natural Language Processing",
+        "Computer Vision",
+        "Reinforcement Learning",
+        "LLMs",
+        "Neural Networks",
+        
+        // Web & Mobile
+        "Web Development",
+        "Mobile Development",
+        "Frontend",
+        "Backend",
+        "UI/UX Design",
+        "DevOps",
+        "Cloud Computing",
+        
+        // Mathematics & Theory
+        "Calculus",
+        "Linear Algebra",
+        "Statistics",
+        "Probability",
+        "Discrete Mathematics",
+        "Graph Theory",
+        "Automata Theory",
+        
+        // Emerging Tech
+        "Blockchain",
+        "Cybersecurity",
+        "IoT",
+        "AR/VR",
+        "Quantum Computing",
+        "Edge Computing",
+        "Robotics"
     ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupBackButton()
+        
+    }
+    
+    private func setupBackButton() {
+        // First ensure the button exists and is a subview
+        guard backButton.superview == nil else { return }
+        
+        // First add the button to the view hierarchy
+        view.addSubview(backButton)
+        
+        // Only after adding to view hierarchy, activate constraints
+        NSLayoutConstraint.activate([
+            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            backButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
+        
+        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
     }
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        view.addSubview(backButton)
         view.addSubview(titleLabel)
+        view.addSubview(subtitleLabel)
         view.addSubview(scrollView)
         view.addSubview(continueButton)
         
         scrollView.addSubview(interestsContainer)
         
         NSLayoutConstraint.activate([
-            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            
-            titleLabel.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 20),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             
-            scrollView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            
+            scrollView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 30),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: continueButton.topAnchor, constant: -20),
@@ -105,15 +171,16 @@ class InterestsViewController: UIViewController {
             interestsContainer.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20),
             interestsContainer.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20),
             interestsContainer.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            // Make the container width equal to scroll view width minus padding
             interestsContainer.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40),
             
             continueButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             continueButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             continueButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            continueButton.heightAnchor.constraint(equalToConstant: 50)
+            continueButton.heightAnchor.constraint(equalToConstant: 50),
+            
+
         ])
-        
+       
         createInterestButtons()
     }
     
@@ -127,8 +194,7 @@ class InterestsViewController: UIViewController {
             let button = createInterestButton(withTitle: interest)
             let buttonWidth = button.intrinsicContentSize.width + 20
             
-            // Check if button needs to go to next line
-            if currentX + buttonWidth > (view.bounds.width - 40) { // 40 is total horizontal padding
+            if currentX + buttonWidth > (view.bounds.width - 40) {
                 currentX = 0
                 currentY += 40 + spacing
             }
@@ -137,11 +203,10 @@ class InterestsViewController: UIViewController {
             interestsContainer.addSubview(button)
             
             currentX += buttonWidth + spacing
-            maxHeight = currentY + 40 // Update max height
+            maxHeight = currentY + 40
         }
         
-        // Set the container height to fit all buttons
-        let containerHeight = maxHeight + 40 // Add extra padding at bottom
+        let containerHeight = maxHeight + 40
         interestsContainer.heightAnchor.constraint(equalToConstant: containerHeight).isActive = true
     }
     
@@ -164,12 +229,10 @@ class InterestsViewController: UIViewController {
     
     @objc private func continueButtonTapped() {
         // Handle continue action
-    }
-    
-    @objc private func backButtonTapped() {
-        // Handle back navigation
+        print("Continue button tapped")
     }
 }
+
 #Preview {
     InterestsViewController()
 }

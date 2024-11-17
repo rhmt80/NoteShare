@@ -1,445 +1,351 @@
-//
-//  CollegeSelectionViewController.swift
-//  OnBoarding
-//
-//  Created by admin24 on 05/11/24.
-//
-
 
 import UIKit
 
 class CollegeSelectionViewController: UIViewController {
-    // Previous UI elements remain the same
-    private let stackView: UIStackView = {
+    
+    // MARK: - Properties
+    private let collegeTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Choose your college"
+        textField.borderStyle = .roundedRect
+        textField.backgroundColor = .systemBackground
+        textField.layer.borderColor = UIColor.systemGray4.cgColor
+        textField.layer.borderWidth = 1
+        textField.layer.cornerRadius = 8
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        return textField
+    }()
+    
+    private let collegeTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.isHidden = true
+        return tableView
+    }()
+    
+    private let yearStackView: UIStackView = {
         let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 20
+        stack.axis = .horizontal
+        stack.distribution = .equalSpacing
+        stack.spacing = 15
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
     
-    private let backButton: UIButton = {
-        let button = UIButton()
-        let image = UIImage(systemName: "chevron.left")
-        button.setImage(image, for: .normal)
-        button.tintColor = .systemBlue
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+    private let courseCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 10
+        layout.itemSize = CGSize(width: (UIScreen.main.bounds.width - 50) / 2, height: 60)
+        
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collection.backgroundColor = .clear
+        collection.translatesAutoresizingMaskIntoConstraints = false
+        collection.register(CourseCell.self, forCellWithReuseIdentifier: "CourseCell")
+        collection.allowsSelection = true // Enable selection
+        return collection
     }()
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Select your college"
-        label.font = .systemFont(ofSize: 24, weight: .bold)
-        return label
-    }()
-    
-    private lazy var collegeDropdown: DropdownField = {
-        return createDropdownField(placeholder: "Select below")
-    }()
-    
-    private lazy var yearDropdown: DropdownField = {
-        return createDropdownField(placeholder: "Select below")
-    }()
-    
-    private lazy var courseDropdown: DropdownField = {
-        return createDropdownField(placeholder: "Select below")
-    }()
-    
-    // New UI elements for interests section
     
     private let continueButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
         button.setTitle("Continue", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         button.backgroundColor = .systemBlue
-        button.layer.cornerRadius = 25
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowRadius = 4
+        button.layer.shadowOpacity = 0.1
+        button.alpha = 0.7
+        button.isEnabled = false
         return button
     }()
     
-    private func setupDropdowns() {
-            // Set up college dropdown
-            collegeDropdown.options = [
-                "Harvard University",
-                "MIT",
-                "Stanford University",
-                "Yale University",
-                "Princeton University"
-            ]
-            collegeDropdown.addTarget(self, action: #selector(dropdownValueChanged(_:)), for: .valueChanged)
-            
-            // Set up year dropdown
-            yearDropdown.options = [
-                "First Year",
-                "Second Year",
-                "Third Year",
-                "Fourth Year"
-            ]
-            yearDropdown.addTarget(self, action: #selector(dropdownValueChanged(_:)), for: .valueChanged)
-            
-            // Set up course dropdown
-            courseDropdown.options = [
-                "Computer Science",
-                "Engineering",
-                "Mathematics",
-                "Physics",
-                "Business Administration"
-            ]
-            courseDropdown.addTarget(self, action: #selector(dropdownValueChanged(_:)), for: .valueChanged)
-        }
-        
-        @objc private func dropdownValueChanged(_ sender: DropdownField) {
-            // Handle the selection
-            if sender === collegeDropdown {
-                print("Selected college: \(sender.selectedOption ?? "None")")
-            } else if sender === yearDropdown {
-                print("Selected year: \(sender.selectedOption ?? "None")")
-            } else if sender === courseDropdown {
-                print("Selected course: \(sender.selectedOption ?? "None")")
-            }
-        }
-    
     // Sample data
-    private let colleges = ["SRM University","VIT","Manipal University","Harvard University", "MIT", "Stanford University", "Yale University"]
-    private let years = ["First Year", "Second Year", "Third Year", "Fourth Year"]
-    private let courses = ["Computer Science", "Medical Science", "Business", "Arts","Entreprunership"]
+    private let colleges = ["SRM", "Stanford", "VIT", "Oxford", "IIT", "MIT", "Harvard", "Cambridge"]
+    private let courses = ["Computer Science", "MBA", "Medicine", "Law", "Engineering", "Arts", "Physics", "Mathematics"]
+    private var selectedYear: Int = 0
+    private var selectedCourse: Int?
     
-    private var interests: [(name: String, isSelected: Bool)] = [
-        ("IOS Dev", false),
-        ("Android Dev", false),
-        ("WebDev", false),
-        ("C++", false),
-        ("Maths", false),
-        ("COA", false),
-        ("Physics", false),
-        ("Automata", false),
-        ("Chem", false),
-        ("Swift", false),
-        ("Data Structures", false),
-        ("OS", false)
-    ]
+    // Selection tracking
+    private var isCollegeSelected: Bool = false {
+        didSet { updateContinueButtonState() }
+    }
+    private var isYearSelected: Bool = false {
+        didSet { updateContinueButtonState() }
+    }
+    private var isCourseSelected: Bool = false {
+        didSet { updateContinueButtonState() }
+    }
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupConstraints()
-        setupActions()
+        setupDelegates()
+        
+        navigationItem.hidesBackButton = true
+        navigationController?.navigationBar.isHidden = true
     }
     
+    // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        view.addSubview(backButton)
-        view.addSubview(stackView)
+        
+        // Setup main stack view
+        let mainStack = UIStackView()
+        mainStack.axis = .vertical
+        mainStack.spacing = 30
+        mainStack.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(mainStack)
         view.addSubview(continueButton)
+        view.addSubview(collegeTableView)
         
-        stackView.addArrangedSubview(titleLabel)
+        // College Selection Section
+        let collegeLabel = createLabel(text: "Select your College")
+        mainStack.addArrangedSubview(collegeLabel)
+        mainStack.addArrangedSubview(collegeTextField)
         
-        let collegeLabel = createSectionLabel(text: "Select your college")
-        stackView.addArrangedSubview(collegeLabel)
-        stackView.addArrangedSubview(collegeDropdown)
+        // Year Selection Section
+        let yearLabel = createLabel(text: "Select your current academic year")
+        mainStack.addArrangedSubview(yearLabel)
+        mainStack.addArrangedSubview(yearStackView)
         
-        let yearLabel = createSectionLabel(text: "Enter current college year")
-        stackView.addArrangedSubview(yearLabel)
-        stackView.addArrangedSubview(yearDropdown)
+        // Setup year buttons
+        for year in 1...4 {
+            let yearButton = createYearButton(year: year)
+            yearStackView.addArrangedSubview(yearButton)
+        }
         
-        let courseLabel = createSectionLabel(text: "Enter your course")
-        stackView.addArrangedSubview(courseLabel)
-        stackView.addArrangedSubview(courseDropdown)
-    
-    }
-    
-    private func setupConstraints() {
+        // Course Selection Section
+        let courseLabel = createLabel(text: "Select your course")
+        mainStack.addArrangedSubview(courseLabel)
+        mainStack.addArrangedSubview(courseCollectionView)
+        
+        // Constraints
         NSLayoutConstraint.activate([
-            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            mainStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            mainStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            mainStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
-            stackView.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 20),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            collegeTextField.heightAnchor.constraint(equalToConstant: 50),
+            yearStackView.heightAnchor.constraint(equalToConstant: 80),
+            courseCollectionView.heightAnchor.constraint(equalToConstant: 350),
             
-        
-            continueButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -300),
+            // Continue button constraints
             continueButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             continueButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            continueButton.heightAnchor.constraint(equalToConstant: 50)
+            continueButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            continueButton.heightAnchor.constraint(equalToConstant: 56),
+            
+            // College TableView Constraints
+            collegeTableView.topAnchor.constraint(equalTo: collegeTextField.bottomAnchor, constant: 5),
+            collegeTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            collegeTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            collegeTableView.heightAnchor.constraint(equalToConstant: 150)
         ])
-    }
-    
-   
-    // Previous helper methods remain the same
-    private func setupActions() {
-        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+        
+        // Setup table view for dropdown
+        collegeTableView.register(UITableViewCell.self, forCellReuseIdentifier: "CollegeCell")
+        
+        // Add continue button target
         continueButton.addTarget(self, action: #selector(continueButtonTapped), for: .touchUpInside)
         
-        collegeDropdown.options = colleges
-        yearDropdown.options = years
-        courseDropdown.options = courses
+        // Add target for collegeTextField to show dropdown
+        collegeTextField.addTarget(self, action: #selector(collegeTextFieldEditingChanged), for: .editingChanged)
     }
     
-    private func createSectionLabel(text: String) -> UILabel {
+    private func createLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
-        label.font = .systemFont(ofSize: 16, weight: .regular)
+        label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.textColor = .label
         return label
     }
     
-    private func createDropdownField(placeholder: String) -> DropdownField {
-        let field = DropdownField()
-        field.placeholder = placeholder
-        field.translatesAutoresizingMaskIntoConstraints = false
-        field.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        return field
+    private func createYearButton(year: Int) -> UIButton {
+        let button = UIButton()
+        
+        // Fixed size for perfect circle
+        let size: CGFloat = 60
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Set fixed size constraints
+        NSLayoutConstraint.activate([
+            button.widthAnchor.constraint(equalToConstant: size),
+            button.heightAnchor.constraint(equalToConstant: size)
+        ])
+        
+        // Configure button
+        button.setTitle("\(year)", for: .normal)
+        button.backgroundColor = .systemGray5
+        button.setTitleColor(.label, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .medium)
+        
+        // Make perfectly round
+        button.layer.cornerRadius = size / 2
+        button.clipsToBounds = true
+        
+        // Add shadow for depth
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowRadius = 4
+        button.layer.shadowOpacity = 0.1
+        
+        button.tag = year
+        button.addTarget(self, action: #selector(yearButtonTapped), for: .touchUpInside)
+        
+        return button
     }
     
-    @objc private func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
+    private func setupDelegates() {
+        collegeTableView.delegate = self
+        collegeTableView.dataSource = self
+        courseCollectionView.delegate = self
+        courseCollectionView.dataSource = self
+    }
+    
+    private func updateContinueButtonState() {
+        let isFormComplete = isCollegeSelected && isYearSelected && isCourseSelected
+        UIView.animate(withDuration: 0.3) {
+            self.continueButton.alpha = isFormComplete ? 1.0 : 0.7
+            self.continueButton.isEnabled = isFormComplete
+        }
+    }
+    
+    // MARK: - Actions
+    @objc private func collegeTextFieldEditingChanged() {
+        collegeTableView.isHidden = collegeTextField.text?.isEmpty ?? true
+        collegeTableView.reloadData()
     }
     
     @objc private func continueButtonTapped() {
-        let selectedInterests = interests.filter { $0.isSelected }.map { $0.name }
-        print("Selected interests: \(selectedInterests)")
+        let loginVC = InterestsViewController()
+//        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.pushViewController(loginVC, animated: true)
+        }
+    
+    @objc private func yearButtonTapped(_ sender: UIButton) {
+        isYearSelected = true
+        selectedYear = sender.tag
+        
+        // Update all year buttons
+        yearStackView.arrangedSubviews.forEach { view in
+            if let button = view as? UIButton {
+                UIView.animate(withDuration: 0.2) {
+                    button.backgroundColor = button.tag == sender.tag ? .systemBlue : .systemGray5
+                    button.setTitleColor(button.tag == sender.tag ? .white : .label, for: .normal)
+                }
+            }
+        }
+    }
+    
+}
+
+// MARK: - TableView Delegate & DataSource
+extension CollegeSelectionViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return colleges.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CollegeCell", for: indexPath)
+        cell.textLabel?.text = colleges[indexPath.row]
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        collegeTextField.text = colleges[indexPath.row]
+        collegeTableView.isHidden = true
+        isCollegeSelected = true
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
-// Collection View Extension
+// MARK: - CollectionView Delegate & DataSource
 extension CollegeSelectionViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return interests.count
+        return courses.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "InterestCell", for: indexPath) as! InterestCell
-        cell.configure(with: interests[indexPath.item].name, isSelected: interests[indexPath.item].isSelected)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CourseCell", for: indexPath) as! CourseCell
+        cell.configure(with: courses[indexPath.row])
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        interests[indexPath.item].isSelected.toggle()
-        collectionView.reloadItems(at: [indexPath])
+        selectedCourse = indexPath.row
+        isCourseSelected = true
     }
 }
 
-// Interest Cell
-class InterestCell: UICollectionViewCell {
-    private let label: UILabel = {
+// MARK: - Course Cell
+class CourseCell: UICollectionViewCell {
+    private let titleLabel: UILabel = {
         let label = UILabel()
-        label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.numberOfLines = 2
         return label
     }()
     
+    override var isSelected: Bool {
+        didSet {
+            updateSelectionState()
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setup()
+        setupCell()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setup() {
-        contentView.backgroundColor = UIColor(white: 0.95, alpha: 1)
-        contentView.layer.cornerRadius = 15
-        contentView.addSubview(label)
+    private func setupCell() {
+        backgroundColor = .systemGray6
+        layer.cornerRadius = 12
+        
+        // Add shadow
+        layer.masksToBounds = false
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOffset = CGSize(width: 0, height: 2)
+        layer.shadowRadius = 4
+        layer.shadowOpacity = 0.1
+        
+        contentView.layer.cornerRadius = 12
+        contentView.layer.masksToBounds = true
+        
+        contentView.addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
+            titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8)
         ])
     }
     
-    func configure(with text: String, isSelected: Bool) {
-        label.text = text
-        if isSelected {
-            contentView.backgroundColor = .systemBlue
-            label.textColor = .white
-        } else {
-            contentView.backgroundColor = UIColor(white: 0.95, alpha: 1)
-            label.textColor = .black
-        }
+    func configure(with title: String) {
+        titleLabel.text = title
     }
     
-    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
-        let targetSize = CGSize(width: layoutAttributes.frame.width, height: 35)
-        let size = contentView.systemLayoutSizeFitting(targetSize, withHorizontalFittingPriority: .defaultHigh, verticalFittingPriority: .defaultHigh)
-        attributes.frame = CGRect(origin: attributes.frame.origin, size: size)
-        return attributes
-    }
-}
-
-// Previous DropdownField class remains the same
-class DropdownField: UIControl {
-    // MARK: - Properties
-    private(set) var selectedOption: String? {
-        didSet {
-            textField.text = selectedOption
-        }
-    }
-    
-    var options: [String] = [] {
-        didSet {
-            pickerView.reloadAllComponents()
-        }
-    }
-    
-    var placeholder: String = "" {
-        didSet {
-            textField.placeholder = placeholder
-        }
-    }
-    
-    // MARK: - UI Elements
-    private lazy var textField: UITextField = {
-        let field = UITextField()
-        field.borderStyle = .none
-        field.backgroundColor = .systemBackground
-        field.translatesAutoresizingMaskIntoConstraints = false
-        field.delegate = self
-        return field
-    }()
-    
-    private lazy var pickerView: UIPickerView = {
-        let picker = UIPickerView()
-        picker.delegate = self
-        picker.dataSource = self
-        return picker
-    }()
-    
-    private let bottomLine: UIView = {
-        let view = UIView()
-        view.backgroundColor = .systemGray4
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    private let dropdownIndicator: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "chevron.down")
-        imageView.tintColor = .systemBlue
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-    
-    // MARK: - Initialization
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupUI()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - Setup
-    private func setupUI() {
-        addSubview(textField)
-        addSubview(bottomLine)
-        addSubview(dropdownIndicator)
-        
-        // Setup picker view as input view
-        textField.inputView = pickerView
-        
-        // Add toolbar with Done button
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
-        toolbar.setItems([flexSpace, doneButton], animated: false)
-        textField.inputAccessoryView = toolbar
-        
-        // Add tap gesture to the entire view
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
-        addGestureRecognizer(tapGesture)
-        
-        setupConstraints()
-    }
-    
-    private func setupConstraints() {
-        NSLayoutConstraint.activate([
-            // TextField constraints
-            textField.topAnchor.constraint(equalTo: topAnchor),
-            textField.leadingAnchor.constraint(equalTo: leadingAnchor),
-            textField.trailingAnchor.constraint(equalTo: dropdownIndicator.leadingAnchor, constant: -8),
-            textField.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
-            // Bottom line constraints
-            bottomLine.leadingAnchor.constraint(equalTo: leadingAnchor),
-            bottomLine.trailingAnchor.constraint(equalTo: trailingAnchor),
-            bottomLine.bottomAnchor.constraint(equalTo: bottomAnchor),
-            bottomLine.heightAnchor.constraint(equalToConstant: 1),
-            
-            // Dropdown indicator constraints
-            dropdownIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
-            dropdownIndicator.trailingAnchor.constraint(equalTo: trailingAnchor),
-            dropdownIndicator.widthAnchor.constraint(equalToConstant: 20),
-            dropdownIndicator.heightAnchor.constraint(equalToConstant: 20)
-        ])
-    }
-    
-    // MARK: - Actions
-    @objc private func doneButtonTapped() {
-        if selectedOption == nil && !options.isEmpty {
-            // If nothing is selected, select the first option
-            selectedOption = options[0]
-            pickerView.selectRow(0, inComponent: 0, animated: false)
-        }
-        textField.resignFirstResponder()
-        sendActions(for: .valueChanged)
-    }
-    
-    @objc private func viewTapped() {
-        textField.becomeFirstResponder()
-    }
-}
-
-// MARK: - UIPickerView Delegate & DataSource
-extension DropdownField: UIPickerViewDelegate, UIPickerViewDataSource {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return options.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return options[row]
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedOption = options[row]
-        sendActions(for: .valueChanged)
-    }
-}
-
-// MARK: - UITextField Delegate
-extension DropdownField: UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return false // Prevent manual text input
-    }
-    
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        // Rotate the dropdown indicator when opening
-        UIView.animate(withDuration: 0.3) {
-            self.dropdownIndicator.transform = CGAffineTransform(rotationAngle: .pi)
-        }
-        return true
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        // Reset the dropdown indicator rotation when closing
-        UIView.animate(withDuration: 0.3) {
-            self.dropdownIndicator.transform = .identity
+    private func updateSelectionState() {
+        UIView.animate(withDuration: 0.2) {
+            self.backgroundColor = self.isSelected ? .systemBlue : .systemGray6
+            self.titleLabel.textColor = self.isSelected ? .white : .label
         }
     }
 }
 
-#Preview {
+#Preview() {
     CollegeSelectionViewController()
 }

@@ -1,10 +1,3 @@
-//
-//  ProfileViewController.swift
-//  MyNotes_Profile
-//
-//  Created by admin24 on 13/11/24.
-//
-
 import UIKit
 
 class ProfileViewController: UIViewController {
@@ -19,14 +12,6 @@ class ProfileViewController: UIViewController {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
-    }()
-    
-    private let backButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-        button.tintColor = .systemBlue
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
     }()
     
     private let titleLabel: UILabel = {
@@ -122,15 +107,17 @@ class ProfileViewController: UIViewController {
     }()
     
     private let signOutButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Sign Out", for: .normal)
-        button.setTitleColor(.red, for: .normal)
+        var config = UIButton.Configuration.plain()
+        config.title = "Sign Out"
+        config.baseForegroundColor = .red
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 0)
+        let button = UIButton(configuration: config, primaryAction: nil)
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .systemBackground
         button.contentHorizontalAlignment = .left
-        button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+
     
     private let saveButton: UIButton = {
         let button = UIButton(type: .system)
@@ -155,9 +142,8 @@ class ProfileViewController: UIViewController {
         scrollView.addSubview(contentView)
         
         // Add all main subviews to content view
-        [backButton, titleLabel, profileContainer, myDownloadsLabel,
-         optionsStackView, accountSettingsLabel, signOutButton, saveButton]
-            .forEach { contentView.addSubview($0) }
+        [titleLabel, profileContainer, myDownloadsLabel, optionsStackView,
+         accountSettingsLabel, signOutButton, saveButton].forEach { contentView.addSubview($0) }
         
         // Add profile container subviews
         [profileImageView, nameLabel, emailLabel, educationLabel, institutionLabel]
@@ -177,7 +163,7 @@ class ProfileViewController: UIViewController {
         
         // Setup constraints
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -188,10 +174,7 @@ class ProfileViewController: UIViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            backButton.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 16),
-            backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            
-            titleLabel.centerYAnchor.constraint(equalTo: backButton.centerYAnchor),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             profileContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
@@ -288,3 +271,6 @@ class ProfileViewController: UIViewController {
     }
 }
 
+#Preview(){
+    ProfileViewController()
+}

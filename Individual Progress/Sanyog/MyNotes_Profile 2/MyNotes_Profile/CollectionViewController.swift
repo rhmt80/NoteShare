@@ -1,15 +1,12 @@
-//
-//  CollectionViewController.swift
-//  MyNotes_Profile
-//
-//  Created by admin24 on 13/11/24.
-//
-
+// created by Sayong Dani
 import UIKit
 
-class CollectionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class CollectionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
-    // UI Elements
+    // Properties for search
+    private var filteredItems: [String] = []
+    private var isSearching: Bool = false
+    
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Collection"
@@ -21,6 +18,7 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
     let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Search"
+        searchBar.searchBarStyle = .minimal // This gives the clean look
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         return searchBar
     }()
@@ -45,12 +43,20 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
         
         // Setup elements
         setupTableView()
+        setupSearchBar()
+        
+        // Initialize filtered items
+        filteredItems = items
         
         // Setup layout constraints
         setupLayout()
     }
     
     // MARK: - Setup Methods
+    
+    func setupSearchBar() {
+        searchBar.delegate = self
+    }
     
     func setupTableView() {
         tableView.delegate = self
@@ -60,12 +66,12 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func setupLayout() {
         NSLayoutConstraint.activate([
-            // Title Label
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+    
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -8),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             // Search Bar
-            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8), // Reduced from 16 to 8
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
@@ -76,16 +82,16 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-    
-    // MARK: - UITableView DataSource and Delegate Methods
+
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
+        return isSearching ? filteredItems.count : items.count
     }
+    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = items[indexPath.row]
+        cell.textLabel?.text = isSearching ? filteredItems[indexPath.row] : items[indexPath.row]
         cell.accessoryType = .disclosureIndicator // Adds arrow on the right
         return cell
     }
@@ -93,16 +99,57 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        // Navigate to ProfileViewController when "Saved" or "Subjects" is tapped
-        if indexPath.row == 0 {
-            let profileVC = NotesViewController()
+        let selectedItem = isSearching ? filteredItems[indexPath.row] : items[indexPath.row]
+        
+        if selectedItem == "Saved" {
+            let profileVC = CollectionSavedViewController()
             navigationController?.pushViewController(profileVC, animated: true)
         }
+        
+        if selectedItem == "Subjects" {
+            let profileVC = CollectionSubjectViewController()
+            navigationController?.pushViewController(profileVC, animated: true)
+        }
+        
+        if selectedItem == "Favourites" {
+            let profileVC = CollectionFavViewController()
+            navigationController?.pushViewController(profileVC, animated: true)
+        }
+        
+        if selectedItem == "Recents" {
+            let profileVC = CollectionRecentViewController()
+            navigationController?.pushViewController(profileVC, animated: true)
+        }
+    }
     
-        if indexPath.row == 1 {
-            let profileVC = ProfileViewController()
-            navigationController?.pushViewController(profileVC, animated: true)
+    // MARK: - SearchBar Delegate Methods
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            filteredItems = items
+            isSearching = false
+            searchBar.resignFirstResponder()
+        } else {
+            filteredItems = items.filter { $0.lowercased().contains(searchText.lowercased()) }
+            isSearching = true
         }
+        tableView.reloadData()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        filteredItems = items
+        isSearching = false
+        searchBar.resignFirstResponder()
+        tableView.reloadData()
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
     }
 }
 
