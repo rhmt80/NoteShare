@@ -2,6 +2,21 @@ import UIKit
 
 class ProfileViewController: UIViewController {
     
+    private let backButton: UIButton = {
+        let button = UIButton(type: .system)
+        let image = UIImage(systemName: "chevron.left")
+        button.setImage(image, for: .normal)
+        button.setTitle("Back", for: .normal)
+        button.tintColor = .systemBlue
+        button.titleLabel?.font = .systemFont(ofSize: 17)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        // Add this line to ensure proper image positioning
+        button.semanticContentAttribute = .forceLeftToRight
+        // Add this line to set the spacing between image and text
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+        return button
+    }()
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -132,8 +147,30 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupBackButton()
     }
     
+    
+    private func setupBackButton() {
+        // First ensure the button exists and is a subview
+        guard backButton.superview == nil else { return }
+        
+        // First add the button to the view hierarchy
+        view.addSubview(backButton)
+        
+        // Only after adding to view hierarchy, activate constraints
+        NSLayoutConstraint.activate([
+            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            backButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
+        
+        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
     private func setupUI() {
         view.backgroundColor = .systemBackground
         

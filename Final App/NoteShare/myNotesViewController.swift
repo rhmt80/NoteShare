@@ -188,8 +188,11 @@ class FavouriteViewController: UIViewController {
         // Setup button actions
         addNoteButton.addTarget(self, action: #selector(addNoteTapped), for: .touchUpInside)
         moreOptionsButton.addTarget(self, action: #selector(moreOptionsTapped), for: .touchUpInside)
-        //        addNoteButton.addTarget(self, action: #selector(addNoteTapped), for: .touchUpInside)
-        //        moreOptionsButton.addTarget(self, action: #selector(moreOptionsTapped), for: .touchUpInside)
+        
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    
         
         
     }
@@ -234,11 +237,18 @@ class FavouriteViewController: UIViewController {
     // MARK: - Action Methods
     
     
-    @objc private func moreOptionsTapped() {
-        print("More options tapped")
-        // Implement more options functionality
-    }
+//    @objc private func moreOptionsTapped() {
+//        print("More options tapped")
+//        // Implement more options functionality
+//    }
+//
     
+    @objc private func moreOptionsTapped() {
+        let optionsMenu = OptionsMenuViewController()
+        optionsMenu.modalPresentationStyle = .overFullScreen
+        optionsMenu.modalTransitionStyle = .crossDissolve
+        present(optionsMenu, animated: true)
+    }
     @objc private func collectionsLabelTapped() {
         let collectionVC = CollectionViewController()
         navigationController?.pushViewController(collectionVC, animated: true)
@@ -248,6 +258,12 @@ class FavouriteViewController: UIViewController {
         let detailVC = CollectionViewController()
         navigationController?.pushViewController(detailVC, animated: true)
     }
+    
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
     @objc private func addNoteTapped() {
         let uploadVC = UploadModalViewController()
         uploadVC.modalPresentationStyle = .pageSheet
@@ -429,10 +445,6 @@ class NoteCardCell: UICollectionViewCell {
                return CGSize(width: width, height: 330) // Increased height to accommodate larger image
            }
        }
-
-
-
-
 
 #Preview {
    FavouriteViewController()

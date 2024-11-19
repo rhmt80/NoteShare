@@ -121,6 +121,8 @@ class CollegeSelectionViewController: UIViewController {
             yearStackView.addArrangedSubview(yearButton)
         }
         
+        
+        
         // Course Selection Section
         let courseLabel = createLabel(text: "Select your course")
         mainStack.addArrangedSubview(courseLabel)
@@ -157,6 +159,9 @@ class CollegeSelectionViewController: UIViewController {
         
         // Add target for collegeTextField to show dropdown
         collegeTextField.addTarget(self, action: #selector(collegeTextFieldEditingChanged), for: .editingChanged)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
     
     private func createLabel(text: String) -> UILabel {
@@ -228,6 +233,10 @@ class CollegeSelectionViewController: UIViewController {
 //        navigationController?.setNavigationBarHidden(true, animated: false)
         navigationController?.pushViewController(loginVC, animated: true)
         }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
     
     @objc private func yearButtonTapped(_ sender: UIButton) {
         isYearSelected = true

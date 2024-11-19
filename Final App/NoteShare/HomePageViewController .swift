@@ -259,7 +259,7 @@ class RecentFileCollectionViewCell: UICollectionViewCell {
 class HomeViewController: UIViewController {
     // MARK: - Properties
     private let notes: [Note] = [
-        Note(title: "iOS Development 101",
+        Note(title: "iOS Development",
              description: "This note explores the basics of iOS development.",
              author: "Alice Johnson",
              coverImage: UIImage(named: "ios_dev_cover")),
@@ -297,8 +297,36 @@ class HomeViewController: UIViewController {
                    fileSize: "856 KB" , pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
         RecentFile(name: "Research Paper",
                   icon: UIImage(systemName: "doc.richtext.fill"),
+                   fileSize: "1.8 MB" , pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
+        RecentFile(name: "AI",
+                  icon: UIImage(systemName: "doc.fill"),
                    fileSize: "1.8 MB" , pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!)
     ]
+    
+    
+    private let profileButton: UIButton = {
+        let button = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 28)
+        let image = UIImage(systemName: "person.crop.circle", withConfiguration: config)
+        button.setImage(image, for: .normal)
+        button.tintColor = .systemBlue
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private let headerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    @objc private func profileButtonTapped() {
+        // Add profile action here
+        let profileVC = ProfileViewController()
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.pushViewController(profileVC, animated: true)
+        
+    }
     
     // MARK: - UI Components
     private let scrollView: UIScrollView = {
@@ -407,6 +435,10 @@ class HomeViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+//        navigationItem.rightBarButtonItem = profileButton
+        navigationController?.navigationBar.prefersLargeTitles = false
+        profileButton.addTarget(self, action: #selector(profileButtonTapped), for: .touchUpInside)
+
         setupUI()
         setupDelegates()
     }
@@ -417,6 +449,9 @@ class HomeViewController: UIViewController {
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        contentView.addSubview(headerView)
+        headerView.addSubview(headerLabel)
+        headerView.addSubview(profileButton)
         
         [headerLabel, notesLabel, notesCollectionView, sharedNotesLabel, sharedNotesTableView,sharedNotesChevron,
          recentFilesLabel, recentFilesCollectionView].forEach { contentView.addSubview($0) }
@@ -433,11 +468,26 @@ class HomeViewController: UIViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            headerLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            headerLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            headerLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+//            headerLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+//            headerLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+//            headerLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            notesLabel.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 24),
+            // Header view constraints
+            headerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            headerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            headerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+
+            // Header label and profile button constraints
+            headerLabel.topAnchor.constraint(equalTo: headerView.topAnchor),
+            headerLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor),
+            headerLabel.bottomAnchor.constraint(equalTo: headerView.bottomAnchor),
+
+            profileButton.centerYAnchor.constraint(equalTo: headerLabel.centerYAnchor),
+            profileButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor),
+            profileButton.heightAnchor.constraint(equalToConstant: 40),
+            profileButton.widthAnchor.constraint(equalToConstant: 40),
+            
+            notesLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 24),
             notesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             notesLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             

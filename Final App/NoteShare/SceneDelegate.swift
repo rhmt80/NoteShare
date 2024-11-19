@@ -107,8 +107,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let AiViewController = AIAssistantViewController()
         AiViewController.tabBarItem = UITabBarItem(
             title: "AI",
-            image: UIImage(systemName: "sparkles"),
-            selectedImage: UIImage(systemName: "sparkles.fill")
+            image: UIImage(systemName: "apple.intelligence"),
+            selectedImage: UIImage(systemName: "apple.intelligence.fill")
         )
         
         let HomeViewController = HomeViewController()

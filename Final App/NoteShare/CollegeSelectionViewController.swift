@@ -1,4 +1,3 @@
-
 import UIKit
 
 class CollegeSelectionViewController: UIViewController {
@@ -13,6 +12,8 @@ class CollegeSelectionViewController: UIViewController {
         textField.layer.borderWidth = 1
         textField.layer.cornerRadius = 8
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
         return textField
     }()
     
@@ -20,6 +21,10 @@ class CollegeSelectionViewController: UIViewController {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.isHidden = true
+        tableView.layer.borderColor = UIColor.systemGray4.cgColor
+        tableView.layer.borderWidth = 1
+        tableView.layer.cornerRadius = 8
+        tableView.clipsToBounds = true
         return tableView
     }()
     
@@ -43,43 +48,29 @@ class CollegeSelectionViewController: UIViewController {
         collection.backgroundColor = .clear
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.register(CourseCell.self, forCellWithReuseIdentifier: "CourseCell")
-        collection.allowsSelection = true // Enable selection
+        collection.allowsSelection = true
+        collection.allowsMultipleSelection = false
         return collection
     }()
     
-    private let continueButton: UIButton = {
+    
+    private lazy var continueButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Continue", for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 12
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        button.layer.cornerRadius = 25
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowOffset = CGSize(width: 0, height: 2)
-        button.layer.shadowRadius = 4
-        button.layer.shadowOpacity = 0.1
-        button.alpha = 0.7
-        button.isEnabled = false
         return button
     }()
     
     // Sample data
     private let colleges = ["SRM", "Stanford", "VIT", "Oxford", "IIT", "MIT", "Harvard", "Cambridge"]
+    private var filteredColleges: [String] = []
     private let courses = ["Computer Science", "MBA", "Medicine", "Law", "Engineering", "Arts", "Physics", "Mathematics"]
     private var selectedYear: Int = 0
     private var selectedCourse: Int?
-    
-    // Selection tracking
-    private var isCollegeSelected: Bool = false {
-        didSet { updateContinueButtonState() }
-    }
-    private var isYearSelected: Bool = false {
-        didSet { updateContinueButtonState() }
-    }
-    private var isCourseSelected: Bool = false {
-        didSet { updateContinueButtonState() }
-    }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -89,12 +80,24 @@ class CollegeSelectionViewController: UIViewController {
         
         navigationItem.hidesBackButton = true
         navigationController?.navigationBar.isHidden = true
+        
+        // Initialize filtered colleges
+        filteredColleges = colleges
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        tap.cancelsTouchesInView = false
+        self.view.addGestureRecognizer(tap)
+    }
+    
+    @objc
+    func hideKeyboard() {
+        collegeTextField.resignFirstResponder()
+        collegeTableView.isHidden = true
     }
     
     // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .systemBackground
-        
         
         // Setup main stack view
         let mainStack = UIStackView()
@@ -136,26 +139,20 @@ class CollegeSelectionViewController: UIViewController {
             yearStackView.heightAnchor.constraint(equalToConstant: 80),
             courseCollectionView.heightAnchor.constraint(equalToConstant: 350),
             
-            // Continue button constraints
             continueButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             continueButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             continueButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             continueButton.heightAnchor.constraint(equalToConstant: 56),
             
-            // College TableView Constraints
             collegeTableView.topAnchor.constraint(equalTo: collegeTextField.bottomAnchor, constant: 5),
-            collegeTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            collegeTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            collegeTableView.heightAnchor.constraint(equalToConstant: 150)
+            collegeTableView.leadingAnchor.constraint(equalTo: collegeTextField.leadingAnchor),
+            collegeTableView.trailingAnchor.constraint(equalTo: collegeTextField.trailingAnchor),
+            collegeTableView.heightAnchor.constraint(equalToConstant: 200)
         ])
         
-        // Setup table view for dropdown
         collegeTableView.register(UITableViewCell.self, forCellReuseIdentifier: "CollegeCell")
         
-        // Add continue button target
         continueButton.addTarget(self, action: #selector(continueButtonTapped), for: .touchUpInside)
-        
-        // Add target for collegeTextField to show dropdown
         collegeTextField.addTarget(self, action: #selector(collegeTextFieldEditingChanged), for: .editingChanged)
     }
     
@@ -169,28 +166,21 @@ class CollegeSelectionViewController: UIViewController {
     
     private func createYearButton(year: Int) -> UIButton {
         let button = UIButton()
-        
-        // Fixed size for perfect circle
         let size: CGFloat = 60
         button.translatesAutoresizingMaskIntoConstraints = false
         
-        // Set fixed size constraints
         NSLayoutConstraint.activate([
             button.widthAnchor.constraint(equalToConstant: size),
             button.heightAnchor.constraint(equalToConstant: size)
         ])
         
-        // Configure button
         button.setTitle("\(year)", for: .normal)
         button.backgroundColor = .systemGray5
         button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .medium)
-        
-        // Make perfectly round
         button.layer.cornerRadius = size / 2
         button.clipsToBounds = true
         
-        // Add shadow for depth
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 0, height: 2)
         button.layer.shadowRadius = 4
@@ -207,33 +197,28 @@ class CollegeSelectionViewController: UIViewController {
         collegeTableView.dataSource = self
         courseCollectionView.delegate = self
         courseCollectionView.dataSource = self
-    }
-    
-    private func updateContinueButtonState() {
-        let isFormComplete = isCollegeSelected && isYearSelected && isCourseSelected
-        UIView.animate(withDuration: 0.3) {
-            self.continueButton.alpha = isFormComplete ? 1.0 : 0.7
-            self.continueButton.isEnabled = isFormComplete
-        }
+        collegeTextField.delegate = self
     }
     
     // MARK: - Actions
     @objc private func collegeTextFieldEditingChanged() {
-        collegeTableView.isHidden = collegeTextField.text?.isEmpty ?? true
+        let searchText = collegeTextField.text?.lowercased() ?? ""
+        filteredColleges = colleges.filter { $0.lowercased().contains(searchText) }
+        if searchText.isEmpty {
+            filteredColleges = colleges
+        }
+        collegeTableView.isHidden = false
         collegeTableView.reloadData()
     }
     
     @objc private func continueButtonTapped() {
         let loginVC = InterestsViewController()
-//        navigationController?.setNavigationBarHidden(true, animated: false)
         navigationController?.pushViewController(loginVC, animated: true)
-        }
+    }
     
     @objc private func yearButtonTapped(_ sender: UIButton) {
-        isYearSelected = true
         selectedYear = sender.tag
         
-        // Update all year buttons
         yearStackView.arrangedSubviews.forEach { view in
             if let button = view as? UIButton {
                 UIView.animate(withDuration: 0.2) {
@@ -243,25 +228,24 @@ class CollegeSelectionViewController: UIViewController {
             }
         }
     }
-    
 }
 
 // MARK: - TableView Delegate & DataSource
 extension CollegeSelectionViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return colleges.count
+        return filteredColleges.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CollegeCell", for: indexPath)
-        cell.textLabel?.text = colleges[indexPath.row]
+        cell.textLabel?.text = filteredColleges[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        collegeTextField.text = colleges[indexPath.row]
+        collegeTextField.text = filteredColleges[indexPath.row]
         collegeTableView.isHidden = true
-        isCollegeSelected = true
+        collegeTextField.resignFirstResponder()
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
@@ -280,7 +264,19 @@ extension CollegeSelectionViewController: UICollectionViewDelegate, UICollection
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedCourse = indexPath.row
-        isCourseSelected = true
+        
+        // Deselect any previously selected cells
+        if let previousSelectedIndexPath = collectionView.indexPathsForSelectedItems?.first,
+           previousSelectedIndexPath != indexPath {
+            collectionView.deselectItem(at: previousSelectedIndexPath, animated: true)
+        }
+    }
+}
+
+// MARK: - TextField Delegate
+extension CollegeSelectionViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        collegeTableView.isHidden = false
     }
 }
 
@@ -314,7 +310,6 @@ class CourseCell: UICollectionViewCell {
         backgroundColor = .systemGray6
         layer.cornerRadius = 12
         
-        // Add shadow
         layer.masksToBounds = false
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -345,7 +340,6 @@ class CourseCell: UICollectionViewCell {
         }
     }
 }
-
 #Preview() {
     CollegeSelectionViewController()
 }

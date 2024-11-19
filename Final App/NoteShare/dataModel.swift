@@ -41,6 +41,7 @@ struct Note {
         self.lastModified = lastModified
     }
 }
+
 struct CNote {
     let title: String
     let description: String
@@ -115,4 +116,52 @@ struct NoteCard {
        self.coverImage = coverImage
        self.pdfUrl = pdfUrl
    }
+}
+
+
+
+
+struct AiNote: Codable, Identifiable, Hashable {
+    let id: UUID
+    var title: String
+    var content: String
+    var date: Date
+    var category: Category
+    var tags: [String]
+    var isPinned: Bool
+    var isLocked: Bool
+    var aiEnhanced: Bool
+    
+    init(id: UUID = UUID(), title: String, content: String, date: Date = Date(),
+         category: Category, tags: [String] = [], isPinned: Bool = false,
+         isLocked: Bool = false, aiEnhanced: Bool = false) {
+        self.id = id
+        self.title = title
+        self.content = content
+        self.date = date
+        self.category = category
+        self.tags = tags
+        self.isPinned = isPinned
+        self.isLocked = isLocked
+        self.aiEnhanced = aiEnhanced
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(title)
+        hasher.combine(content)
+        hasher.combine(date)
+        hasher.combine(category)
+        hasher.combine(tags)
+        hasher.combine(isPinned)
+        hasher.combine(isLocked)
+        hasher.combine(aiEnhanced)
+    }
+}
+
+struct CardItem {
+    let image: String
+    let title: String
+    let description: String
+    let pdfURL: URL
 }

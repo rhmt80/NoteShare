@@ -7,34 +7,36 @@ class CollectionRecentViewController: UIViewController, UICollectionViewDelegate
         CNote(title: "Double Integrals",
              description: "An introduction to double integrals,focusing on area calculations in higher dimensions.",
              author: "Awnish",
-             coverImage: UIImage(named: "math1"),
+             coverImage: UIImage(named: "maths_notes_icon"),
              pdfUrl: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
         CNote(title: "Functions",
              description: "A deep dive into mathematical functions and their properties.",
              author: "Hindberg",
-             coverImage: UIImage(named: "math1"),
+             coverImage: UIImage(named: "functions_notes_icon"),
              pdfUrl: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
         CNote(title: "Integrals",
              description: "A comprehensive study on integrals and their applications.",
              author: "Amit",
-             coverImage: UIImage(named: "math1"),
+             coverImage: UIImage(named: "integral_notes_icon"),
              pdfUrl: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
         CNote(title: "Algebra",
              description: "Understanding the basics and advanced topics in algebra.",
              author: "Allen Johnson",
-             coverImage: UIImage(named: "math1"),
+             coverImage: UIImage(named: "algebra_notes_icon"),
              pdfUrl: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
         CNote(title: "Trigonometry",
              description: "Exploring the relationships between angles and sides of triangles.",
              author: "prof john",
-             coverImage: UIImage(named: "math1"),
+             coverImage: UIImage(named: "trigo_notes_icon"),
              pdfUrl: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
         CNote(title: "Physics",
              description: "A comprehensive guide to concepts in classical and modern physics.",
              author: "Prof. John",
-             coverImage: UIImage(named: "math1"),
+             coverImage: UIImage(named: "pie_notes_icon"),
              pdfUrl: Bundle.main.url(forResource: "test", withExtension: "pdf")!)
     ]
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -241,4 +243,7 @@ class RecentNoteCell: UICollectionViewCell {
             return "Just now"
         }
     }
+}
+#Preview{
+    CollectionRecentViewController()
 }

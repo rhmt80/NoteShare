@@ -36,7 +36,7 @@ class NotesViewController: UIViewController, UICollectionViewDelegate, UICollect
     }
     
     private func setupUI() {
-        title = "Mathematics Notes"
+        title = "Shared with Awnish"
         navigationController?.navigationBar.prefersLargeTitles = true
         
         let layout = UICollectionViewFlowLayout()
@@ -177,3 +177,7 @@ class NoteCells: UICollectionViewCell {
     }
 }
 
+
+#Preview{
+    NotesViewController()
+}

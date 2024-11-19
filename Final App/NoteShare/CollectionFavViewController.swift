@@ -4,7 +4,7 @@ class CollectionFavViewController: UIViewController {
     
     private let favouritesLabel: UILabel = {
         let label = UILabel()
-        label.text = "Favourites"
+//        label.text = "Favourites"
         label.font = .systemFont(ofSize: 28, weight: .semibold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -62,7 +62,6 @@ class CollectionFavViewController: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .systemGray6
-        
         // Add favourites section
         view.addSubview(favouritesLabel)
         NSLayoutConstraint.activate([

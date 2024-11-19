@@ -272,11 +272,19 @@ class ExploreViewController: UIViewController, UICollectionViewDelegate, UIColle
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.section == 1 {
-            _ = subjects[indexPath.item]
-            let subjectVC = SubjectsViewController()
-            navigationController?.pushViewController(subjectVC, animated: true)
-        }
+            if indexPath.section == 0 {
+                let selectedCollege = topColleges[indexPath.item]
+                let acresourcesVC = AcademicResourcesViewController()
+                acresourcesVC.instituteName = selectedCollege.title
+                acresourcesVC.instituteLogo = selectedCollege.image
+                navigationController?.pushViewController(acresourcesVC, animated: true)
+            }
+             else if indexPath.section == 1 {
+                // Handle tap on Subjects
+                let subjectVC = SubjectsViewController()
+                navigationController?.pushViewController(subjectVC, animated: true)
+            }
+        
     }
 }
 

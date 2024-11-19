@@ -162,16 +162,8 @@ class CardCollectionViewCell: UICollectionViewCell {
     }
 }
 
-// MARK: - Model
-struct CardItem {
-    let image: String
-    let title: String
-    let description: String
-    let pdfURL: URL
+#Preview() {
+    SharedNotesViewController()
 }
-
-//#Preview() {
-//    SharedNotesViewController()
-//}
 
 

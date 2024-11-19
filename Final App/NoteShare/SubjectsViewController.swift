@@ -18,7 +18,7 @@ class SubjectCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-    
+
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .medium)
@@ -83,13 +83,15 @@ class SubjectCell: UICollectionViewCell {
     }
 }
 
-// View Controller
+
+
+
 class SubjectsViewController: UIViewController {
     private var selectedSubject: Subject?
 
     private lazy var headingLabel: UILabel = {
         let label = UILabel()
-        label.text = "Subjects"
+        label.text = "Artificial Intelligence"
         label.font = .systemFont(ofSize: 32, weight: .bold)
         label.textColor = .label
         label.textAlignment = .left
@@ -111,14 +113,13 @@ class SubjectsViewController: UIViewController {
     }()
 
     private lazy var subjectData: [Subject] = [
-        // Example subjects...
         Subject(title: "Artificial Intelligence", subtitle: "Machine Learning", image: UIImage(named: "Ai_logo") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
-        Subject(title: "Formal Language and Automata", subtitle: "String Theory", image: UIImage(named: "automata_icon") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
-        Subject(title: "Computer Networking", subtitle: "Internet and it services", image: UIImage(named: "networking_icon") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
-        Subject(title: "physics", subtitle: "Newtons laws", image: UIImage(named: "physics_icon") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
+        Subject(title: "Regression", subtitle: "Linear Regression, Logical Regression", image: UIImage(named: "automata_icon") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
+        Subject(title: "Computer Vision", subtitle: "Image Processing", image: UIImage(named: "ml_cover") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
+        Subject(title: "Deep Learning", subtitle: "Neural Networks", image: UIImage(named: "Ai_logo") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
        
-        Subject(title: "maths", subtitle: "Calculus", image: UIImage(named: "maths_icon") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
-        Subject(title: "chemistry", subtitle: "periodic table", image: UIImage(named: "chemistry_icon") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!)
+        Subject(title: "LLMs", subtitle: "Netsuite, OpenAI", image: UIImage(named: "automata_icon") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!),
+        Subject(title: "CNN", subtitle: "ReLU Layer, Pooling Layer", image: UIImage(named: "ml_cover") ?? UIImage(), pdfURL: Bundle.main.url(forResource: "test", withExtension: "pdf")!)
     ]
     
     override func viewDidLoad() {

@@ -1,5 +1,4 @@
 import PDFKit
-
 class PDFViewerViewController: UIViewController {
     private var pdfView: PDFView = {
         let pdfView = PDFView()
