@@ -116,14 +116,12 @@ class SharedWithMeViewController: UIViewController {
     // MARK: - UI Components
     private let backButton: UIButton = {
         let button = UIButton(type: .system)
-//        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
         button.tintColor = .systemBlue
         return button
     }()
     
     private let homeLabel: UILabel = {
         let label = UILabel()
-//        label.text = "Home"
         label.textColor = .systemBlue
         label.font = .systemFont(ofSize: 17)
         return label
@@ -175,8 +173,6 @@ class SharedWithMeViewController: UIViewController {
     // MARK: - Setup Methods
     private func setupUI() {
         view.backgroundColor = .systemBackground
-//        navigationController?.navigationBar.isHidden = true
-        
         [backButton, homeLabel, searchBar, titleLabel, usersCollectionView].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -218,22 +214,13 @@ class SharedWithMeViewController: UIViewController {
         
     }
     
-//    private func handleAvatarTap(for index: Int) {
-//        let detailVC = SharedNotesViewController()
-//
-//        let userName = filteredUsers[index].replacingOccurrences(of: ".", with: "")
-//
-//        if let titleLabel = detailVC.view.viewWithTag(100) as? UILabel {
-//            titleLabel.text = "Shared by \(userName)"
-//        }
     private func handleAvatarTap(for index: Int) {
         let detailVC = SharedNotesViewController()
         let selectedUserName = filteredUsers[index]
         detailVC.username = selectedUserName
         navigationController?.pushViewController(detailVC, animated: true)
     }
-        
-//        navigationController?.pushViewController(detailVC, animated: true)
+
     }
 
 
@@ -260,7 +247,7 @@ extension SharedWithMeViewController: UICollectionViewDelegate, UICollectionView
     }
 }
 
-// MARK: - SearchBar Delegate
+// MARK: SearchBar Delegate
 extension SharedWithMeViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty {

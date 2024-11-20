@@ -108,7 +108,7 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         return button
     }()
     
-    // New label for privacy selection
+    
     let privacyLabel: UILabel = {
         let label = UILabel()
         label.text = "Choose the privacy of the file"
@@ -123,7 +123,6 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         return control
     }()
     
-    // New label to show selected file name
     let selectedFileLabel: UILabel = {
         let label = UILabel()
         label.text = "No file selected"

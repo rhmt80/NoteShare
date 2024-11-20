@@ -60,7 +60,7 @@ class InterestsViewController: UIViewController {
     }()
     
     private let interests = [
-        // Core Computer Science
+        
         "Mathematics",
         "Algorithms",
         "Data Structures",
@@ -70,7 +70,7 @@ class InterestsViewController: UIViewController {
         "Database Systems",
         "System Design",
         
-        // Programming Languages
+        
         "Python",
         "Java",
         "C++",
@@ -80,7 +80,7 @@ class InterestsViewController: UIViewController {
         "Go",
         "TypeScript",
         
-        // AI & ML
+        
         "Artificial Intelligence",
         "Machine Learning",
         "Deep Learning",
@@ -90,7 +90,7 @@ class InterestsViewController: UIViewController {
         "LLMs",
         "Neural Networks",
         
-        // Web & Mobile
+        
         "Web Development",
         "Mobile Development",
         "Frontend",
@@ -99,7 +99,7 @@ class InterestsViewController: UIViewController {
         "DevOps",
         "Cloud Computing",
         
-        // Mathematics & Theory
+        
         "Calculus",
         "Linear Algebra",
         "Statistics",
@@ -108,7 +108,7 @@ class InterestsViewController: UIViewController {
         "Graph Theory",
         "Automata Theory",
         
-        // Emerging Tech
+        
         "Blockchain",
         "Cybersecurity",
         "IoT",
@@ -130,13 +130,13 @@ class InterestsViewController: UIViewController {
     
     
     private func setupBackButton() {
-        // First ensure the button exists and is a subview
+        
         guard backButton.superview == nil else { return }
         
-        // First add the button to the view hierarchy
+        
         view.addSubview(backButton)
         
-        // Only after adding to view hierarchy, activate constraints
+        
         NSLayoutConstraint.activate([
             backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -203,7 +203,7 @@ class InterestsViewController: UIViewController {
             let spacing: CGFloat = 10
             var maxHeight: CGFloat = 0
             
-            // Add Recommended Topics Label
+            //  Recommended Topics Label
             let recommendedLabel = UILabel()
             recommendedLabel.text = "Recommended for You"
             recommendedLabel.font = .systemFont(ofSize: 20, weight: .semibold)
@@ -211,8 +211,6 @@ class InterestsViewController: UIViewController {
             interestsContainer.addSubview(recommendedLabel)
             currentY += 50
             
-            // Create recommended interest buttons first
-            // Create recommended interest buttons first
             for interest in recommendedInterests {
                 let button = createInterestButton(withTitle: interest, isRecommended: true)
                 let buttonWidth = button.intrinsicContentSize.width + 20
@@ -228,17 +226,17 @@ class InterestsViewController: UIViewController {
                 currentX += buttonWidth + spacing
             }
             
-            // Add a separator
+            //separator
             let separator = UIView()
             separator.backgroundColor = .systemGray4
             separator.frame = CGRect(x: 0, y: currentY + 50, width: view.bounds.width - 40, height: 1)
             interestsContainer.addSubview(separator)
             currentY += 60
             
-            // Reset X for all interests
+            
             currentX = 0
             
-            // Add All Interests Label
+
             let allInterestsLabel = UILabel()
             allInterestsLabel.text = "All Topics"
             allInterestsLabel.font = .systemFont(ofSize: 20, weight: .semibold)
@@ -246,7 +244,7 @@ class InterestsViewController: UIViewController {
             interestsContainer.addSubview(allInterestsLabel)
             currentY += 50
             
-            // Create buttons for all interests
+            
             for interest in interests {
                 let button = createInterestButton(withTitle: interest)
                 let buttonWidth = button.intrinsicContentSize.width + 20
@@ -290,7 +288,7 @@ class InterestsViewController: UIViewController {
                 sender.backgroundColor = .systemGray6
                 sender.setTitleColor(.systemBlue, for: .normal)
             } else {
-                // Select, but limit to 2
+                // Select -  limited to 2
                 if selectedRecommendedInterests.count < 2 {
                     selectedRecommendedInterests.insert(title)
                     sender.backgroundColor = .systemBlue

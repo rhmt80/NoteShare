@@ -10,9 +10,9 @@ class ProfileViewController: UIViewController {
         button.tintColor = .systemBlue
         button.titleLabel?.font = .systemFont(ofSize: 17)
         button.translatesAutoresizingMaskIntoConstraints = false
-        // Add this line to ensure proper image positioning
+        
         button.semanticContentAttribute = .forceLeftToRight
-        // Add this line to set the spacing between image and text
+        
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
         return button
     }()
@@ -70,7 +70,7 @@ class ProfileViewController: UIViewController {
     private let emailLabel: UILabel = {
         let label = UILabel()
         label.text = "abc@icloud.com"
-        label.font = .systemFont(ofSize: 16)
+
         label.textColor = .systemGray
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -152,13 +152,13 @@ class ProfileViewController: UIViewController {
     
     
     private func setupBackButton() {
-        // First ensure the button exists and is a subview
+        
         guard backButton.superview == nil else { return }
         
-        // First add the button to the view hierarchy
+        
         view.addSubview(backButton)
         
-        // Only after adding to view hierarchy, activate constraints
+        
         NSLayoutConstraint.activate([
             backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -174,19 +174,19 @@ class ProfileViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        // Add subviews in proper hierarchy
+        
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        // Add all main subviews to content view
+        
         [titleLabel, profileContainer, myDownloadsLabel, optionsStackView,
          accountSettingsLabel, signOutButton, saveButton].forEach { contentView.addSubview($0) }
         
-        // Add profile container subviews
+        
         [profileImageView, nameLabel, emailLabel, educationLabel, institutionLabel]
             .forEach { profileContainer.addSubview($0) }
         
-        // Create option rows
+        
         let options = [
             ("Downloads", "arrow.down.circle.fill"),
             ("My Notes", "note.text"),

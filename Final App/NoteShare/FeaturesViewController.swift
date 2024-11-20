@@ -1,10 +1,3 @@
-//
-//  FeaturesViewController.swift
-//  OnBoarding
-//
-//  Created by admin24 on 02/11/24.
-//
-
 import UIKit
 protocol FeaturesViewControllerDelegate: AnyObject {
     func didCompleteFeaturesTour()
@@ -43,17 +36,6 @@ class FeaturesViewController: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
-    
-//    private lazy var continueButton: UIButton = {
-//        var configuration = UIButton.Configuration.filled()
-//        configuration.title = "Continue"
-//        configuration.baseBackgroundColor = UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
-//        configuration.cornerStyle = .large
-//        
-//        let button = UIButton(configuration: configuration)
-//        button.translatesAutoresizingMaskIntoConstraints = false
-//        return button
-//    }()
     
     private lazy var continueButton: UIButton = {
         let button = UIButton(type: .system)
@@ -137,7 +119,7 @@ class FeaturesViewController: UIViewController {
         stackView.addArrangedSubview(featuresStack)
         view.addSubview(continueButton)
         
-        // Add features
+        
         let features = [
             ("house.fill", "Handwritten Exclusivity", "Capture the personal touch and authenticity that handwritten notes can offer."),
             ("magnifyingglass", "Explore", "Browse and discover notes by subject, course, or topic shared by your peers."),
@@ -160,7 +142,7 @@ class FeaturesViewController: UIViewController {
             continueButton.heightAnchor.constraint(equalToConstant: 50)
         ])
         
-        // Add button action
+        
         view.addSubview(continueButton)
         continueButton.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
         
@@ -168,7 +150,7 @@ class FeaturesViewController: UIViewController {
 
     @objc private func continueTapped() {
         let registrationVC = RegistrationViewController()
-        // If you want to show the navigation bar for this transition
+        
         navigationController?.setNavigationBarHidden(true, animated: false)
         navigationController?.pushViewController(registrationVC, animated: true)
     }

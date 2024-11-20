@@ -5,19 +5,27 @@ import VisionKit
 class PDFScannerViewController: UIViewController {
     private var scannedDocuments: [ScannedDocument] = []
     
+    private let backButton: UIButton = {
+            let button = UIButton(type: .system)
+            button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+            button.tintColor = .systemBlue
+            button.translatesAutoresizingMaskIntoConstraints = false
+            return button
+        }()
+    
     private let collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.itemSize = CGSize(width: (UIScreen.main.bounds.width - 48) / 2, height: 250)
-        layout.minimumInteritemSpacing = 16
-        layout.minimumLineSpacing = 16
-        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        return collectionView
-    }()
+            let layout = UICollectionViewFlowLayout()
+            layout.scrollDirection = .vertical
+            layout.itemSize = CGSize(width: (UIScreen.main.bounds.width - 48) / 2, height: 250)
+            layout.minimumInteritemSpacing = 16
+            layout.minimumLineSpacing = 16
+            layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+            
+            let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+            collectionView.backgroundColor = .clear
+            collectionView.translatesAutoresizingMaskIntoConstraints = false
+            return collectionView
+        }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +38,22 @@ class PDFScannerViewController: UIViewController {
         title = "PDF Scanner"
         view.backgroundColor = .systemBackground
         
+        navigationItem.hidesBackButton = true
+            navigationItem.leftBarButtonItem = UIBarButtonItem(
+                image: UIImage(systemName: "chevron.left"),
+                style: .plain,
+                target: self,
+                action: #selector(navigateToFavorites)
+            )
+            
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+                    image: UIImage(systemName: "chevron.left"),
+                    style: .plain,
+                    target: self,
+                    action: #selector(backButtonTapped)
+        )
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .add,
             target: self,
@@ -37,7 +61,7 @@ class PDFScannerViewController: UIViewController {
         )
         
         view.addSubview(collectionView)
-        
+                
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -51,6 +75,23 @@ class PDFScannerViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.register(ScannedDocumentCell.self, forCellWithReuseIdentifier: "ScannedDocumentCell")
     }
+    @objc private func navigateToFavorites() {
+        let favouriteVC = FavouriteViewController()
+        
+        if let navigationController = self.navigationController {
+            var viewControllers = navigationController.viewControllers
+            viewControllers.removeLast()
+            viewControllers.append(favouriteVC)
+            navigationController.setViewControllers(viewControllers, animated: true)
+        } else {
+            favouriteVC.modalPresentationStyle = .fullScreen
+            present(favouriteVC, animated: true, completion: nil)
+        }
+    }
+    
+    @objc private func backButtonTapped() {
+            navigationController?.popViewController(animated: true)
+        }
     
     @objc private func startScanning() {
         guard VNDocumentCameraViewController.isSupported else {
@@ -138,16 +179,15 @@ class PDFScannerViewController: UIViewController {
     fileprivate func   updatePDF(document: ScannedDocument, with newPages: [UIImage]) {
         guard let pdfDocument = PDFDocument(url: document.pdfUrl) else { return }
         
-        // Append new pages
+        
         for image in newPages {
             guard let newPage = PDFPage(image: image) else { continue }
             pdfDocument.insert(newPage, at: pdfDocument.pageCount)
         }
         
-        // Overwrite existing PDF
+    
         pdfDocument.write(to: document.pdfUrl)
-        
-        // Update scanned documents list and reload collection view
+    
         loadSavedDocuments()
     }
 }
@@ -247,7 +287,6 @@ extension PDFScannerViewController: UICollectionViewDataSource, UICollectionView
     }
 }
 
-// MARK: - Add Pages Delegate
 class AddPagesDelegate: NSObject, VNDocumentCameraViewControllerDelegate {
     private weak var parentViewController: PDFScannerViewController?
     private let originalDocument: ScannedDocument
@@ -351,46 +390,55 @@ class ScannedDocumentCell: UICollectionViewCell {
 
 class PDFViewController: UIViewController {
     private let document: ScannedDocument
-    private let pdfView: PDFView = {
-        let pdfView = PDFView()
-        pdfView.autoScales = true
-        pdfView.displayMode = .singlePage
-        pdfView.displayDirection = .vertical
-        pdfView.translatesAutoresizingMaskIntoConstraints = false
-        return pdfView
+        private let pdfView: PDFView = {
+            let pdfView = PDFView()
+            pdfView.autoScales = true
+            pdfView.displayMode = .singlePage
+            pdfView.displayDirection = .vertical
+            pdfView.translatesAutoresizingMaskIntoConstraints = false
+            return pdfView
     }()
+        
 
     init(document: ScannedDocument) {
-        self.document = document
-        super.init(nibName: nil, bundle: nil)
-    }
+            self.document = document
+            super.init(nibName: nil, bundle: nil)
+        }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        setupNavigationBar()
-        loadPDF()
+            super.viewDidLoad()
+            setupUI()
+            setupNavigationBar()
+            loadPDF()
     }
 
     private func setupUI() {
-        view.backgroundColor = .systemBackground
-        view.addSubview(pdfView)
-
-        NSLayoutConstraint.activate([
-            pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            pdfView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            pdfView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            pdfView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
+            view.backgroundColor = .systemBackground
+            view.addSubview(pdfView)
+            
+            NSLayoutConstraint.activate([
+                pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                pdfView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                pdfView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                pdfView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
     }
 
     private func setupNavigationBar() {
         title = document.title
         navigationItem.largeTitleDisplayMode = .never
+        
+        navigationItem.hidesBackButton = true
+           navigationItem.leftBarButtonItem = UIBarButtonItem(
+               image: UIImage(systemName: "chevron.left"),
+               style: .plain,
+               target: self,
+               action: #selector(navigateToFavorites)
+           )
 
         let shareButton = UIBarButtonItem(
             image: UIImage(systemName: "square.and.arrow.up"),
@@ -408,6 +456,25 @@ class PDFViewController: UIViewController {
 
         navigationItem.rightBarButtonItems = [shareButton, thumbnailButton]
     }
+    
+    @objc private func navigateToFavorites() {
+        let favouriteVC = FavouriteViewController()
+        
+        if let navigationController = self.navigationController {
+            var viewControllers = navigationController.viewControllers
+            viewControllers.removeLast()  // Remove current view controller
+            viewControllers.append(favouriteVC)  // Add FavouriteViewController
+            navigationController.setViewControllers(viewControllers, animated: true)
+        } else {
+            favouriteVC.modalPresentationStyle = .fullScreen
+            present(favouriteVC, animated: true, completion: nil)
+        }
+    }
+    @objc private func backButtonTapped() {
+            navigationController?.popViewController(animated: true)
+        }
+    
+    
 
     private func loadPDF() {
         if let pdfDocument = PDFDocument(url: document.pdfUrl) {
@@ -488,6 +555,13 @@ class PDFThumbnailViewController: UIViewController {
     private func setupUI() {
         title = "Thumbnails"
         view.backgroundColor = .systemBackground
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+                    image: UIImage(systemName: "chevron.left"),
+                    style: .plain,
+                    target: self,
+                    action: #selector(doneButtonTapped)
+        )
 
         view.addSubview(thumbnailView)
         thumbnailView.pdfView = pdfView
@@ -510,4 +584,3 @@ class PDFThumbnailViewController: UIViewController {
         dismiss(animated: true)
     }
 }
-

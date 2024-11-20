@@ -113,7 +113,7 @@ class RegistrationViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        // Add subviews
+        
         [logoLabel, nameTextField, emailTextField, passwordTextField,
          registerButton, signInWithAppleButton, termsLabel, loginPromptButton].forEach { view.addSubview($0) }
         
@@ -155,7 +155,7 @@ class RegistrationViewController: UIViewController {
             loginPromptButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
         
-        // Add targets
+        
         registerButton.addTarget(self, action: #selector(registerTapped), for: .touchUpInside)
         signInWithAppleButton.addTarget(self, action: #selector(signInWithAppleTapped), for: .touchUpInside)
         loginPromptButton.addTarget(self, action: #selector(loginPromptTapped), for: .touchUpInside)
@@ -167,14 +167,14 @@ class RegistrationViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func registerTapped() {
-        // Handle registration logic
+        
         let collegeSelectionVC = CollegeSelectionViewController()
         navigationController?.setNavigationBarHidden(true, animated: false)
         navigationController?.pushViewController(collegeSelectionVC, animated: true)
     }
     
     @objc private func signInWithAppleTapped() {
-        // Handle Sign in with Apple
+        
     }
     
     @objc private func loginPromptTapped() {

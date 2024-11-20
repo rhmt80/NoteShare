@@ -13,11 +13,11 @@ struct Topic {
     let subtitle: String
     let image: UIImage? // Made optional
     
-    // Added initializer with default image
+    
     init(title: String, subtitle: String, imageName: String) {
         self.title = title
         self.subtitle = subtitle
-        self.image = UIImage(named: imageName) ?? UIImage(systemName: "questionmark.square") // Fallback image
+        self.image = UIImage(named: imageName) ?? UIImage(systemName: "questionmark.square")
     }
 }
 
@@ -81,9 +81,9 @@ class TopicCell: UICollectionViewCell {
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            containerView.heightAnchor.constraint(equalTo: containerView.widthAnchor), // Make it square
+            containerView.heightAnchor.constraint(equalTo: containerView.widthAnchor),
             
-            // Updated image constraints to fill the container
+            
             iconImageView.topAnchor.constraint(equalTo: containerView.topAnchor),
             iconImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             iconImageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),

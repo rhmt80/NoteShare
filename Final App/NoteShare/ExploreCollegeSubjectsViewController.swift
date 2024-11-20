@@ -95,7 +95,7 @@ class StudyMaterialCell: UICollectionViewCell {
     private func createAttributedString(for description: String) -> NSAttributedString {
         let attributedString = NSMutableAttributedString(string: description)
         
-        // Find the range of "#Trending"
+        
         if let trendingRange = description.range(of: "#Trending") {
             let nsRange = NSRange(trendingRange, in: description)
             attributedString.addAttribute(.foregroundColor,
@@ -103,13 +103,13 @@ class StudyMaterialCell: UICollectionViewCell {
                                        range: nsRange)
         }
         
-        // Set the default color for the rest of the text
+        
         let fullRange = NSRange(location: 0, length: description.count)
         attributedString.addAttribute(.foregroundColor,
                                     value: UIColor.gray,
                                     range: fullRange)
         
-        // Re-apply blue color to "#Trending" as it might have been overwritten
+        // applies blue color to #Trending
         if let trendingRange = description.range(of: "#Trending") {
             let nsRange = NSRange(trendingRange, in: description)
             attributedString.addAttribute(.foregroundColor,
@@ -257,12 +257,6 @@ extension AcademicResourcesViewController: UICollectionViewDelegate, UICollectio
         return CGSize(width: width, height: width * 1.3)
     }
     
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        let selectedMaterial = studyMaterials[indexPath.item]
-//        let pdfViewerVC = PDFViewerViewController(pdfURL: selectedMaterial.pdfURL)
-//        pdfViewerVC.modalPresentationStyle = .fullScreen
-//        present(pdfViewerVC, animated: true, completion: nil)
-//    }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedSubject = studyMaterials[indexPath.item]
          let pdfViewerVC = PDFViewerViewController(pdfURL: selectedSubject.pdfURL)

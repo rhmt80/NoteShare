@@ -119,8 +119,6 @@ struct NoteCard {
 }
 
 
-
-
 struct AiNote: Codable, Identifiable, Hashable {
     let id: UUID
     var title: String

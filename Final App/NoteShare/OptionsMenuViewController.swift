@@ -35,7 +35,7 @@ class OptionsMenuViewController: UIViewController {
         ("Kind", "tag", 2),
         ("Date", "calendar", 2),
         ("Size", "arrow.up.arrow.down", 2),
-//        ("Tags", "tag.circle", 2)
+
     ]
 
     override func viewDidLoad() {
@@ -62,10 +62,10 @@ class OptionsMenuViewController: UIViewController {
 
         NSLayoutConstraint.activate([
             menuView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            menuView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7), // Increased width
+            menuView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
             menuView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            menuView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.6), // Reduced height
-            stackView.topAnchor.constraint(equalTo: menuView.topAnchor, constant: 20), // Added margin to move down
+            menuView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.6),
+            stackView.topAnchor.constraint(equalTo: menuView.topAnchor, constant: 20), 
             stackView.leadingAnchor.constraint(equalTo: menuView.leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: menuView.trailingAnchor),
             stackView.bottomAnchor.constraint(equalTo: menuView.bottomAnchor)

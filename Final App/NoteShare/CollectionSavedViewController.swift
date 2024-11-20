@@ -42,14 +42,14 @@ class CollectionSavedViewController: UIViewController, UICollectionViewDelegate,
     }
     
     private func setupUI() {
-        // Set background color for the main view
+        
         view.backgroundColor = .white
         
         // Setup navigation bar
         title = "Saved Notes"
         navigationController?.navigationBar.prefersLargeTitles = true
         
-        // Configure collection view layout
+        // collection view layout
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 20
@@ -65,7 +65,7 @@ class CollectionSavedViewController: UIViewController, UICollectionViewDelegate,
         // Fix #1: Register the correct cell class with the correct identifier
         collectionView.register(SavedNoteCell.self, forCellWithReuseIdentifier: "savedNoteCells")
         
-        // Add collection view to view hierarchy
+        
         view.addSubview(collectionView)
         
         // Setup constraints
@@ -106,7 +106,7 @@ class CollectionSavedViewController: UIViewController, UICollectionViewDelegate,
     
 }
 
-// Fix #3: Rename the class to match Swift naming conventions and make it consistent
+
 class SavedNoteCell: UICollectionViewCell {
     private let cardView = UIView()
     private let imageView = UIImageView()

@@ -44,21 +44,21 @@ class CollectionRecentViewController: UIViewController, UICollectionViewDelegate
     }
     
     private func setupUI() {
-        // Set background color for the main view
+        
         view.backgroundColor = .white
         
-        // Setup navigation bar
+        //  navigation bar
         title = "Recent Notes"
         navigationController?.navigationBar.prefersLargeTitles = true
         
-        // Configure collection view layout
+        //  collection view layout
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 20
         layout.minimumInteritemSpacing = 10
         layout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 10)
         
-        // Initialize collection view with zero frame
+        
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.delegate = self
@@ -66,7 +66,7 @@ class CollectionRecentViewController: UIViewController, UICollectionViewDelegate
         collectionView.backgroundColor = .white
         collectionView.register(RecentNoteCell.self, forCellWithReuseIdentifier: "recentNoteCell")
         
-        // Add collection view to view hierarchy
+        
         view.addSubview(collectionView)
         
         // Setup constraints
@@ -106,7 +106,7 @@ class RecentNoteCell: UICollectionViewCell {
     private let descriptionLabel = UILabel()
     private let authorLabel = UILabel()
     private let dateLabel = UILabel()
-    private let timeAgoLabel = UILabel() // Added for recent notes
+    private let timeAgoLabel = UILabel() 
     
     override init(frame: CGRect) {
         super.init(frame: frame)

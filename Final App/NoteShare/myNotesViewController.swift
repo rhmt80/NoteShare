@@ -126,13 +126,13 @@ class FavouriteViewController: UIViewController {
        }
        
        private func configureNavigationBar() {
-           // Hide the navigation bar for this view controller
+           // Hide navigation bar
            navigationController?.setNavigationBarHidden(true, animated: false)
        }
        
        override func viewWillDisappear(_ animated: Bool) {
            super.viewWillDisappear(animated)
-           // Show the navigation bar again when leaving this view
+           // Show navigation bar again
            navigationController?.setNavigationBarHidden(false, animated: false)
        }
     
@@ -145,7 +145,7 @@ class FavouriteViewController: UIViewController {
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
         ])
         
-        // Add buttons
+        
         view.addSubview(addNoteButton)
         view.addSubview(moreOptionsButton)
         NSLayoutConstraint.activate([
@@ -156,7 +156,7 @@ class FavouriteViewController: UIViewController {
             moreOptionsButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
         
-        // Add search bar
+        // search bar
         view.addSubview(searchBar)
         searchBar.delegate = self
         NSLayoutConstraint.activate([
@@ -165,7 +165,7 @@ class FavouriteViewController: UIViewController {
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
         
-        // Add collections section
+        // collections section
         view.addSubview(collectionsLabel)
         view.addSubview(navigateButton)
         navigateButton.addTarget(self, action: #selector(navigateToDetailPage), for: .touchUpInside)
@@ -194,7 +194,7 @@ class FavouriteViewController: UIViewController {
         view.addGestureRecognizer(tapGesture)
     
         
-        
+
     }
     
     private func setupCollectionView() {
@@ -234,15 +234,7 @@ class FavouriteViewController: UIViewController {
         ])
     }
     
-    // MARK: - Action Methods
-    
-    
-//    @objc private func moreOptionsTapped() {
-//        print("More options tapped")
-//        // Implement more options functionality
-//    }
-//
-    
+   
     @objc private func moreOptionsTapped() {
         let optionsMenu = OptionsMenuViewController()
         optionsMenu.modalPresentationStyle = .overFullScreen
@@ -403,18 +395,18 @@ class NoteCardCell: UICollectionViewCell {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-                   // Larger cover image with full width
+                   
                    coverImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
                    coverImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-                   coverImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9), // 90% of card width
-                   coverImageView.heightAnchor.constraint(equalTo: coverImageView.widthAnchor), // Make it square
+                   coverImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
+                   coverImageView.heightAnchor.constraint(equalTo: coverImageView.widthAnchor),
 
-                   // Title below image
+                   
                    titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: 12),
                    titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
                    titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
 
-                   // Favorite icon and author
+                   
                    favoriteIcon.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
                    favoriteIcon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
                    favoriteIcon.widthAnchor.constraint(equalToConstant: 20),
@@ -424,7 +416,7 @@ class NoteCardCell: UICollectionViewCell {
                    authorLabel.leadingAnchor.constraint(equalTo: favoriteIcon.trailingAnchor, constant: 8),
                    authorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
 
-                   // Description at the bottom
+                   
                    descriptionLabel.topAnchor.constraint(equalTo: favoriteIcon.bottomAnchor, constant: 8),
                    descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
                    descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
@@ -442,7 +434,7 @@ class NoteCardCell: UICollectionViewCell {
        extension FavouriteViewController {
            func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
                let width = (collectionView.frame.width / 2) - 10
-               return CGSize(width: width, height: 330) // Increased height to accommodate larger image
+               return CGSize(width: width, height: 330) 
            }
        }
 

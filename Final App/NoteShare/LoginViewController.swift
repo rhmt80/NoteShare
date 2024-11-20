@@ -1,11 +1,3 @@
-//
-//  LoginViewController.swift
-//  OnBoarding
-//
-//  Created by admin24 on 05/11/24.
-//
-
-
 import UIKit
 import AuthenticationServices
 
@@ -158,7 +150,7 @@ class LoginViewController: UIViewController {
     }
     
     @objc private func signInWithAppleTapped() {
-        // Handle Sign in with Apple
+        
     }
     
     @objc private func signUpPromptTapped() {
@@ -168,7 +160,7 @@ class LoginViewController: UIViewController {
     }
     
     @objc private func forgotPasswordTapped() {
-        // Handle forgot password
+        
     }
     
     @objc private func dismissKeyboard() {

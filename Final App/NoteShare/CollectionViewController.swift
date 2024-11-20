@@ -52,10 +52,10 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     private func setupUI() {
-        // Add container view first
+        
         view.addSubview(containerView)
         
-        // Add other views to container
+        
         containerView.addSubview(titleLabel)
         containerView.addSubview(searchBar)
         containerView.addSubview(tableView)
@@ -88,7 +88,7 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewWillAppear(animated)
         
         if !initialLayout {
-            // Only modify navigation bar if not initial layout
+            
             setupNavigationBar()
         }
     }
@@ -101,7 +101,7 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        // Reset navigation bar appearance when leaving
+        
         if isMovingFromParent {
             navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
             navigationController?.navigationBar.shadowImage = nil
@@ -139,7 +139,7 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
             }
         }()
         
-        // Configure the next view controller's navigation bar
+        
         viewController.navigationItem.title = selectedItem
         navigationController?.pushViewController(viewController, animated: true)
     }

@@ -1,10 +1,3 @@
-//
-//  ViewController.swift
-//  OnBoarding
-//
-//  Created by admin24 on 02/11/24.
-//
-
 import UIKit
 
 class LandingViewController: UIViewController {
@@ -49,7 +42,7 @@ class LandingViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .white
         
-        // Add subviews
+        
         view.addSubview(logoLabel)
         view.addSubview(subtitleLabel)
         view.addSubview(getStartedButton)
@@ -74,13 +67,13 @@ class LandingViewController: UIViewController {
             
         ])
         
-        // Add button target
+        
         getStartedButton.addTarget(self, action: #selector(getStartedTapped), for: .touchUpInside)
     }
     
     @objc private func getStartedTapped() {
         let registrationVC = FeaturesViewController()
-        // If you want to show the navigation bar for this transition
+        
         registrationVC.navigationItem.hidesBackButton = true
         navigationController?.setNavigationBarHidden(true, animated: false)
         navigationController?.pushViewController(registrationVC, animated: true)

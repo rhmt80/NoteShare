@@ -321,7 +321,6 @@ class HomeViewController: UIViewController {
     }()
     
     @objc private func profileButtonTapped() {
-        // Add profile action here
         let profileVC = ProfileViewController()
         navigationController?.setNavigationBarHidden(true, animated: false)
         navigationController?.pushViewController(profileVC, animated: true)
@@ -435,7 +434,6 @@ class HomeViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-//        navigationItem.rightBarButtonItem = profileButton
         navigationController?.navigationBar.prefersLargeTitles = false
         profileButton.addTarget(self, action: #selector(profileButtonTapped), for: .touchUpInside)
 
@@ -467,10 +465,6 @@ class HomeViewController: UIViewController {
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            
-//            headerLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-//            headerLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-//            headerLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             // Header view constraints
             headerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
