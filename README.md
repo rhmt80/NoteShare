@@ -1,6 +1,8 @@
 
 **Noteshare** is an iOS application tailored to meet the needs of students, enabling them to upload, share, store, and organize notes effortlessly. Designed to foster collaboration and simplify study workflows, Noteshare focuses on providing an intuitive platform where students can contribute and access handwritten notes, making learning more accessible and organized.
 
+![ns ss](https://github.com/user-attachments/assets/fbbe0a71-b954-4891-bd4a-4eb8d8031ad4)
+
 I am developing **Noteshare** from scratch in Swift as part of my training at the **iOS Development Center at SRMIST**, where I am honing my skills in mobile application development. This project involves end-to-end app development, including:  
 - **Conceptualization**: Understanding the pain points faced by students when managing notes and brainstorming solutions.  
 - **UI/UX Design**: Crafting a user-friendly interface that resonates with students, ensuring easy navigation and accessibility.  
