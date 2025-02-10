@@ -1,4 +1,3 @@
-// new file
 
 import UIKit
 import FirebaseStorage
@@ -656,7 +655,7 @@ class HomeViewController: UIViewController {
     
     private let collegesLabel: UILabel = {
         let label = UILabel()
-        label.text = "Top Colleges"
+        label.text = "Explore College Notes"
         label.font = .systemFont(ofSize: 22, weight: .semibold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

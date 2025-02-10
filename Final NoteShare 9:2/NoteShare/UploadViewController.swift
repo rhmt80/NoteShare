@@ -3,69 +3,12 @@ import FirebaseStorage
 import FirebaseFirestore
 import FirebaseAuth
 
-class BottomSheetPresentationController: UIPresentationController {
-    private let blurEffectView: UIVisualEffectView = {
-        let blur = UIBlurEffect(style: .dark)
-        let view = UIVisualEffectView(effect: blur)
-        view.alpha = 0
-        return view
-    }()
-
-    override var frameOfPresentedViewInContainerView: CGRect {
-        guard let containerView = containerView else { return .zero }
-        let height = containerView.frame.height * 0.7
-        return CGRect(x: 0, y: containerView.frame.height - height, width: containerView.frame.width, height: height)
-    }
-
-    override func presentationTransitionWillBegin() {
-        guard let containerView = containerView else { return }
-
-        blurEffectView.frame = containerView.bounds
-        containerView.insertSubview(blurEffectView, at: 0)
-
-        presentedView?.layer.cornerRadius = 20
-        presentedView?.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        presentedView?.clipsToBounds = true
-
-        guard let coordinator = presentedViewController.transitionCoordinator else {
-            blurEffectView.alpha = 0.5
-            return
-        }
-
-        coordinator.animate { _ in
-            self.blurEffectView.alpha = 0.5
-        }
-    }
-
-//    override func dismissalTransitionWillBegin() {
-//        guard let coordinator = presentedViewController.transitionCoordinator else {
-//            blurEffectView.alpha = 0
-//            return
-//        }
-//
-//        coordinator.animate { _ in
-//            self.blurEffectView.alpha = 0
-//        }
-//    }
-
-    override func containerViewDidLayoutSubviews() {
-        super.containerViewDidLayoutSubviews()
-        presentedView?.frame = frameOfPresentedViewInContainerView
-        blurEffectView.frame = containerView?.bounds ?? .zero
-    }
-}
-
-class BottomSheetTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return BottomSheetPresentationController(presentedViewController: presented, presenting: presenting)
-    }
-}
-
 class FirebaseManager {
     static let shared = FirebaseManager()
     private let storage = Storage.storage()
     private let db = Firestore.firestore()
     private init() {}
+
     func uploadPDF(
         fileURL: URL,
         fileName: String,
@@ -107,10 +50,7 @@ class FirebaseManager {
                     "uploadDate": FieldValue.serverTimestamp(),
                     "fileSize": metadata?.size ?? 0,
                     "userId": userId
-            
-                    
                 ]
-
 
                 self.db.collection("pdfs").addDocument(data: document) { error in
                     if let error = error {
@@ -122,70 +62,236 @@ class FirebaseManager {
             }
         }
     }
+
     func fetchUserData(userID: String, completion: @escaping (Result<[String: Any], Error>) -> Void) {
         self.db.collection("users").document(userID).getDocument { document, error in
-                if let error = error {
-                    completion(.failure(error))
-                } else if let document = document, document.exists {
-                    completion(.success(document.data() ?? [:]))
-                } else {
-                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User document not found"])))
-                }
+            if let error = error {
+                completion(.failure(error))
+            } else if let document = document, document.exists {
+                completion(.success(document.data() ?? [:]))
+            } else {
+                completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User document not found"])))
             }
         }
+    }
 }
 
-class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UIDocumentPickerDelegate {
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        categories.count
+// MARK: - BottomSheetPresentationController
+class BottomSheetPresentationController: UIPresentationController {
+    private let blurEffectView: UIVisualEffectView = {
+        let blur = UIBlurEffect(style: .dark)
+        let view = UIVisualEffectView(effect: blur)
+        view.alpha = 0
+        return view
+    }()
+    
+    override var frameOfPresentedViewInContainerView: CGRect {
+        guard let containerView = containerView else { return .zero }
+        let height = containerView.frame.height * 0.7
+        return CGRect(x: 0, y: containerView.frame.height - height, width: containerView.frame.width, height: height)
     }
     
-    private let transitionDelegate = BottomSheetTransitionDelegate()
+    override func presentationTransitionWillBegin() {
+        guard let containerView = containerView else { return }
+        
+        blurEffectView.frame = containerView.bounds
+        containerView.insertSubview(blurEffectView, at: 0)
+        
+        presentedView?.layer.cornerRadius = 20
+        presentedView?.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        presentedView?.clipsToBounds = true
+        
+        guard let coordinator = presentedViewController.transitionCoordinator else {
+            blurEffectView.alpha = 0.5
+            return
+        }
+        
+        coordinator.animate { _ in
+            self.blurEffectView.alpha = 0.5
+        }
+    }
+    
+    override func dismissalTransitionWillBegin() {
+        guard let coordinator = presentedViewController.transitionCoordinator else {
+            blurEffectView.alpha = 0
+            return
+        }
+        
+        coordinator.animate { _ in
+            self.blurEffectView.alpha = 0
+        }
+    }
+    
+    override func containerViewDidLayoutSubviews() {
+        super.containerViewDidLayoutSubviews()
+        presentedView?.frame = frameOfPresentedViewInContainerView
+        blurEffectView.frame = containerView?.bounds ?? .zero
+    }
+}
 
-    let titleLabel = UILabel()
-    let categoryTextField = UITextField()
-    let collegePickerTextField = UITextField()
-    let courseCodeTextField = UITextField()
-    let subjectNameTextField = UITextField()
-    let fileNameTextField = UITextField()
-    let uploadCardView = UIView()
-    let uploadImageView = UIImageView()
-    let selectFileButton = UIButton(type: .system)
-    let selectedFileLabel = UILabel()
-    let uploadButton = UIButton(type: .system)
-    let cancelButton = UIButton(type: .system)
+// MARK: - BottomSheetTransitionDelegate
+class BottomSheetTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return BottomSheetPresentationController(presentedViewController: presented, presenting: presenting)
+    }
+}
+class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UIDocumentPickerDelegate {
+    private let transitionDelegate = BottomSheetTransitionDelegate()
+    
+    // MARK: - UI Components
+    private let scrollView: UIScrollView = {
+        let scroll = UIScrollView()
+        scroll.showsVerticalScrollIndicator = false
+        return scroll
+    }()
+    
+    private let containerView = UIView()
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Upload PDF"
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 24, weight: .bold)
+        return label
+    }()
+    
+    private let categoryTextField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Select Category"
+        field.borderStyle = .none
+        field.backgroundColor = .systemGray6
+        field.layer.cornerRadius = 12
+        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
+        field.leftViewMode = .always
+        field.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return field
+    }()
+    
+    private let collegePickerTextField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Select College"
+        field.borderStyle = .none
+        field.backgroundColor = .systemGray6
+        field.layer.cornerRadius = 12
+        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
+        field.leftViewMode = .always
+        field.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return field
+    }()
+    
+    private let courseCodeTextField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Enter Subject Code"
+        field.borderStyle = .none
+        field.backgroundColor = .systemGray6
+        field.layer.cornerRadius = 12
+        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
+        field.leftViewMode = .always
+        field.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return field
+    }()
+    
+    private let subjectNameTextField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Enter Subject Name"
+        field.borderStyle = .none
+        field.backgroundColor = .systemGray6
+        field.layer.cornerRadius = 12
+        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
+        field.leftViewMode = .always
+        field.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return field
+    }()
+    
+    private let fileNameTextField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Enter File Name"
+        field.borderStyle = .none
+        field.backgroundColor = .systemGray6
+        field.layer.cornerRadius = 12
+        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
+        field.leftViewMode = .always
+        field.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return field
+    }()
+    
+    private let uploadCardView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGray6
+        view.layer.cornerRadius = 16
+        return view
+    }()
+    
+    private let uploadStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 8
+        return stack
+    }()
+    
+    private lazy var uploadButton: UIButton = {
+        let button = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 40, weight: .medium)
+        let image = UIImage(systemName: "doc.badge.arrow.up", withConfiguration: config)
+        button.setImage(image, for: .normal)
+        button.tintColor = .systemBlue
+        button.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private let selectedFileLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Tap icon to select PDF"
+        label.textAlignment = .center
+        label.textColor = .gray
+        label.font = .systemFont(ofSize: 14)
+        return label
+    }()
+    
+    private let submitButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Submit", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+        button.backgroundColor = .systemBlue
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return button
+    }()
+    
+    private let cancelButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Cancel", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        button.backgroundColor = .systemRed.withAlphaComponent(0.1)
+        button.setTitleColor(.systemRed, for: .normal)
+        button.layer.cornerRadius = 12
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return button
+    }()
     
     var userCollege: String?
     var userCourse: String?
     var categoryPickerView = UIPickerView()
     var collegePickerView = UIPickerView()
+    var selectedFileURL: URL?
     
-    let categories = [
-        "Core Cse",
-        "Web & App Development",
-        "AIML",
-        "Core ECE",
-        "Core Mechanical",
-        "Core Civil",
-        "Core Electrical",
-        "Physics",
-        "Maths"
-    ]
-    
+    let categories = ["Core Cse", "Web & App Development", "AIML", "Core ECE",
+                     "Core Mechanical", "Core Civil", "Core Electrical", "Physics", "Maths"]
     let colleges = ["SRM", "VIT", "KIIT", "Manipal", "LPU", "Amity"]
     
-    var selectedFileURL: URL?
-
+    // MARK: - Lifecycle
     init() {
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .custom
         transitioningDelegate = transitionDelegate
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -193,145 +299,93 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         setupDelegates()
         setupActions()
         fetchUserData()
-        
     }
-    private func fetchUserData() {
-            guard let userID = Auth.auth().currentUser?.uid else {
-                showAlert(title: "Error", message: "User not logged in.")
-                return
-            }
-            
-            FirebaseManager.shared.fetchUserData(userID: userID) { [weak self] result in
-                switch result {
-                case .success(let data):
-                    DispatchQueue.main.async {
-                        self?.userCollege = data["college"] as? String
-                        self?.userCourse = data["course"] as? String
-                        self?.collegePickerTextField.text = self?.userCollege
-//                        self?.courseCodeTextField.text = self?.userCourse
-                        
-                        // Set college picker to user's college
-                        if let college = self?.userCollege,
-                           let index = self?.colleges.firstIndex(of: college) {
-                            self?.collegePickerView.selectRow(index, inComponent: 0, animated: false)
-                        }
-                    }
-                case .failure(let error):
-                    DispatchQueue.main.async {
-                        self?.showAlert(title: "Error", message: "Failed to fetch user data: \(error.localizedDescription)")
-                    }
-                }
-            }
-        }
-
+    
+    // MARK: - Setup Methods
     private func setupUI() {
-        titleLabel.text = "Upload Here"
-        titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 24)
-
-        categoryTextField.placeholder = "Select the category"
-        categoryTextField.borderStyle = .roundedRect
-
-        collegePickerTextField.placeholder = "Select college"
-        collegePickerTextField.borderStyle = .roundedRect
-
-        courseCodeTextField.placeholder = "Enter subject code"
-        courseCodeTextField.borderStyle = .roundedRect
-
-        subjectNameTextField.placeholder = "Enter subject name"
-        subjectNameTextField.borderStyle = .roundedRect
-
-        fileNameTextField.placeholder = "Enter the name of file"
-        fileNameTextField.borderStyle = .roundedRect
-
-        uploadCardView.layer.cornerRadius = 10
-        uploadCardView.backgroundColor = .systemGray6
-
-        uploadImageView.image = UIImage(systemName: "icloud.and.arrow.up")
-        uploadImageView.contentMode = .scaleAspectFit
-        uploadImageView.tintColor = .systemBlue
-
-        selectFileButton.setTitle("Select File", for: .normal)
-
-        selectedFileLabel.text = "No file selected"
-        selectedFileLabel.textAlignment = .center
-        selectedFileLabel.textColor = .gray
-
-        uploadButton.setTitle("Upload", for: .normal)
-        uploadButton.backgroundColor = .systemBlue
-        uploadButton.layer.cornerRadius = 10
-        uploadButton.setTitleColor(.white, for: .normal)
-
-        cancelButton.setTitle("Cancel", for: .normal)
-        cancelButton.backgroundColor = .systemRed
-        cancelButton.layer.cornerRadius = 10
-        cancelButton.setTitleColor(.white, for: .normal)
-
+        setupScrollView()
+        setupUploadCard()
         setupConstraints()
     }
-
-    private func setupConstraints() {
-        // Add subviews
+    
+    private func setupScrollView() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(containerView)
+        
         [titleLabel, categoryTextField, collegePickerTextField, courseCodeTextField,
-         subjectNameTextField, fileNameTextField, uploadCardView, selectFileButton,
-         selectedFileLabel, uploadButton, cancelButton].forEach {
+         subjectNameTextField, fileNameTextField, uploadCardView,
+         submitButton, cancelButton].forEach {
+            containerView.addSubview($0)
+        }
+    }
+    
+    private func setupUploadCard() {
+        uploadCardView.addSubview(uploadStackView)
+        uploadStackView.addArrangedSubview(uploadButton)
+        uploadStackView.addArrangedSubview(selectedFileLabel)
+    }
+    
+    private func setupConstraints() {
+        [scrollView, containerView, titleLabel, categoryTextField, collegePickerTextField,
+         courseCodeTextField, subjectNameTextField, fileNameTextField, uploadCardView,
+         uploadStackView, uploadButton, selectedFileLabel, submitButton, cancelButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview($0)
         }
         
-        uploadCardView.addSubview(uploadImageView)
-        uploadImageView.translatesAutoresizingMaskIntoConstraints = false
-
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            categoryTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
-            categoryTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            categoryTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            containerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            containerView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            collegePickerTextField.topAnchor.constraint(equalTo: categoryTextField.bottomAnchor, constant: 20),
-            collegePickerTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            collegePickerTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 20),
+            titleLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             
-            courseCodeTextField.topAnchor.constraint(equalTo: collegePickerTextField.bottomAnchor, constant: 20),
-            courseCodeTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            courseCodeTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            categoryTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
+            categoryTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            categoryTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            subjectNameTextField.topAnchor.constraint(equalTo: courseCodeTextField.bottomAnchor, constant: 20),
-            subjectNameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            subjectNameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            collegePickerTextField.topAnchor.constraint(equalTo: categoryTextField.bottomAnchor, constant: 16),
+            collegePickerTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            collegePickerTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            fileNameTextField.topAnchor.constraint(equalTo: subjectNameTextField.bottomAnchor, constant: 20),
-            fileNameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            fileNameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            courseCodeTextField.topAnchor.constraint(equalTo: collegePickerTextField.bottomAnchor, constant: 16),
+            courseCodeTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            courseCodeTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            uploadCardView.topAnchor.constraint(equalTo: fileNameTextField.bottomAnchor, constant: 20),
-            uploadCardView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            uploadCardView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            uploadCardView.heightAnchor.constraint(equalToConstant: 100),
+            subjectNameTextField.topAnchor.constraint(equalTo: courseCodeTextField.bottomAnchor, constant: 16),
+            subjectNameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            subjectNameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            uploadImageView.centerXAnchor.constraint(equalTo: uploadCardView.centerXAnchor),
-            uploadImageView.centerYAnchor.constraint(equalTo: uploadCardView.centerYAnchor),
-            uploadImageView.heightAnchor.constraint(equalToConstant: 50),
-            uploadImageView.widthAnchor.constraint(equalToConstant: 50),
+            fileNameTextField.topAnchor.constraint(equalTo: subjectNameTextField.bottomAnchor, constant: 16),
+            fileNameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            fileNameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            selectFileButton.topAnchor.constraint(equalTo: uploadCardView.bottomAnchor, constant: 20),
-            selectFileButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            uploadCardView.topAnchor.constraint(equalTo: fileNameTextField.bottomAnchor, constant: 24),
+            uploadCardView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            uploadCardView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            uploadCardView.heightAnchor.constraint(equalToConstant: 120),
             
-            selectedFileLabel.topAnchor.constraint(equalTo: selectFileButton.bottomAnchor, constant: 20),
-            selectedFileLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            uploadStackView.centerXAnchor.constraint(equalTo: uploadCardView.centerXAnchor),
+            uploadStackView.centerYAnchor.constraint(equalTo: uploadCardView.centerYAnchor),
             
-            uploadButton.topAnchor.constraint(equalTo: selectedFileLabel.bottomAnchor, constant: 30),
-            uploadButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            uploadButton.widthAnchor.constraint(equalToConstant: 150),
+            submitButton.topAnchor.constraint(equalTo: uploadCardView.bottomAnchor, constant: 24),
+            submitButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            submitButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            cancelButton.topAnchor.constraint(equalTo: uploadButton.bottomAnchor, constant: 20),
-            cancelButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            cancelButton.widthAnchor.constraint(equalToConstant: 150)
+            cancelButton.topAnchor.constraint(equalTo: submitButton.bottomAnchor, constant: 16),
+            cancelButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            cancelButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            cancelButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20)
         ])
     }
-
+    
     private func setupDelegates() {
         categoryPickerView.delegate = self
         categoryPickerView.dataSource = self
@@ -341,65 +395,125 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         collegePickerView.dataSource = self
         collegePickerTextField.inputView = collegePickerView
     }
-
+    
     private func setupActions() {
-        selectFileButton.addTarget(self, action: #selector(selectFileButtonTapped), for: .touchUpInside)
-        uploadButton.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
+        submitButton.addTarget(self, action: #selector(submitButtonTapped), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
     }
-
-    // Picker view methods
+    
+    private func updateUploadButtonState(isFileSelected: Bool) {
+        let config = UIImage.SymbolConfiguration(pointSize: 40, weight: .medium)
+        let imageName = isFileSelected ? "doc.badge.checkmark" : "doc.badge.arrow.up"
+        let image = UIImage(systemName: imageName, withConfiguration: config)
+        uploadButton.setImage(image, for: .normal)
+        uploadButton.tintColor = isFileSelected ? .systemGreen : .systemBlue
+        selectedFileLabel.text = isFileSelected ? selectedFileURL?.lastPathComponent : "Tap icon to select PDF"
+        selectedFileLabel.textColor = isFileSelected ? .black : .gray
+    }
+    
+    // MARK: - API Methods
+    private func fetchUserData() {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            showAlert(title: "Error", message: "User not logged in.")
+            return
+        }
+        
+        FirebaseManager.shared.fetchUserData(userID: userID) { [weak self] result in
+            switch result {
+            case .success(let data):
+                DispatchQueue.main.async {
+                    self?.userCollege = data["college"] as? String
+                    self?.userCourse = data["course"] as? String
+                    self?.collegePickerTextField.text = self?.userCollege
+                    
+                    if let college = self?.userCollege,
+                       let index = self?.colleges.firstIndex(of: college) {
+                        self?.collegePickerView.selectRow(index, inComponent: 0, animated: false)
+                    }
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self?.showAlert(title: "Error", message: "Failed to fetch user data: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    // MARK: - UIPickerView Methods
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
-     
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return pickerView == categoryPickerView ? categories.count : colleges.count
+    }
+    
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
             let label = UILabel()
             label.textAlignment = .center
             label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
             label.textColor = .darkGray
-            if pickerView == categoryPickerView {
-                label.text = categories[row]
-            } else {
-                label.text = colleges[row]
-            }
+            label.text = pickerView == categoryPickerView ? categories[row] : colleges[row]
             return label
         }
         
         func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-            return 40 // Increase row height for better visibility
+            return 40
         }
-
+        
+        func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+            if pickerView == categoryPickerView {
+                categoryTextField.text = categories[row]
+            } else {
+                collegePickerTextField.text = colleges[row]
+            }
+            view.endEditing(true)
+        }
+        
+        // MARK: - Button Actions
         @objc private func uploadButtonTapped() {
+            if selectedFileURL != nil {
+                // If file is already selected, clear it
+                selectedFileURL = nil
+                updateUploadButtonState(isFileSelected: false)
+                fileNameTextField.text = ""
+            } else {
+                // If no file is selected, show document picker
+                let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf])
+                documentPicker.delegate = self
+                documentPicker.allowsMultipleSelection = false
+                present(documentPicker, animated: true, completion: nil)
+            }
+        }
+        
+        @objc private func submitButtonTapped() {
             guard let userID = Auth.auth().currentUser?.uid else {
                 showAlert(title: "Error", message: "User not logged in.")
                 return
             }
             
             guard let fileURL = selectedFileURL,
-                  let category = categoryTextField.text,
-                  let college = collegePickerTextField.text,
-                  let courseCode = courseCodeTextField.text,
-                  let subjectName = subjectNameTextField.text,
-                  let fileName = fileNameTextField.text,
-                  !fileName.isEmpty,
-                  !courseCode.isEmpty,
-                  !subjectName.isEmpty else {
+                  let category = categoryTextField.text, !category.isEmpty,
+                  let college = collegePickerTextField.text, !college.isEmpty,
+                  let courseCode = courseCodeTextField.text, !courseCode.isEmpty,
+                  let subjectName = subjectNameTextField.text, !subjectName.isEmpty,
+                  let fileName = fileNameTextField.text, !fileName.isEmpty else {
                 showAlert(title: "Error", message: "Please fill in all fields and select a file")
                 return
             }
-
+            
             let loadingAlert = UIAlertController(title: nil, message: "Uploading...", preferredStyle: .alert)
             let loadingIndicator = UIActivityIndicatorView(style: .medium)
-            loadingIndicator.startAnimating()
-            loadingAlert.view.addSubview(loadingIndicator)
             loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+            loadingAlert.view.addSubview(loadingIndicator)
+            
             NSLayoutConstraint.activate([
                 loadingIndicator.centerXAnchor.constraint(equalTo: loadingAlert.view.centerXAnchor),
                 loadingIndicator.topAnchor.constraint(equalTo: loadingAlert.view.topAnchor, constant: 20),
                 loadingAlert.view.bottomAnchor.constraint(equalTo: loadingIndicator.bottomAnchor, constant: 20)
             ])
+            
+            loadingIndicator.startAnimating()
             
             present(loadingAlert, animated: true) {
                 FirebaseManager.shared.uploadPDF(
@@ -410,7 +524,7 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     subjectCode: courseCode,
                     subjectName: subjectName,
                     privacy: "public",
-                    userId: userID // Pass userID
+                    userId: userID
                 ) { [weak self] result in
                     DispatchQueue.main.async {
                         self?.dismiss(animated: true) {
@@ -429,89 +543,29 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 }
             }
         }
-
-
-    @objc private func selectFileButtonTapped() {
-        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.data])
-        documentPicker.delegate = self
-        present(documentPicker, animated: true, completion: nil)
+        
+        @objc private func cancelButtonTapped() {
+            dismiss(animated: true, completion: nil)
+        }
+        
+        // MARK: - UIDocumentPickerDelegate
+        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+            guard let url = urls.first else { return }
+            
+            selectedFileURL = url
+            fileNameTextField.text = url.lastPathComponent.replacingOccurrences(of: ".pdf", with: "")
+            updateUploadButtonState(isFileSelected: true)
+        }
+        
+        // MARK: - Helper Methods
+        private func showAlert(title: String, message: String) {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+        }
     }
 
-//    @objc private func uploadButtonTapped() {
-//        guard let fileURL = selectedFileURL,
-//              let category = categoryTextField.text,
-//              let college = collegePickerTextField.text,
-//              let courseCode = courseCodeTextField.text,
-//              let subjectName = subjectNameTextField.text,
-//              let fileName = fileNameTextField.text,
-//              !fileName.isEmpty,
-//              !courseCode.isEmpty,
-//              !subjectName.isEmpty else {
-//            showAlert(title: "Error", message: "Please fill in all fields and select a file")
-//            return
-//        }
-//
-//        let loadingAlert = UIAlertController(title: nil, message: "Uploading...", preferredStyle: .alert)
-//        let loadingIndicator = UIActivityIndicatorView(style: .medium)
-//        loadingIndicator.startAnimating()
-//        loadingAlert.view.addSubview(loadingIndicator)
-//
-//        present(loadingAlert, animated: true) {
-//            FirebaseManager.shared.uploadPDF(
-//                fileURL: fileURL,
-//                fileName: fileName,
-//                category: category,
-//                collegeName: college,
-//                subjectCode: courseCode,
-//                subjectName: subjectName,
-//                privacy: "public", userId: <#String#>
-//                
-//            ) { [weak self] result in
-//                DispatchQueue.main.async {
-//                    self?.dismiss(animated: true) { // Dismiss the loading alert
-//                        switch result {
-//                        case .success:
-//                            let successAlert = UIAlertController(title: "Success", message: "File uploaded successfully!", preferredStyle: .alert)
-//                            successAlert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-//                                self?.dismiss(animated: true) // Close UploadModalViewController
-//                            })
-//                            self?.present(successAlert, animated: true)
-//                        case .failure(let error):
-//                            self?.showAlert(title: "Error", message: "Upload failed: \(error.localizedDescription)")
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
 
-
-    @objc private func cancelButtonTapped() {
-        dismiss(animated: true, completion: nil)
+    #Preview {
+        UploadModalViewController()
     }
-
-    private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
-
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let url = urls.first else { return }
-        selectedFileURL = url
-        selectedFileLabel.text = url.lastPathComponent
-        selectedFileLabel.textColor = .black
-    }
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-            if pickerView == categoryPickerView {
-                categoryTextField.text = categories[row]
-            } else {
-                collegePickerTextField.text = colleges[row]
-            }
-            view.endEditing(true)
-    }
-}
-
-#Preview {
-    UploadModalViewController()
-}

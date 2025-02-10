@@ -631,7 +631,10 @@ class SavedViewController: UIViewController {
     
     private let addNoteButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "doc.badge.plus"), for: .normal)
+//        button.setImage(UIImage(systemName: "icloud.and.arrow.up"), for: .normal)
+        
+        button.setImage(UIImage(systemName: "document.badge.arrow.up"), for: .normal)
+        
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -639,7 +642,8 @@ class SavedViewController: UIViewController {
 
     private let scanButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "doc.text.viewfinder"), for: .normal)
+//        button.setImage(UIImage(systemName: "camera.viewfinder"), for: .normal)
+        button.setImage(UIImage(systemName: "document.viewfinder.fill"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -654,7 +658,7 @@ class SavedViewController: UIViewController {
     
     private let curatedNotesLabel: UILabel = {
         let label = UILabel()
-        label.text = "Saved Notes"
+        label.text = "Uploaded Notes"
         label.font = .systemFont(ofSize: 22, weight: .semibold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -706,16 +710,17 @@ class SavedViewController: UIViewController {
     // MARK: - Lifecycle Methods
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        setupDelegates()
-        configureNavigationBar()
-        fetchCuratedNotes()
-        fetchFavoriteNotes()
-
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadFavoriteNotes), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
-    }
+            super.viewDidLoad()
+            setupUI()
+            setupDelegates()
+            configureNavigationBar()
+            fetchCuratedNotes()
+            fetchFavoriteNotes()
+            favoriteNotesCollectionView.reloadData()
+            curatedNotesCollectionView.reloadData()
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(reloadFavoriteNotes), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+        }
 
     
     override func viewWillAppear(_ animated: Bool) {

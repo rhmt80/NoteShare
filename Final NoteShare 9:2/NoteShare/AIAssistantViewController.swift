@@ -207,7 +207,7 @@ struct AdvancedChatView: View {
     
     private var inputAreaView: some View {
         HStack(spacing: 10) {
-            TextField("Ask about the PDF...", text: $messageText)
+            TextField("Ask Anything !", text: $messageText)
                 .textFieldStyle(.roundedBorder)
                 .submitLabel(.send)
                 .onSubmit(sendMessage)
