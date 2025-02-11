@@ -257,6 +257,24 @@ class FirebaseService {
         
         return storage.reference().child(urlString)
     }
+    func updateFavoriteStatus(for noteId: String, isFavorite: Bool, completion: @escaping (Bool) -> Void) {
+        guard let userId = currentUserId else {
+            completion(false)
+            return
+        }
+
+        let noteRef = db.collection("pdfs").document(noteId)
+        noteRef.updateData(["isFavorite": isFavorite]) { error in
+            if let error = error {
+                print("Error updating favorite status: \(error)")
+                completion(false)
+            } else {
+                // Post notification when favorite status is updated
+                NotificationCenter.default.post(name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+                completion(true)
+            }
+        }
+    }
     
     private func fetchPDFCoverImage(from urlString: String, completion: @escaping (UIImage?, Int) -> Void) {
         guard let storageRef = getStorageReference(from: urlString) else {
@@ -306,6 +324,8 @@ class FirebaseService {
 }
 
 class NoteCollectionViewCell: UICollectionViewCell {
+    var noteId: String?
+    
     private let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
@@ -390,7 +410,7 @@ class NoteCollectionViewCell: UICollectionViewCell {
     }()
     
     // Properties
-    private var isFavorite: Bool = false {
+     var isFavorite: Bool = false {
         didSet {
             updateFavoriteButtonImage()
         }
@@ -470,26 +490,25 @@ class NoteCollectionViewCell: UICollectionViewCell {
     // Favorite button pressed
     @objc private func favoriteButtonPressed() {
         isFavorite.toggle()
+        updateFavoriteButtonImage()
         favoriteButtonTapped?()
     }
+
     
     // Configure cell with FireNote data
-    func configure(with note: FireNote) {
-        titleLabel.text = note.title
-        authorLabel.text = note.author
-        pagesLabel.text = "Pages: \(note.pageCount)"
-        fileSizeLabel.text = note.fileSize
-        
-        coverImageView.image = note.coverImage
-        isFavorite = note.isFavorite
-        
-        // Set recommended tag visibility based on certain conditions
-        recommendedTag.isHidden = false // or implement logic for showing the tag
-        
-        // Hide the tag if it doesn't meet certain conditions
-//         recommendedTag.isHidden = true
-        
-    }
+        func configure(with note: FireNote) {
+            titleLabel.text = note.title
+            authorLabel.text = note.author
+            pagesLabel.text = "Pages: \(note.pageCount)"
+            fileSizeLabel.text = note.fileSize
+            
+            coverImageView.image = note.coverImage
+            isFavorite = note.isFavorite
+            noteId = note.id // Set the note ID
+
+            // Set recommended tag visibility based on certain conditions
+            recommendedTag.isHidden = false // or implement logic for showing the tag
+        }
 }
 
 
@@ -686,6 +705,18 @@ class HomeViewController: UIViewController {
         setupDelegates()
         fetchNotes()
         
+        // Add observer for favorite status changes
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFavoriteStatusChange), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+    }
+
+    @objc private func handleFavoriteStatusChange() {
+        // Refresh the notes when favorite status changes
+        fetchNotes()
+    }
+
+    deinit {
+        // Remove observer when the view controller is deallocated
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
     }
 
     
@@ -764,12 +795,10 @@ class HomeViewController: UIViewController {
         isLoading = true
         activityIndicator.startAnimating()
         
-        // Fetch all notes first
-        FirebaseService.shared.fetchNotes { [weak self] fetchedNotes,arg in
+        FirebaseService.shared.fetchNotes { [weak self] fetchedNotes, _ in
             guard let self = self else { return }
             self.notes = fetchedNotes
             
-            // Now fetch recommended notes
             FirebaseService.shared.fetchRecommendedNotes { recommendedNotes in
                 self.recommendedNotes = recommendedNotes
                 self.notesCollectionView.reloadData()
@@ -792,26 +821,49 @@ class HomeViewController: UIViewController {
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == notesCollectionView {
-            return recommendedNotes.count // Use recommendedNotes instead of notes
-        } else {
-            return colleges.count
-        }
-        
-    }
+           if collectionView == notesCollectionView {
+               return recommendedNotes.count
+           } else {
+               return colleges.count
+           }
+       }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == notesCollectionView {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: noteReuseIdentifier, for: indexPath) as! NoteCollectionViewCell
-            cell.configure(with: recommendedNotes[indexPath.item]) // Use recommendedNotes
-            return cell
-        } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collegeReuseIdentifier, for: indexPath) as! CollegeCell
-            cell.configure(with: colleges[indexPath.item])
-            return cell
+            if collectionView == notesCollectionView {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: noteReuseIdentifier, for: indexPath) as! NoteCollectionViewCell
+                let note = recommendedNotes[indexPath.item]
+                cell.configure(with: note)
+                
+                // Handle favorite button tap
+                cell.favoriteButtonTapped = { [weak self] in
+                    guard let self = self else { return }
+                    
+                    let newFavoriteStatus = !note.isFavorite
+
+                    // Instantly update UI for a smooth user experience
+                    cell.isFavorite = newFavoriteStatus
+                    self.recommendedNotes[indexPath.item].isFavorite = newFavoriteStatus
+
+                    // Perform Firestore update asynchronously
+                    FirebaseService.shared.updateFavoriteStatus(for: note.id, isFavorite: newFavoriteStatus) { success in
+                        if !success {
+                            // Revert UI changes if Firestore update fails
+                            DispatchQueue.main.async {
+                                cell.isFavorite = !newFavoriteStatus
+                                self.recommendedNotes[indexPath.item].isFavorite = !newFavoriteStatus
+                            }
+                        }
+                    }
+                }
+                
+                return cell
+            } else {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collegeReuseIdentifier, for: indexPath) as! CollegeCell
+                cell.configure(with: colleges[indexPath.item])
+                return cell
+            }
         }
     }
-}
 
 
 

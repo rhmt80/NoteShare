@@ -277,16 +277,13 @@ class FirebaseService1 {
         }
 
         let noteRef = db.collection("pdfs").document(noteId)
-
         noteRef.updateData(["isFavorite": isFavorite, "userId": userId]) { error in
             if error == nil {
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
-                }
+                // Post notification when favorite status is updated
+                NotificationCenter.default.post(name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
             }
             completion(error)
         }
-        
     }
 }
 
@@ -435,8 +432,8 @@ class NoteCollectionViewCell1: UICollectionViewCell {
         isFavorite.toggle()
         updateFavoriteButtonImage()
         
-        guard !noteId.isEmpty else { return } // ✅ Ensure noteId is set before making a Firestore update
-
+        guard !noteId.isEmpty else { return }
+        
         FirebaseService1.shared.updateFavoriteStatus(for: noteId, isFavorite: isFavorite) { error in
             if let error = error {
                 print("Error updating favorite status: \(error.localizedDescription)")
@@ -604,11 +601,8 @@ class SavedViewController: UIViewController {
         }
         
         FirebaseService1.shared.fetchFavoriteNotes(userId: userID) { [weak self] notes in
-            guard let self = self else { return }
-            self.favoriteNotes = notes
-            DispatchQueue.main.async {
-                self.favoriteNotesCollectionView.reloadData()
-            }
+            self?.favoriteNotes = notes
+            self?.favoriteNotesCollectionView.reloadData()
         }
     }
 
@@ -710,17 +704,26 @@ class SavedViewController: UIViewController {
     // MARK: - Lifecycle Methods
     
     override func viewDidLoad() {
-            super.viewDidLoad()
-            setupUI()
-            setupDelegates()
-            configureNavigationBar()
-            fetchCuratedNotes()
-            fetchFavoriteNotes()
-            favoriteNotesCollectionView.reloadData()
-            curatedNotesCollectionView.reloadData()
-            
-            NotificationCenter.default.addObserver(self, selector: #selector(reloadFavoriteNotes), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
-        }
+        super.viewDidLoad()
+        setupUI()
+        setupDelegates()
+        configureNavigationBar()
+        fetchCuratedNotes()
+        fetchFavoriteNotes()
+        
+        // Add observer for favorite status changes
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFavoriteStatusChange), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+    }
+    @objc private func handleFavoriteStatusChange() {
+        // Refresh the notes when favorite status changes
+        fetchCuratedNotes()
+        fetchFavoriteNotes()
+    }
+
+//    deinit {
+//        // Remove observer when the view controller is deallocated
+//        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+//    }
 
     
     override func viewWillAppear(_ animated: Bool) {
@@ -826,21 +829,20 @@ class SavedViewController: UIViewController {
 
     
     private func fetchCuratedNotes() {
-            guard let userID = Auth.auth().currentUser?.uid else {
-                showAlert(title: "Error", message: "User not authenticated")
-                return
-            }
-            
-            isLoading = true
-            activityIndicator.startAnimating()
-            
+        guard let userID = Auth.auth().currentUser?.uid else {
+            showAlert(title: "Error", message: "User not authenticated")
+            return
+        }
+        
+        isLoading = true
+        activityIndicator.startAnimating()
+        
         FirebaseService1.shared.fetchNotes(userId: userID) { [weak self] notes in
-                self?.curatedNotes = notes
-                self?.curatedNotesCollectionView.reloadData()
-                self?.activityIndicator.stopAnimating()
-                self?.isLoading = false
-
-            }
+            self?.curatedNotes = notes
+            self?.curatedNotesCollectionView.reloadData()
+            self?.activityIndicator.stopAnimating()
+            self?.isLoading = false
+        }
     }
     
     // MARK: - Action Methods

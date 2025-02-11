@@ -155,17 +155,35 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         return label
     }()
     
-    private let categoryTextField: UITextField = {
-        let field = UITextField()
-        field.placeholder = "Select Category"
-        field.borderStyle = .none
-        field.backgroundColor = .systemGray6
-        field.layer.cornerRadius = 12
-        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
-        field.leftViewMode = .always
-        field.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        return field
+    private lazy var categoryDropdownButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Select Category", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
+        button.setTitleColor(.label, for: .normal)
+        button.backgroundColor = .systemGray5
+        button.layer.cornerRadius = 10
+        button.layer.masksToBounds = true
+        button.menu = createCategoryMenu()
+        button.showsMenuAsPrimaryAction = true
+        NSLayoutConstraint.activate([
+            button.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        return button
     }()
+    
+    private func createCategoryMenu() -> UIMenu {
+        var menuActions: [UIAction] = []
+        
+        for category in categories {
+            let action = UIAction(title: category) { [weak self] _ in
+                self?.categoryDropdownButton.setTitle(category, for: .normal)
+            }
+            menuActions.append(action)
+        }
+        
+        return UIMenu(title: "Select Category", children: menuActions)
+    }
     
     private let collegePickerTextField: UITextField = {
         let field = UITextField()
@@ -312,7 +330,7 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         view.addSubview(scrollView)
         scrollView.addSubview(containerView)
         
-        [titleLabel, categoryTextField, collegePickerTextField, courseCodeTextField,
+        [titleLabel, categoryDropdownButton, collegePickerTextField, courseCodeTextField,
          subjectNameTextField, fileNameTextField, uploadCardView,
          submitButton, cancelButton].forEach {
             containerView.addSubview($0)
@@ -326,7 +344,7 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     private func setupConstraints() {
-        [scrollView, containerView, titleLabel, categoryTextField, collegePickerTextField,
+        [scrollView, containerView, titleLabel, categoryDropdownButton, collegePickerTextField,
          courseCodeTextField, subjectNameTextField, fileNameTextField, uploadCardView,
          uploadStackView, uploadButton, selectedFileLabel, submitButton, cancelButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -347,11 +365,11 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
             titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 20),
             titleLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             
-            categoryTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
-            categoryTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            categoryTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            categoryDropdownButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
+            categoryDropdownButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            categoryDropdownButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            collegePickerTextField.topAnchor.constraint(equalTo: categoryTextField.bottomAnchor, constant: 16),
+            collegePickerTextField.topAnchor.constraint(equalTo: categoryDropdownButton.bottomAnchor, constant: 16),
             collegePickerTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             collegePickerTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
@@ -389,8 +407,8 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
     private func setupDelegates() {
         categoryPickerView.delegate = self
         categoryPickerView.dataSource = self
-        categoryTextField.inputView = categoryPickerView
-        
+//        categoryTextField.inputView = categoryPickerView
+//
         collegePickerView.delegate = self
         collegePickerView.dataSource = self
         collegePickerTextField.inputView = collegePickerView
@@ -461,14 +479,14 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
             return 40
         }
         
-        func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-            if pickerView == categoryPickerView {
-                categoryTextField.text = categories[row]
-            } else {
-                collegePickerTextField.text = colleges[row]
-            }
-            view.endEditing(true)
-        }
+//        func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+//            if pickerView == categoryPickerView {
+//                categoryTextField.text = categories[row]
+//            } else {
+//                collegePickerTextField.text = colleges[row]
+//            }
+//            view.endEditing(true)
+//        }
         
         // MARK: - Button Actions
         @objc private func uploadButtonTapped() {
@@ -486,21 +504,22 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
             }
         }
         
-        @objc private func submitButtonTapped() {
-            guard let userID = Auth.auth().currentUser?.uid else {
-                showAlert(title: "Error", message: "User not logged in.")
-                return
-            }
-            
-            guard let fileURL = selectedFileURL,
-                  let category = categoryTextField.text, !category.isEmpty,
-                  let college = collegePickerTextField.text, !college.isEmpty,
-                  let courseCode = courseCodeTextField.text, !courseCode.isEmpty,
-                  let subjectName = subjectNameTextField.text, !subjectName.isEmpty,
-                  let fileName = fileNameTextField.text, !fileName.isEmpty else {
-                showAlert(title: "Error", message: "Please fill in all fields and select a file")
-                return
-            }
+    @objc private func submitButtonTapped() {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            showAlert(title: "Error", message: "User not logged in.")
+            return
+        }
+        
+        guard let fileURL = selectedFileURL,
+              let category = categoryDropdownButton.titleLabel?.text, category != "Select Category",
+              let college = collegePickerTextField.text, !college.isEmpty,
+              let courseCode = courseCodeTextField.text, !courseCode.isEmpty,
+              let subjectName = subjectNameTextField.text, !subjectName.isEmpty,
+              let fileName = fileNameTextField.text, !fileName.isEmpty else {
+            showAlert(title: "Error", message: "Please fill in all fields and select a file")
+            return
+        }
+        
             
             let loadingAlert = UIAlertController(title: nil, message: "Uploading...", preferredStyle: .alert)
             let loadingIndicator = UIActivityIndicatorView(style: .medium)
