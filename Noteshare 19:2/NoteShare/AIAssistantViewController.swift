@@ -178,13 +178,17 @@ struct AdvancedChatView: View {
     @State private var showChatHistory = false
     @State private var showFullScreenPDF = false
     @State private var showWelcomeScreen = true
+    @FocusState private var isTextFieldFocused: Bool // Focus state for keyboard dismissal
     @Namespace private var bottomID
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
                 backgroundGradient
-                
+                    .onTapGesture {
+                        isTextFieldFocused = false // Dismiss keyboard when tapping anywhere
+                    }
+
                 if showWelcomeScreen && viewModel.selectedPDFMetadata == nil {
                     WelcomeView(showPDFPicker: $showPDFPicker)
                 } else {
@@ -205,7 +209,7 @@ struct AdvancedChatView: View {
             )
         }
     }
-    
+
     private var backgroundGradient: some View {
         LinearGradient(
             gradient: Gradient(colors: [Color(.systemBackground), Color(.systemGray6)]),
@@ -214,14 +218,14 @@ struct AdvancedChatView: View {
         )
         .ignoresSafeArea()
     }
-    
+
     private var mainChatView: some View {
         VStack(spacing: 0) {
             CustomNavigationBar(
                 showChatHistory: $showChatHistory,
                 showPDFPicker: $showPDFPicker
             )
-            
+
             if let pdfMetadata = viewModel.selectedPDFMetadata {
                 PDFPreviewView(
                     metadata: pdfMetadata,
@@ -234,24 +238,28 @@ struct AdvancedChatView: View {
                     }
                 )
             }
-            
+
             ChatMessagesView(
                 messages: viewModel.messages,
                 isLoading: viewModel.isLoading,
                 bottomID: bottomID
             )
-            
+            .scrollDismissesKeyboard(.interactively) // Allows pulling down to dismiss the keyboard
+
             MessageInputView(
                 messageText: $messageText,
                 isDisabled: messageText.isEmpty || viewModel.selectedPDFMetadata == nil,
+                isTextFieldFocused: $isTextFieldFocused, // Pass focus state
                 onSend: {
                     withAnimation {
                         viewModel.sendMessage(messageText)
                         messageText = ""
+                        isTextFieldFocused = false // Dismiss keyboard after sending
                     }
                 }
             )
         }
+        .scrollDismissesKeyboard(.interactively) // Enable keyboard dismissal on scroll
     }
 }
 
@@ -436,42 +444,47 @@ struct ChatMessagesView: View {
 struct MessageInputView: View {
     @Binding var messageText: String
     let isDisabled: Bool
+    @FocusState.Binding var isTextFieldFocused: Bool // Bind focus state
     let onSend: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 0) {
             Divider()
-            
+
             HStack(spacing: 12) {
                 TextField("Ask about the PDF...", text: $messageText)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .font(.body)
-                                    .padding(.vertical, 8)
-                                
-                                Button(action: onSend) {
-                                    Circle()
-                                        .fill(
-                                            LinearGradient(
-                                                gradient: Gradient(colors: isDisabled ? [.gray] : [.blue, .purple]),
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            )
-                                        )
-                                        .frame(width: 35, height: 35)
-                                        .overlay(
-                                            Image(systemName: "arrow.up")
-                                                .foregroundColor(.white)
-                                                .font(.system(size: 15, weight: .semibold))
-                                        )
-                                }
-                                .disabled(isDisabled)
-                            }
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
-                            .background(.ultraThinMaterial)
-                        }
+                    .focused($isTextFieldFocused) // Attach focus state
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .font(.body)
+                    .padding(.vertical, 8)
+                    .onSubmit {
+                        isTextFieldFocused = false // Dismiss keyboard on Return key
                     }
+
+                Button(action: onSend) {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: isDisabled ? [.gray] : [.blue, .purple]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 35, height: 35)
+                        .overlay(
+                            Image(systemName: "arrow.up")
+                                .foregroundColor(.white)
+                                .font(.system(size: 15, weight: .semibold))
+                        )
                 }
+                .disabled(isDisabled)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
+        }
+    }
+}
 
 // MARK: - Chat Bubble
 struct ChatBubble: View {

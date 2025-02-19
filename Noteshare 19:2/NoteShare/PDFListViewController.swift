@@ -25,6 +25,7 @@ class PDFListViewController: UIViewController {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .systemBackground
+        collectionView.keyboardDismissMode = .onDrag // ✅ Dismiss keyboard when scrolling
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
@@ -46,99 +47,96 @@ class PDFListViewController: UIViewController {
         setupUI()
         fetchPDFsFromFirebase()
         
-        // Add tap gesture to dismiss keyboard
+        // ✅ Add tap gesture to dismiss keyboard
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         view.addGestureRecognizer(tapGesture)
     }
     
     @objc private func dismissKeyboard() {
-        searchBar.resignFirstResponder()
+        view.endEditing(true) // ✅ Dismiss keyboard on tap anywhere
     }
     
     private func setupUI() {
-        view.backgroundColor = .systemBackground
-        
-        // Add title label
-        view.addSubview(titleLabel)
-        
-        // Set up search bar
-        searchBar.delegate = self
-        view.addSubview(searchBar)
-        
-        // Set up collection view
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.register(PDFCollectionViewCell1.self, forCellWithReuseIdentifier: "PDFCell")
-        view.addSubview(collectionView)
-        
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            view.backgroundColor = .systemBackground
             
-            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            view.addSubview(titleLabel)
+            searchBar.delegate = self
+            view.addSubview(searchBar)
             
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-    }
-    
+            collectionView.delegate = self
+            collectionView.dataSource = self
+            collectionView.register(PDFCollectionViewCell1.self, forCellWithReuseIdentifier: "PDFCell")
+            view.addSubview(collectionView)
+            
+            NSLayoutConstraint.activate([
+                titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+                titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+                
+                searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+                searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                
+                collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+                collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
+        }
+        
     @objc private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
     
     private func fetchPDFsFromFirebase() {
-        db.collection("pdfs").getDocuments { [weak self] (snapshot, error) in
-            guard let self = self else { return }
-            
-            if let error = error {
-                print("Error getting documents: \(error)")
-                return
-            }
-            
-            guard let documents = snapshot?.documents else { return }
-            
-            for document in documents {
-                let data = document.data()
-                
-                guard let downloadURLString = data["downloadURL"] as? String,
-                      let url = URL(string: downloadURLString),
-                      let fileName = data["fileName"] as? String,
-                      let subjectName = data["subjectName"] as? String,
-                      let subjectCode = data["subjectCode"] as? String,
-                      let fileSize = data["fileSize"] as? Int else {
-                    continue
-                }
-                
-                self.generateThumbnail(for: url) { thumbnail in
-                    let pdf = (url: url, fileName: fileName, subjectName: subjectName, subjectCode: subjectCode, fileSize: fileSize, thumbnail: thumbnail)
-                    self.pdfFiles.append(pdf)
-                    self.filteredPDFFiles.append(pdf)
-                    
-                    DispatchQueue.main.async {
-                        self.collectionView.reloadData()
-                    }
-                }
-            }
-        }
-    }
+           db.collection("pdfs").getDocuments { [weak self] (snapshot, error) in
+               guard let self = self else { return }
+               
+               if let error = error {
+                   print("Error getting documents: \(error)")
+                   return
+               }
+               
+               guard let documents = snapshot?.documents else { return }
+               
+               for document in documents {
+                   let data = document.data()
+                   
+                   guard let downloadURLString = data["downloadURL"] as? String,
+                         let url = URL(string: downloadURLString),
+                         let fileName = data["fileName"] as? String,
+                         let subjectName = data["subjectName"] as? String,
+                         let subjectCode = data["subjectCode"] as? String,
+                         let fileSize = data["fileSize"] as? Int else {
+                       continue
+                   }
+                   
+                   self.generateThumbnail(for: url) { thumbnail in
+                       let pdf = (url: url, fileName: fileName, subjectName: subjectName, subjectCode: subjectCode, fileSize: fileSize, thumbnail: thumbnail)
+                       self.pdfFiles.append(pdf)
+                       self.filteredPDFFiles.append(pdf)
+                       
+                       DispatchQueue.main.async {
+                           self.collectionView.reloadData()
+                       }
+                   }
+               }
+           }
+       }
     
     private func generateThumbnail(for url: URL, completion: @escaping (UIImage?) -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            if let document = PDFDocument(url: url),
-               let page = document.page(at: 0) {
-                let thumbnail = page.thumbnail(of: CGSize(width: 200, height: 280), for: .cropBox)
-                DispatchQueue.main.async {
-                    completion(thumbnail)
-                }
-            } else {
-                DispatchQueue.main.async {
-                    completion(nil)
+            DispatchQueue.global(qos: .userInitiated).async {
+                if let document = PDFDocument(url: url),
+                   let page = document.page(at: 0) {
+                    let thumbnail = page.thumbnail(of: CGSize(width: 200, height: 280), for: .cropBox)
+                    DispatchQueue.main.async {
+                        completion(thumbnail)
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        completion(nil)
+                    }
                 }
             }
         }
@@ -150,7 +148,7 @@ class PDFListViewController: UIViewController {
         formatter.countStyle = .file
         return formatter.string(fromByteCount: Int64(size))
     }
-}
+
 
 // MARK: - UICollectionViewDelegate & UICollectionViewDataSource
 extension PDFListViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -169,20 +167,16 @@ extension PDFListViewController: UICollectionViewDelegate, UICollectionViewDataS
         let width = (collectionView.bounds.width - 48) / 2
         return CGSize(width: width, height: width * 1.2)
     }
-
-
+    
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let pdf = filteredPDFFiles[indexPath.row]
         let pdfViewerVC = PDFViewerViewController(pdfURL: pdf.url, title: pdf.fileName)
-        // Create a navigation controller to wrap the PDF viewer
         let navController = UINavigationController(rootViewController: pdfViewerVC)
-        navController.modalPresentationStyle = .fullScreen  // or .automatic if you prefer
+        navController.modalPresentationStyle = .fullScreen
         onPDFSelected?(pdf.url, pdf.fileName, pdf.subjectName, pdf.subjectCode, pdf.fileSize, pdf.thumbnail)
-        // Present modally instead of pushing
         present(navController, animated: true)
     }
-    
-
 }
 
 // MARK: - UISearchBarDelegate
@@ -201,7 +195,7 @@ extension PDFListViewController: UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
+        searchBar.resignFirstResponder() // ✅ Dismiss keyboard when pressing Return
     }
 }
 
