@@ -563,7 +563,7 @@ class PDFCollectionViewCell: UICollectionViewCell {
 }
 
 
-class SavedViewController: UIViewController {
+class SavedViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - Properties
     
     private var curatedNotes: [SavedFireNote] = []
@@ -710,11 +710,14 @@ class SavedViewController: UIViewController {
         configureNavigationBar()
         fetchCuratedNotes()
         fetchFavoriteNotes()
+        searchBar.delegate = self
+        scrollView.delegate = self
+
         
 //        keyboard dismiss
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-           view.addGestureRecognizer(tapGesture)
         tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
 
         
         // Add observer for favorite status changes
@@ -885,8 +888,27 @@ class SavedViewController: UIViewController {
         present(uploadVC, animated: true)
     }
 }
+// search bar functionality
+extension SavedViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            fetchCuratedNotes() // Reload all notes
+        } else {
+            curatedNotes = curatedNotes.filter { $0.title.lowercased().contains(searchText.lowercased()) }
+            curatedNotesCollectionView.reloadData()
+        }
+    }
+//    dismiss keyboard on scroll
+//    extension SavedViewController: UIScrollViewDelegate {
+//        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+//            view.endEditing(true)
+//        }
+//    }
 
-
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder() // Dismiss keyboard when search button is pressed
+    }
+}
 
 extension SavedViewController: VNDocumentCameraViewControllerDelegate {
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
