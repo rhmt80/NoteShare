@@ -28,8 +28,10 @@ class NotesViewController: UIViewController, UITableViewDataSource, UITableViewD
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupUI()
+
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-            view.addGestureRecognizer(tapGesture)
+        tapGesture.cancelsTouchesInView = false // Allow table view interactions
+        view.addGestureRecognizer(tapGesture)
     }
     
     @objc private func dismissKeyboard() {

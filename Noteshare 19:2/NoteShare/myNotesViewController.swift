@@ -714,6 +714,8 @@ class SavedViewController: UIViewController {
 //        keyboard dismiss
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
            view.addGestureRecognizer(tapGesture)
+        tapGesture.cancelsTouchesInView = false
+
         
         // Add observer for favorite status changes
         NotificationCenter.default.addObserver(self, selector: #selector(handleFavoriteStatusChange), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)

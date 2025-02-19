@@ -1,4 +1,3 @@
-
 import UIKit
 import FirebaseStorage
 import FirebaseFirestore
@@ -255,21 +254,33 @@ class FirebaseService {
         
         return storage.reference().child(urlString)
     }
-    func updateFavoriteStatus(for noteId: String, isFavorite: Bool, completion: @escaping (Bool) -> Void) {
-        guard let userId = currentUserId else {
-            completion(false)
+    func updateFavoriteStatus(for noteId: String, isFavorite: Bool, completion: @escaping (Error?) -> Void) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            completion(NSError(domain: "FirebaseService", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"]))
             return
         }
 
-        let noteRef = db.collection("pdfs").document(noteId)
-        noteRef.updateData(["isFavorite": isFavorite]) { error in
-            if let error = error {
-                print("Error updating favorite status: \(error)")
-                completion(false)
-            } else {
-                // Post notification when favorite status is updated
-                NotificationCenter.default.post(name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
-                completion(true)
+        let favoriteRef = db.collection("userFavorites").document("\(userId)_\(noteId)")
+        
+        if isFavorite {
+            // Add to favorites
+            favoriteRef.setData([
+                "userId": userId,
+                "pdfId": noteId,
+                "isFavorite": true
+            ]) { error in
+                if error == nil {
+                    NotificationCenter.default.post(name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+                }
+                completion(error)
+            }
+        } else {
+            // Remove from favorites
+            favoriteRef.delete { error in
+                if error == nil {
+                    NotificationCenter.default.post(name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+                }
+                completion(error)
             }
         }
     }
@@ -844,7 +855,7 @@ extension HomeViewController: UICollectionViewDataSource {
 
                     // Perform Firestore update asynchronously
                     FirebaseService.shared.updateFavoriteStatus(for: note.id, isFavorite: newFavoriteStatus) { success in
-                        if !success {
+                        if (success == nil) {
                             // Revert UI changes if Firestore update fails
                             DispatchQueue.main.async {
                                 cell.isFavorite = !newFavoriteStatus
