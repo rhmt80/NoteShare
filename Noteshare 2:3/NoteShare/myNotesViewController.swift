@@ -37,52 +37,72 @@ class FirebaseService1 {
     private let storage = Storage.storage()
     private let db = Firestore.firestore()
     
-    func fetchNotes(userId:String , completion: @escaping ([SavedFireNote]) -> Void) {
-        db.collection("pdfs").whereField("userId", isEqualTo: userId)
-            .getDocuments { (snapshot, error) in
-            if let error = error {
-                print("Error fetching notes: \(error)")
-                completion([])
-                return
-            }
-            
-            var notes: [SavedFireNote] = []
-            let group = DispatchGroup()
-            
-            snapshot?.documents.forEach { document in
-                group.enter()
-                let data = document.data()
-                let pdfUrl = data["downloadURL"] as? String ?? ""
-                
-                // Get metadata and cover image
-                self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
-                    let fileSize = self.formatFileSize(metadata?.size ?? 0)
-                    
-                    self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
-                        let note = SavedFireNote(
-                            id: document.documentID,
-                            title: data["fileName"] as? String ?? "Untitled",
-                            description: data["category"] as? String ?? "",
-                            author: data["collegeName"] as? String ?? "Unknown Author",
-                            coverImage: image,
-                            pdfUrl: pdfUrl,
-                            dateAdded: (metadata?.timeCreated ?? Date()),
-                            pageCount: pageCount,
-                            fileSize: fileSize,
-                            userID: data["userId"] as? String ?? "",
-                            isFavorite: data["isFavorite"] as? Bool ?? false
-                        )
-                        notes.append(note)
-                        group.leave()
+    // Fetch notes for a specific user
+    func fetchNotes(userId: String, completion: @escaping ([SavedFireNote]) -> Void) {
+            // Fetch notes uploaded by the user
+            db.collection("pdfs")
+                .whereField("userId", isEqualTo: userId)
+                .getDocuments { (snapshot, error) in
+                    if let error = error {
+                        print("Error fetching uploaded notes: \(error)")
+                        completion([])
+                        return
+                    }
+
+                    guard let documents = snapshot?.documents, !documents.isEmpty else {
+                        print("No uploaded notes found for user \(userId)")
+                        completion([])
+                        return
+                    }
+
+                    var notes: [SavedFireNote] = []
+                    let group = DispatchGroup()
+
+                    for document in documents {
+                        group.enter()
+                        let data = document.data()
+                        let pdfUrl = data["downloadURL"] as? String ?? ""
+                        print("Processing note with pdfUrl: \(pdfUrl)")
+
+                        self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
+                            if let error = error {
+                                print("Metadata error for \(pdfUrl): \(error)")
+                            }
+                            let fileSize = self.formatFileSize(metadata?.size ?? 0)
+
+                            self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
+                                let note = SavedFireNote(
+                                    id: document.documentID,
+                                    title: data["fileName"] as? String ?? "Untitled",
+                                    description: data["category"] as? String ?? "",
+                                    author: data["collegeName"] as? String ?? "Unknown Author",
+                                    coverImage: image,
+                                    pdfUrl: pdfUrl,
+                                    dateAdded: (metadata?.timeCreated ?? Date()),
+                                    pageCount: pageCount,
+                                    fileSize: fileSize,
+                                    userID: userId,
+                                    isFavorite: false
+                                )
+                                notes.append(note)
+                                group.leave()
+                            }
+                        }
+                    }
+
+                    group.notify(queue: .main) {
+                        self.fetchUserFavorites(userId: userId) { favoriteIds in
+                            let updatedNotes = notes.map { note in
+                                var updatedNote = note
+                                updatedNote.isFavorite = favoriteIds.contains(note.id)
+                                return updatedNote
+                            }
+                            print("Fetched \(updatedNotes.count) uploaded notes for user \(userId)")
+                            completion(updatedNotes.sorted { $0.dateAdded > $1.dateAdded })
+                        }
                     }
                 }
-            }
-            
-            group.notify(queue: .main) {
-                completion(notes.sorted { $0.dateAdded > $1.dateAdded })
-            }
         }
-    }
     
     
     private func formatFileSize(_ size: Int64) -> String {
@@ -109,183 +129,245 @@ class FirebaseService1 {
     }
     
     private func fetchPDFCoverImage(from urlString: String, completion: @escaping (UIImage?, Int) -> Void) {
-        guard let storageRef = getStorageReference(from: urlString) else {
+        guard !urlString.isEmpty else {
+            print("Empty PDF URL provided")
             completion(nil, 0)
             return
         }
-        
+
+        guard let storageRef = getStorageReference(from: urlString) else {
+            print("Invalid storage reference for URL: \(urlString)")
+            completion(nil, 0)
+            return
+        }
+
         let tempDir = FileManager.default.temporaryDirectory
         let localURL = tempDir.appendingPathComponent(UUID().uuidString + ".pdf")
-        
+
         storageRef.write(toFile: localURL) { url, error in
             if let error = error {
-                print("Error downloading PDF for cover: \(error)")
+                print("Error downloading PDF for cover from \(urlString): \(error.localizedDescription)")
                 completion(nil, 0)
                 return
             }
-            
-            guard let pdfDocument = PDFDocument(url: localURL) else {
+
+            guard let pdfURL = url, FileManager.default.fileExists(atPath: pdfURL.path) else {
+                print("Failed to download PDF to \(localURL.path)")
                 completion(nil, 0)
                 return
             }
-            
+
+            guard let pdfDocument = PDFDocument(url: pdfURL) else {
+                print("Failed to create PDFDocument from \(pdfURL.path)")
+                completion(nil, 0)
+                return
+            }
+
             let pageCount = pdfDocument.pageCount
-            
-            guard let pdfPage = pdfDocument.page(at: 0) else {
+            guard pageCount > 0, let pdfPage = pdfDocument.page(at: 0) else {
+                print("No pages found in PDF at \(pdfURL.path)")
                 completion(nil, pageCount)
                 return
             }
-            
+
             let pageRect = pdfPage.bounds(for: .mediaBox)
             let renderer = UIGraphicsImageRenderer(size: pageRect.size)
             let image = renderer.image { context in
                 UIColor.white.set()
                 context.fill(pageRect)
-                
                 context.cgContext.translateBy(x: 0.0, y: pageRect.size.height)
                 context.cgContext.scaleBy(x: 1.0, y: -1.0)
-                
                 pdfPage.draw(with: .mediaBox, to: context.cgContext)
             }
-            
-            try? FileManager.default.removeItem(at: localURL)
-            
+
+            do {
+                try FileManager.default.removeItem(at: pdfURL)
+            } catch {
+                print("Failed to delete temp file: \(error)")
+            }
+
             completion(image, pageCount)
         }
     }
     
     func downloadPDF(from urlString: String, completion: @escaping (Result<URL, Error>) -> Void) {
-        guard let storageRef = getStorageReference(from: urlString) else {
-            let error = NSError(domain: "PDFDownloadError",
-                                code: -1,
-                                userInfo: [NSLocalizedDescriptionKey: "Invalid storage reference URL"])
+        guard !urlString.isEmpty else {
+            let error = NSError(domain: "PDFDownloadError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Empty PDF URL"])
             completion(.failure(error))
             return
         }
-        
+
+        guard let storageRef = getStorageReference(from: urlString) else {
+            let error = NSError(domain: "PDFDownloadError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid storage reference URL: \(urlString)"])
+            completion(.failure(error))
+            return
+        }
+
         let fileName = UUID().uuidString + ".pdf"
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let localURL = documentsPath.appendingPathComponent(fileName)
-        
-        // Ensure file doesn't already exist before download
+
         if FileManager.default.fileExists(atPath: localURL.path) {
             do {
                 try FileManager.default.removeItem(at: localURL)
             } catch {
+                print("Failed to remove existing file: \(error)")
                 completion(.failure(error))
                 return
             }
         }
-        
+
         let downloadTask = storageRef.write(toFile: localURL) { url, error in
             if let error = error {
-                print("Download error: \(error.localizedDescription)")
+                print("Download error for \(urlString): \(error.localizedDescription)")
                 completion(.failure(error))
                 return
             }
-            
+
             guard let url = url else {
-                let error = NSError(domain: "PDFDownloadError",
-                                    code: -2,
-                                    userInfo: [NSLocalizedDescriptionKey: "Downloaded file URL is nil"])
+                let error = NSError(domain: "PDFDownloadError", code: -2, userInfo: [NSLocalizedDescriptionKey: "Downloaded file URL is nil"])
                 completion(.failure(error))
                 return
             }
-            
-            // Verify that the file is a valid PDF
+
             if let pdfDocument = PDFDocument(url: url) {
-                print("PDF document loaded successfully with \(pdfDocument.pageCount) pages")
+                print("PDF loaded successfully with \(pdfDocument.pageCount) pages at \(url.path)")
                 completion(.success(url))
             } else {
-                let error = NSError(domain: "PDFDownloadError",
-                                    code: -3,
-                                    userInfo: [NSLocalizedDescriptionKey: "Downloaded file is not a valid PDF"])
+                let error = NSError(domain: "PDFDownloadError", code: -3, userInfo: [NSLocalizedDescriptionKey: "Invalid PDF at \(url.path)"])
                 completion(.failure(error))
             }
         }
-        
+
         downloadTask.observe(.progress) { snapshot in
             let percentComplete = 100.0 * Double(snapshot.progress?.completedUnitCount ?? 0) /
-            Double(snapshot.progress?.totalUnitCount ?? 1)
-            print("Download is \(percentComplete)% complete")
+                Double(snapshot.progress?.totalUnitCount ?? 1)
+            print("Download progress for \(urlString): \(percentComplete)%")
         }
     }
-//    fav
+    
+    
+    //    fav
+    // Ensure fetchFavoriteNotes works correctly
     func fetchFavoriteNotes(userId: String, completion: @escaping ([SavedFireNote]) -> Void) {
-        db.collection("pdfs")
-            .whereField("userId", isEqualTo: userId)  // Ensure correct filtering
+        // Fetch all notes the user has favorited
+        self.db.collection("userFavorites") // Explicitly use self here
+            .document(userId)
+            .collection("favorites")
             .whereField("isFavorite", isEqualTo: true)
             .getDocuments { (snapshot, error) in
                 if let error = error {
-                    print("❌ Error fetching favorite notes: \(error)")
+                    print("Error fetching favorite note IDs: \(error)")
                     completion([])
                     return
                 }
 
-                guard let documents = snapshot?.documents, !documents.isEmpty else {
-                    print("⚠️ No favorite notes found for userId: \(userId)")
+                guard let favoriteDocs = snapshot?.documents, !favoriteDocs.isEmpty else {
+                    print("No favorite notes found for user \(userId)")
                     completion([])
                     return
                 }
 
-                print("✅ Found \(documents.count) favorite notes.")
-
-                var notes: [SavedFireNote] = []
+                let favoriteIds = favoriteDocs.map { $0.documentID }
                 let group = DispatchGroup()
+                var favoriteNotes: [SavedFireNote] = []
 
-                for document in documents {
+                for noteId in favoriteIds {
                     group.enter()
-                    let data = document.data()
-                    print("📄 Processing favorite note: \(data)") // Debug print
-
-                    let pdfUrl = data["downloadURL"] as? String ?? ""
-                    self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
-                        let fileSize = self.formatFileSize(metadata?.size ?? 0)
-
-                        self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
-                            let note = SavedFireNote(
-                                id: document.documentID,
-                                title: data["fileName"] as? String ?? "Untitled",
-                                description: data["category"] as? String ?? "",
-                                author: data["collegeName"] as? String ?? "Unknown Author",
-                                coverImage: image,
-                                pdfUrl: pdfUrl,
-                                dateAdded: (metadata?.timeCreated ?? Date()),
-                                pageCount: pageCount,
-                                fileSize: fileSize,
-                                userID: data["userId"] as? String ?? "",
-                                isFavorite: data["isFavorite"] as? Bool ?? false
-                            )
-                            notes.append(note)
+                    self.db.collection("pdfs").document(noteId).getDocument { (document, error) in // Fix applied here
+                        if let error = error {
+                            print("Error fetching note \(noteId): \(error)")
                             group.leave()
+                            return
+                        }
+
+                        guard let data = document?.data(), document?.exists ?? false else {
+                            print("Note \(noteId) not found")
+                            group.leave()
+                            return
+                        }
+
+                        let pdfUrl = data["downloadURL"] as? String ?? ""
+                        self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
+                            let fileSize = self.formatFileSize(metadata?.size ?? 0)
+
+                            self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
+                                let note = SavedFireNote(
+                                    id: noteId,
+                                    title: data["fileName"] as? String ?? "Untitled",
+                                    description: data["category"] as? String ?? "",
+                                    author: data["collegeName"] as? String ?? "Unknown Author",
+                                    coverImage: image,
+                                    pdfUrl: pdfUrl,
+                                    dateAdded: (metadata?.timeCreated ?? Date()),
+                                    pageCount: pageCount,
+                                    fileSize: fileSize,
+                                    userID: data["userId"] as? String ?? userId,
+                                    isFavorite: true
+                                )
+                                favoriteNotes.append(note)
+                                group.leave()
+                            }
                         }
                     }
                 }
 
                 group.notify(queue: .main) {
-                    print("✅ Successfully loaded \(notes.count) favorite notes.")
-                    completion(notes.sorted { $0.dateAdded > $1.dateAdded })
+                    print("Fetched \(favoriteNotes.count) favorite notes for user \(userId)")
+                    completion(favoriteNotes.sorted { $0.dateAdded > $1.dateAdded })
                 }
             }
     }
-
-
+    
+    // Fetch favorite note IDs for the user
+        private func fetchUserFavorites(userId: String, completion: @escaping ([String]) -> Void) {
+            db.collection("userFavorites")
+                .document(userId)
+                .collection("favorites")
+                .whereField("isFavorite", isEqualTo: true)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        print("Error fetching favorites: \(error)")
+                        completion([])
+                        return
+                    }
+                    let favoriteIds = snapshot?.documents.map { $0.documentID } ?? []
+                    completion(favoriteIds)
+                }
+        }
+    
+    
+    // Update favorite status
     func updateFavoriteStatus(for noteId: String, isFavorite: Bool, completion: @escaping (Error?) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             completion(NSError(domain: "FirebaseService", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"]))
             return
         }
-
-        let noteRef = db.collection("pdfs").document(noteId)
-        noteRef.updateData(["isFavorite": isFavorite, "userId": userId]) { error in
-            if error == nil {
-                // Post notification when favorite status is updated
-                NotificationCenter.default.post(name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+        
+        let favoriteRef = db.collection("userFavorites").document(userId).collection("favorites").document(noteId)
+        
+        if isFavorite {
+            favoriteRef.setData([
+                "isFavorite": true,
+                "timestamp": Timestamp(date: Date())
+            ]) { error in
+                if error == nil {
+                    NotificationCenter.default.post(name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+                }
+                completion(error)
             }
-            completion(error)
+        } else {
+            favoriteRef.delete { error in
+                if error == nil {
+                    NotificationCenter.default.post(name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+                }
+                completion(error)
+            }
         }
     }
 }
+    // fav end
+
 
 import UIKit
 import PDFKit
@@ -428,21 +510,21 @@ class NoteCollectionViewCell1: UICollectionViewCell {
         favoriteButton.tintColor = isFavorite ? .systemRed : .systemGray
     }
     
+//    fav button pressed
     @objc private func favoriteButtonPressed() {
-        isFavorite.toggle()
-        updateFavoriteButtonImage()
-        
-        guard !noteId.isEmpty else { return }
-        
-        FirebaseService1.shared.updateFavoriteStatus(for: noteId, isFavorite: isFavorite) { error in
-            if let error = error {
-                print("Error updating favorite status: \(error.localizedDescription)")
-            } else {
-                print("Favorite status updated successfully")
-                NotificationCenter.default.post(name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+            isFavorite.toggle()
+            updateFavoriteButtonImage()
+            
+            guard !noteId.isEmpty else { return }
+            
+            FirebaseService1.shared.updateFavoriteStatus(for: noteId, isFavorite: isFavorite) { error in
+                if let error = error {
+                    print("Error updating favorite status: \(error.localizedDescription)")
+                    self.isFavorite.toggle()
+                    self.updateFavoriteButtonImage()
+                }
             }
         }
-    }
     func configure(with note: SavedFireNote) {
         noteId = note.id
         titleLabel.text = note.title
@@ -1018,42 +1100,40 @@ extension SavedViewController: UICollectionViewDataSource, UICollectionViewDeleg
 
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedNote: SavedFireNote
-        if collectionView == curatedNotesCollectionView {
-            selectedNote = curatedNotes[indexPath.item]
-        } else {
-            selectedNote = favoriteNotes[indexPath.item]
-        }
-
-        let loadingAlert = UIAlertController(title: nil, message: "Loading PDF...", preferredStyle: .alert)
-        let loadingIndicator = UIActivityIndicatorView(style: .medium)
-        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
-        loadingIndicator.startAnimating()
-        loadingAlert.view.addSubview(loadingIndicator)
-        
-        present(loadingAlert, animated: true)
-        
-        FirebaseService1.shared.downloadPDF(from: selectedNote.pdfUrl) { [weak self] result in
-            DispatchQueue.main.async {
-                loadingAlert.dismiss(animated: true) {
-                    switch result {
-                    case .success(let url):
-                        let pdfViewController = PDFViewerViewController(pdfURL: url, title: selectedNote.title)
-                        let navController = UINavigationController(rootViewController: pdfViewController)
-                        navController.modalPresentationStyle = .fullScreen
-                        self?.present(navController, animated: true)
-                    case .failure(let error):
-                        let errorAlert = UIAlertController(
-                            title: "Error",
-                            message: "Could not load PDF: \(error.localizedDescription)",
-                            preferredStyle: .alert
-                        )
-                        errorAlert.addAction(UIAlertAction(title: "OK", style: .default))
-                        self?.present(errorAlert, animated: true)
+        let selectedNote = collectionView == curatedNotesCollectionView ? curatedNotes[indexPath.item] : favoriteNotes[indexPath.item]
+        showLoadingAlert {
+            FirebaseService1.shared.downloadPDF(from: selectedNote.pdfUrl) { [weak self] result in
+                DispatchQueue.main.async {
+                    self?.dismissLoadingAlert {
+                        switch result {
+                        case .success(let url):
+                            let pdfVC = PDFViewerViewController(pdfURL: url, title: selectedNote.title)
+                            let nav = UINavigationController(rootViewController: pdfVC)
+                            nav.modalPresentationStyle = .fullScreen
+                            self?.present(nav, animated: true)
+                        case .failure(let error):
+                            self?.showAlert(title: "Error", message: "Could not load PDF: \(error.localizedDescription)")
+                        }
                     }
                 }
             }
         }
+    }
+    private func showLoadingAlert(completion: @escaping () -> Void) {
+        let alert = UIAlertController(title: nil, message: "Loading PDF...", preferredStyle: .alert)
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.startAnimating()
+        alert.view.addSubview(indicator)
+        NSLayoutConstraint.activate([
+            indicator.centerXAnchor.constraint(equalTo: alert.view.centerXAnchor),
+            indicator.centerYAnchor.constraint(equalTo: alert.view.centerYAnchor, constant: 20)
+        ])
+        present(alert, animated: true, completion: completion)
+    }
+
+    private func dismissLoadingAlert(completion: @escaping () -> Void) {
+        dismiss(animated: true, completion: completion)
     }
 }
 

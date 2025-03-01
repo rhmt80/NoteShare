@@ -761,3 +761,4 @@ struct AdvancedChatView_Previews: PreviewProvider {
         AdvancedChatView()
     }
 }
+
