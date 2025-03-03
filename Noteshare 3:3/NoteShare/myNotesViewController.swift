@@ -39,12 +39,11 @@ class FirebaseService1 {
     
     // Fetch notes for a specific user
     func fetchNotes(userId: String, completion: @escaping ([SavedFireNote]) -> Void) {
-            // Fetch notes uploaded by the user
             db.collection("pdfs")
                 .whereField("userId", isEqualTo: userId)
                 .getDocuments { (snapshot, error) in
                     if let error = error {
-                        print("Error fetching uploaded notes: \(error)")
+                        print("Error fetching uploaded notes: \(error.localizedDescription)")
                         completion([])
                         return
                     }
@@ -65,9 +64,7 @@ class FirebaseService1 {
                         print("Processing note with pdfUrl: \(pdfUrl)")
 
                         self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
-                            if let error = error {
-                                print("Metadata error for \(pdfUrl): \(error)")
-                            }
+                            if let error = error { print("Metadata error for \(pdfUrl): \(error)") }
                             let fileSize = self.formatFileSize(metadata?.size ?? 0)
 
                             self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
@@ -193,12 +190,14 @@ class FirebaseService1 {
     func downloadPDF(from urlString: String, completion: @escaping (Result<URL, Error>) -> Void) {
         guard !urlString.isEmpty else {
             let error = NSError(domain: "PDFDownloadError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Empty PDF URL"])
+            print("Download failed: \(error.localizedDescription)")
             completion(.failure(error))
             return
         }
 
         guard let storageRef = getStorageReference(from: urlString) else {
-            let error = NSError(domain: "PDFDownloadError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid storage reference URL: \(urlString)"])
+            let error = NSError(domain: "PDFDownloadError", code: -2, userInfo: [NSLocalizedDescriptionKey: "Invalid storage reference URL: \(urlString)"])
+            print("Download failed: \(error.localizedDescription)")
             completion(.failure(error))
             return
         }
@@ -210,6 +209,7 @@ class FirebaseService1 {
         if FileManager.default.fileExists(atPath: localURL.path) {
             do {
                 try FileManager.default.removeItem(at: localURL)
+                print("Removed existing file at \(localURL.path)")
             } catch {
                 print("Failed to remove existing file: \(error)")
                 completion(.failure(error))
@@ -217,24 +217,44 @@ class FirebaseService1 {
             }
         }
 
+        print("Starting download from \(urlString) to \(localURL.path)")
         let downloadTask = storageRef.write(toFile: localURL) { url, error in
             if let error = error {
-                print("Download error for \(urlString): \(error.localizedDescription)")
+                // Enhanced error logging
+                if let nsError = error as NSError? {
+                    let errorCode = nsError.code
+                    let errorDesc = nsError.localizedDescription
+                    let underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as? NSError
+                    print("Download error for \(urlString): Code \(errorCode) - \(errorDesc)")
+                    if let underlyingDesc = underlyingError?.localizedDescription {
+                        print("Underlying error: \(underlyingDesc)")
+                    }
+                } else {
+                    print("Download error for \(urlString): \(error.localizedDescription)")
+                }
                 completion(.failure(error))
                 return
             }
 
             guard let url = url else {
-                let error = NSError(domain: "PDFDownloadError", code: -2, userInfo: [NSLocalizedDescriptionKey: "Downloaded file URL is nil"])
+                let error = NSError(domain: "PDFDownloadError", code: -3, userInfo: [NSLocalizedDescriptionKey: "Downloaded file URL is nil"])
+                print("Download failed: \(error.localizedDescription)")
                 completion(.failure(error))
                 return
             }
 
-            if let pdfDocument = PDFDocument(url: url) {
-                print("PDF loaded successfully with \(pdfDocument.pageCount) pages at \(url.path)")
-                completion(.success(url))
+            if FileManager.default.fileExists(atPath: url.path) {
+                if let pdfDocument = PDFDocument(url: url) {
+                    print("PDF loaded successfully with \(pdfDocument.pageCount) pages at \(url.path)")
+                    completion(.success(url))
+                } else {
+                    let error = NSError(domain: "PDFDownloadError", code: -4, userInfo: [NSLocalizedDescriptionKey: "Invalid PDF at \(url.path)"])
+                    print("Download failed: \(error.localizedDescription)")
+                    completion(.failure(error))
+                }
             } else {
-                let error = NSError(domain: "PDFDownloadError", code: -3, userInfo: [NSLocalizedDescriptionKey: "Invalid PDF at \(url.path)"])
+                let error = NSError(domain: "PDFDownloadError", code: -5, userInfo: [NSLocalizedDescriptionKey: "File not found at \(url.path) after download"])
+                print("Download failed: \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }
@@ -250,74 +270,74 @@ class FirebaseService1 {
     //    fav
     // Ensure fetchFavoriteNotes works correctly
     func fetchFavoriteNotes(userId: String, completion: @escaping ([SavedFireNote]) -> Void) {
-        // Fetch all notes the user has favorited
-        self.db.collection("userFavorites") // Explicitly use self here
-            .document(userId)
-            .collection("favorites")
-            .whereField("isFavorite", isEqualTo: true)
-            .getDocuments { (snapshot, error) in
-                if let error = error {
-                    print("Error fetching favorite note IDs: \(error)")
-                    completion([])
-                    return
-                }
+            self.db.collection("userFavorites")
+                .document(userId)
+                .collection("favorites")
+                .whereField("isFavorite", isEqualTo: true)
+                .getDocuments { (snapshot, error) in
+                    if let error = error {
+                        print("Error fetching favorite note IDs: \(error.localizedDescription)")
+                        completion([])
+                        return
+                    }
 
-                guard let favoriteDocs = snapshot?.documents, !favoriteDocs.isEmpty else {
-                    print("No favorite notes found for user \(userId)")
-                    completion([])
-                    return
-                }
+                    guard let favoriteDocs = snapshot?.documents, !favoriteDocs.isEmpty else {
+                        print("No favorite notes found for user \(userId)")
+                        completion([])
+                        return
+                    }
 
-                let favoriteIds = favoriteDocs.map { $0.documentID }
-                let group = DispatchGroup()
-                var favoriteNotes: [SavedFireNote] = []
+                    let favoriteIds = favoriteDocs.map { $0.documentID }
+                    let group = DispatchGroup()
+                    var favoriteNotes: [SavedFireNote] = []
 
-                for noteId in favoriteIds {
-                    group.enter()
-                    self.db.collection("pdfs").document(noteId).getDocument { (document, error) in // Fix applied here
-                        if let error = error {
-                            print("Error fetching note \(noteId): \(error)")
-                            group.leave()
-                            return
-                        }
-
-                        guard let data = document?.data(), document?.exists ?? false else {
-                            print("Note \(noteId) not found")
-                            group.leave()
-                            return
-                        }
-
-                        let pdfUrl = data["downloadURL"] as? String ?? ""
-                        self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
-                            let fileSize = self.formatFileSize(metadata?.size ?? 0)
-
-                            self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
-                                let note = SavedFireNote(
-                                    id: noteId,
-                                    title: data["fileName"] as? String ?? "Untitled",
-                                    description: data["category"] as? String ?? "",
-                                    author: data["collegeName"] as? String ?? "Unknown Author",
-                                    coverImage: image,
-                                    pdfUrl: pdfUrl,
-                                    dateAdded: (metadata?.timeCreated ?? Date()),
-                                    pageCount: pageCount,
-                                    fileSize: fileSize,
-                                    userID: data["userId"] as? String ?? userId,
-                                    isFavorite: true
-                                )
-                                favoriteNotes.append(note)
+                    for noteId in favoriteIds {
+                        group.enter()
+                        self.db.collection("pdfs").document(noteId).getDocument { (document, error) in
+                            if let error = error {
+                                print("Error fetching note \(noteId): \(error)")
                                 group.leave()
+                                return
+                            }
+
+                            guard let data = document?.data(), document?.exists ?? false else {
+                                print("Note \(noteId) not found")
+                                group.leave()
+                                return
+                            }
+
+                            let pdfUrl = data["downloadURL"] as? String ?? ""
+                            self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
+                                if let error = error { print("Metadata error for \(pdfUrl): \(error)") }
+                                let fileSize = self.formatFileSize(metadata?.size ?? 0)
+
+                                self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
+                                    let note = SavedFireNote(
+                                        id: noteId,
+                                        title: data["fileName"] as? String ?? "Untitled",
+                                        description: data["category"] as? String ?? "",
+                                        author: data["collegeName"] as? String ?? "Unknown Author",
+                                        coverImage: image,
+                                        pdfUrl: pdfUrl,
+                                        dateAdded: (metadata?.timeCreated ?? Date()),
+                                        pageCount: pageCount,
+                                        fileSize: fileSize,
+                                        userID: data["userId"] as? String ?? userId,
+                                        isFavorite: true
+                                    )
+                                    favoriteNotes.append(note)
+                                    group.leave()
+                                }
                             }
                         }
                     }
-                }
 
-                group.notify(queue: .main) {
-                    print("Fetched \(favoriteNotes.count) favorite notes for user \(userId)")
-                    completion(favoriteNotes.sorted { $0.dateAdded > $1.dateAdded })
+                    group.notify(queue: .main) {
+                        print("Fetched \(favoriteNotes.count) favorite notes for user \(userId)")
+                        completion(favoriteNotes.sorted { $0.dateAdded > $1.dateAdded })
+                    }
                 }
-            }
-    }
+        }
     
     // Fetch favorite note IDs for the user
         private func fetchUserFavorites(userId: String, completion: @escaping ([String]) -> Void) {
@@ -369,10 +389,12 @@ class FirebaseService1 {
     // fav end
 
 
-import UIKit
 import PDFKit
+import UIKit
 
 class NoteCollectionViewCell1: UICollectionViewCell {
+    var noteId: String?
+    
     private let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
@@ -394,20 +416,11 @@ class NoteCollectionViewCell1: UICollectionViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-    private var noteId: String = ""
-
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.numberOfLines = 2
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let authorLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
-        label.textColor = .secondaryLabel
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -443,7 +456,8 @@ class NoteCollectionViewCell1: UICollectionViewCell {
         return button
     }()
     
-    private var isFavorite: Bool = false {
+    // Properties
+    var isFavorite: Bool = false {
         didSet {
             updateFavoriteButtonImage()
         }
@@ -451,6 +465,7 @@ class NoteCollectionViewCell1: UICollectionViewCell {
     
     var favoriteButtonTapped: (() -> Void)?
     
+    // Initialization
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -460,10 +475,11 @@ class NoteCollectionViewCell1: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // UI Setup
     private func setupUI() {
         contentView.addSubview(containerView)
         
-        [coverImageView, titleLabel, authorLabel, detailsStackView, favoriteButton].forEach {
+        [coverImageView, titleLabel, detailsStackView, favoriteButton].forEach {
             containerView.addSubview($0)
         }
         
@@ -471,6 +487,11 @@ class NoteCollectionViewCell1: UICollectionViewCell {
             detailsStackView.addArrangedSubview($0)
         }
         
+        setupConstraints()
+        favoriteButton.addTarget(self, action: #selector(favoriteButtonPressed), for: .touchUpInside)
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
@@ -486,50 +507,45 @@ class NoteCollectionViewCell1: UICollectionViewCell {
             titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
             titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
             
-            authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            authorLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            authorLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            
-            detailsStackView.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 4),
+            detailsStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12), // Increased to match original spacing (was 8+4 from title to author to details)
             detailsStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
             detailsStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
             
-            favoriteButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
-            favoriteButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -12),
-            favoriteButton.widthAnchor.constraint(equalToConstant: 32),
-            favoriteButton.heightAnchor.constraint(equalToConstant: 32)
+            favoriteButton.topAnchor.constraint(equalTo: detailsStackView.bottomAnchor, constant: 8), // Restored to original spacing
+            favoriteButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -12), // Consistent spacing
+            favoriteButton.widthAnchor.constraint(equalToConstant: 24), // Consistent size
+            favoriteButton.heightAnchor.constraint(equalToConstant: 24) // Consistent size
         ])
-        
-        favoriteButton.addTarget(self, action: #selector(favoriteButtonPressed), for: .touchUpInside)
     }
     
+    // Update UI for favorite button
     private func updateFavoriteButtonImage() {
-        let imageName = isFavorite ? "heart.fill" : "heart"
-        let image = UIImage(systemName: imageName)
+        let image = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
         favoriteButton.setImage(image, for: .normal)
-        favoriteButton.tintColor = isFavorite ? .systemRed : .systemGray
+        favoriteButton.tintColor = isFavorite ? .systemBlue : .systemGray // Blue for filled heart
     }
     
-//    fav button pressed
+    // Favorite button pressed
     @objc private func favoriteButtonPressed() {
-            isFavorite.toggle()
-            updateFavoriteButtonImage()
-            
-            guard !noteId.isEmpty else { return }
-            
-            FirebaseService1.shared.updateFavoriteStatus(for: noteId, isFavorite: isFavorite) { error in
-                if let error = error {
-                    print("Error updating favorite status: \(error.localizedDescription)")
-                    self.isFavorite.toggle()
-                    self.updateFavoriteButtonImage()
-                }
+        isFavorite.toggle()
+        updateFavoriteButtonImage()
+        
+        guard let noteId = noteId else { return }
+        
+        FirebaseService1.shared.updateFavoriteStatus(for: noteId, isFavorite: isFavorite) { error in
+            if let error = error {
+                print("Error updating favorite status: \(error.localizedDescription)")
+                self.isFavorite.toggle()
+                self.updateFavoriteButtonImage()
             }
         }
+    }
+    
+    // Configure cell with SavedFireNote
     func configure(with note: SavedFireNote) {
         noteId = note.id
         titleLabel.text = note.title
-        authorLabel.text = "By \(note.author)"
-        pagesLabel.text = "\(note.pageCount) pages"
+        pagesLabel.text = "Pages: \(note.pageCount)"
         fileSizeLabel.text = note.fileSize
         coverImageView.image = note.coverImage ?? UIImage(systemName: "doc.fill")
         isFavorite = note.isFavorite
@@ -1096,17 +1112,19 @@ extension SavedViewController: UICollectionViewDataSource, UICollectionViewDeleg
             return cell
         }
     }
-
-
+    
+    
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedNote = collectionView == curatedNotesCollectionView ? curatedNotes[indexPath.item] : favoriteNotes[indexPath.item]
+        print("Selected note with pdfUrl: \(selectedNote.pdfUrl)")
         showLoadingAlert {
             FirebaseService1.shared.downloadPDF(from: selectedNote.pdfUrl) { [weak self] result in
                 DispatchQueue.main.async {
                     self?.dismissLoadingAlert {
                         switch result {
                         case .success(let url):
+                            print("Opening PDF at \(url.path)")
                             let pdfVC = PDFViewerViewController(pdfURL: url, title: selectedNote.title)
                             let nav = UINavigationController(rootViewController: pdfVC)
                             nav.modalPresentationStyle = .fullScreen
@@ -1119,6 +1137,7 @@ extension SavedViewController: UICollectionViewDataSource, UICollectionViewDeleg
             }
         }
     }
+    
     private func showLoadingAlert(completion: @escaping () -> Void) {
         let alert = UIAlertController(title: nil, message: "Loading PDF...", preferredStyle: .alert)
         let indicator = UIActivityIndicatorView(style: .medium)

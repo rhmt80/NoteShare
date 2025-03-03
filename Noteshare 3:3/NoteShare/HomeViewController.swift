@@ -41,16 +41,16 @@ class FirebaseService {
     static let shared = FirebaseService()
     private let storage = Storage.storage()
     private let db = Firestore.firestore()
-    
+
     var currentUserId: String? {
         return Auth.auth().currentUser?.uid
     }
     
     // Fetch all notes (unchanged, but removing isFavorite from note fetch)
-        func fetchNotes(completion: @escaping ([FireNote], [String: [String: [FireNote]]]) -> Void) {
+    func fetchNotes(completion: @escaping ([FireNote], [String: [String: [FireNote]]]) -> Void) {
             db.collection("pdfs").getDocuments { (snapshot, error) in
                 if let error = error {
-                    print("Error fetching notes: \(error)")
+                    print("Error fetching notes: \(error.localizedDescription)")
                     completion([], [:])
                     return
                 }
@@ -63,10 +63,12 @@ class FirebaseService {
                     group.enter()
                     let data = document.data()
                     let pdfUrl = data["downloadURL"] as? String ?? ""
+                    print("Fetching note with pdfUrl: \(pdfUrl)")
                     let collegeName = data["collegeName"] as? String ?? "Unknown College"
                     let subjectCode = data["subjectCode"] as? String ?? "Unknown Subject"
 
                     self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
+                        if let error = error { print("Metadata error for \(pdfUrl): \(error)") }
                         let fileSize = self.formatFileSize(metadata?.size ?? 0)
 
                         self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
@@ -80,35 +82,31 @@ class FirebaseService {
                                 dateAdded: (metadata?.timeCreated ?? Date()),
                                 pageCount: pageCount,
                                 fileSize: fileSize,
-                                isFavorite: false, // Default to false; fetch separately
+                                isFavorite: false,
                                 category: data["category"] as? String ?? "",
                                 subjectCode: subjectCode,
                                 subjectName: data["subjectName"] as? String ?? ""
                             )
-
-                            if groupedNotes[collegeName] == nil {
-                                groupedNotes[collegeName] = [:]
-                            }
+                            notes.append(note)
+                            if groupedNotes[collegeName] == nil { groupedNotes[collegeName] = [:] }
                             if groupedNotes[collegeName]?[subjectCode] != nil {
                                 groupedNotes[collegeName]?[subjectCode]?.append(note)
                             } else {
                                 groupedNotes[collegeName]?[subjectCode] = [note]
                             }
-
-                            notes.append(note)
                             group.leave()
                         }
                     }
                 }
 
                 group.notify(queue: .main) {
-                    // Fetch favorite status separately for the current user
                     self.fetchUserFavorites { favoriteNoteIds in
                         let updatedNotes = notes.map { note in
                             var updatedNote = note
                             updatedNote.isFavorite = favoriteNoteIds.contains(note.id)
                             return updatedNote
                         }
+                        print("Fetched \(updatedNotes.count) notes")
                         completion(updatedNotes.sorted { $0.dateAdded > $1.dateAdded }, groupedNotes)
                     }
                 }
@@ -208,12 +206,14 @@ class FirebaseService {
     func downloadPDF(from urlString: String, completion: @escaping (Result<URL, Error>) -> Void) {
         guard !urlString.isEmpty else {
             let error = NSError(domain: "PDFDownloadError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Empty PDF URL"])
+            print("Download failed: \(error.localizedDescription)")
             completion(.failure(error))
             return
         }
 
         guard let storageRef = getStorageReference(from: urlString) else {
-            let error = NSError(domain: "PDFDownloadError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid storage reference URL: \(urlString)"])
+            let error = NSError(domain: "PDFDownloadError", code: -2, userInfo: [NSLocalizedDescriptionKey: "Invalid storage reference URL: \(urlString)"])
+            print("Download failed: \(error.localizedDescription)")
             completion(.failure(error))
             return
         }
@@ -225,6 +225,7 @@ class FirebaseService {
         if FileManager.default.fileExists(atPath: localURL.path) {
             do {
                 try FileManager.default.removeItem(at: localURL)
+                print("Removed existing file at \(localURL.path)")
             } catch {
                 print("Failed to remove existing file: \(error)")
                 completion(.failure(error))
@@ -232,24 +233,44 @@ class FirebaseService {
             }
         }
 
+        print("Starting download from \(urlString) to \(localURL.path)")
         let downloadTask = storageRef.write(toFile: localURL) { url, error in
             if let error = error {
-                print("Download error for \(urlString): \(error.localizedDescription)")
+                // Enhanced error logging
+                if let nsError = error as NSError? {
+                    let errorCode = nsError.code
+                    let errorDesc = nsError.localizedDescription
+                    let underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as? NSError
+                    print("Download error for \(urlString): Code \(errorCode) - \(errorDesc)")
+                    if let underlyingDesc = underlyingError?.localizedDescription {
+                        print("Underlying error: \(underlyingDesc)")
+                    }
+                } else {
+                    print("Download error for \(urlString): \(error.localizedDescription)")
+                }
                 completion(.failure(error))
                 return
             }
 
             guard let url = url else {
-                let error = NSError(domain: "PDFDownloadError", code: -2, userInfo: [NSLocalizedDescriptionKey: "Downloaded file URL is nil"])
+                let error = NSError(domain: "PDFDownloadError", code: -3, userInfo: [NSLocalizedDescriptionKey: "Downloaded file URL is nil"])
+                print("Download failed: \(error.localizedDescription)")
                 completion(.failure(error))
                 return
             }
 
-            if let pdfDocument = PDFDocument(url: url) {
-                print("PDF loaded successfully with \(pdfDocument.pageCount) pages at \(url.path)")
-                completion(.success(url))
+            if FileManager.default.fileExists(atPath: url.path) {
+                if let pdfDocument = PDFDocument(url: url) {
+                    print("PDF loaded successfully with \(pdfDocument.pageCount) pages at \(url.path)")
+                    completion(.success(url))
+                } else {
+                    let error = NSError(domain: "PDFDownloadError", code: -4, userInfo: [NSLocalizedDescriptionKey: "Invalid PDF at \(url.path)"])
+                    print("Download failed: \(error.localizedDescription)")
+                    completion(.failure(error))
+                }
             } else {
-                let error = NSError(domain: "PDFDownloadError", code: -3, userInfo: [NSLocalizedDescriptionKey: "Invalid PDF at \(url.path)"])
+                let error = NSError(domain: "PDFDownloadError", code: -5, userInfo: [NSLocalizedDescriptionKey: "File not found at \(url.path) after download"])
+                print("Download failed: \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }
@@ -260,6 +281,8 @@ class FirebaseService {
             print("Download progress for \(urlString): \(percentComplete)%")
         }
     }
+    
+    
     
     private func formatFileSize(_ size: Int64) -> String {
         if size <= 0 {
@@ -942,20 +965,20 @@ extension HomeViewController: UICollectionViewDelegate {
                         notesVC.configure(with: collegeNotes)
                         self.navigationController?.pushViewController(notesVC, animated: true)
                     } else {
-                        let alert = UIAlertController(title: "No Notes", message: "No notes available for \(selectedCollege.name).", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .default))
-                        self.present(alert, animated: true)
+                        self.showAlert(title: "No Notes", message: "No notes available for \(selectedCollege.name).")
                     }
                 }
             }
         } else if collectionView == notesCollectionView {
             let selectedNote = recommendedNotes[indexPath.item]
+            print("Selected note with pdfUrl: \(selectedNote.pdfUrl)")
             showLoadingAlert {
                 FirebaseService.shared.downloadPDF(from: selectedNote.pdfUrl) { [weak self] result in
                     DispatchQueue.main.async {
                         self?.dismissLoadingAlert {
                             switch result {
                             case .success(let url):
+                                print("Opening PDF at \(url.path)")
                                 let pdfVC = PDFViewerViewController(pdfURL: url, title: selectedNote.title)
                                 let nav = UINavigationController(rootViewController: pdfVC)
                                 nav.modalPresentationStyle = .fullScreen
@@ -969,7 +992,7 @@ extension HomeViewController: UICollectionViewDelegate {
             }
         }
     }
-
+    
     // Helper methods for loading alert
     private func showLoadingAlert(completion: @escaping () -> Void) {
         let alert = UIAlertController(title: nil, message: "Loading PDF...", preferredStyle: .alert)
