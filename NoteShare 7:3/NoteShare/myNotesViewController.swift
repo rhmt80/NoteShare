@@ -38,68 +38,58 @@ class FirebaseService1 {
     private let db = Firestore.firestore()
     
     // Fetch notes for a specific user
-    func fetchNotes(userId: String, completion: @escaping ([SavedFireNote]) -> Void) {
-            db.collection("pdfs")
-                .whereField("userId", isEqualTo: userId)
-                .getDocuments { (snapshot, error) in
-                    if let error = error {
-                        print("Error fetching uploaded notes: \(error.localizedDescription)")
-                        completion([])
-                        return
-                    }
+    func observeNotes(userId: String, completion: @escaping ([SavedFireNote]) -> Void) {
+        db.collection("pdfs")
+            .whereField("userId", isEqualTo: userId)
+            .addSnapshotListener { (snapshot, error) in
+                if let error = error {
+                    print("Error observing notes: \(error.localizedDescription)")
+                    return
+                }
 
-                    guard let documents = snapshot?.documents, !documents.isEmpty else {
-                        print("No uploaded notes found for user \(userId)")
-                        completion([])
-                        return
-                    }
+                guard let documents = snapshot?.documents else {
+                    completion([])
+                    return
+                }
 
-                    var notes: [SavedFireNote] = []
-                    let group = DispatchGroup()
+                var notes: [SavedFireNote] = []
+                let group = DispatchGroup()
 
-                    for document in documents {
-                        group.enter()
-                        let data = document.data()
-                        let pdfUrl = data["downloadURL"] as? String ?? ""
-                        print("Processing note with pdfUrl: \(pdfUrl)")
+                for document in documents {
+                    group.enter()
+                    let data = document.data()
+                    let pdfUrl = data["downloadURL"] as? String ?? ""
+                    let noteId = document.documentID
 
-                        self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
-                            if let error = error { print("Metadata error for \(pdfUrl): \(error)") }
-                            let fileSize = self.formatFileSize(metadata?.size ?? 0)
+                    self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
+                        let fileSize = self.formatFileSize(metadata?.size ?? 0)
 
-                            self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
-                                let note = SavedFireNote(
-                                    id: document.documentID,
-                                    title: data["fileName"] as? String ?? "Untitled",
-                                    description: data["category"] as? String ?? "",
-                                    author: data["collegeName"] as? String ?? "Unknown Author",
-                                    coverImage: image,
-                                    pdfUrl: pdfUrl,
-                                    dateAdded: (metadata?.timeCreated ?? Date()),
-                                    pageCount: pageCount,
-                                    fileSize: fileSize,
-                                    userID: userId,
-                                    isFavorite: false
-                                )
-                                notes.append(note)
-                                group.leave()
-                            }
-                        }
-                    }
-
-                    group.notify(queue: .main) {
-                        self.fetchUserFavorites(userId: userId) { favoriteIds in
-                            let updatedNotes = notes.map { note in
-                                var updatedNote = note
-                                updatedNote.isFavorite = favoriteIds.contains(note.id)
-                                return updatedNote
-                            }
-                            print("Fetched \(updatedNotes.count) uploaded notes for user \(userId)")
-                            completion(updatedNotes.sorted { $0.dateAdded > $1.dateAdded })
+                        self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
+                            let note = SavedFireNote(
+                                id: noteId,
+                                title: data["fileName"] as? String ?? "Untitled",
+                                description: data["category"] as? String ?? "",
+                                author: data["collegeName"] as? String ?? "Unknown Author",
+                                coverImage: image,
+                                pdfUrl: pdfUrl,
+                                dateAdded: (metadata?.timeCreated ?? Date()),
+                                pageCount: pageCount,
+                                fileSize: fileSize,
+                                userID: userId,
+                                isFavorite: false
+                            )
+                            notes.append(note)
+                            group.leave()
                         }
                     }
                 }
-        }
+
+                group.notify(queue: .main) {
+                    completion(notes.sorted { $0.dateAdded > $1.dateAdded })
+                }
+            }
+    }
+
     
     
     private func formatFileSize(_ size: Int64) -> String {
@@ -941,16 +931,12 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
             return
         }
         
-        isLoading = true
-        activityIndicator.startAnimating()
-        
-        FirebaseService1.shared.fetchNotes(userId: userID) { [weak self] notes in
+        FirebaseService1.shared.observeNotes(userId: userID) { [weak self] notes in
             self?.curatedNotes = notes
             self?.curatedNotesCollectionView.reloadData()
-            self?.activityIndicator.stopAnimating()
-            self?.isLoading = false
         }
     }
+
     
     // MARK: - Action Methods
     
