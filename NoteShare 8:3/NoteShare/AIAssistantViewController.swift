@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseAuth
 import PDFKit
 import Vision
 import GoogleGenerativeAI
@@ -39,24 +40,62 @@ class AIPageViewController: ObservableObject {
         isLoading = true
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let localURL = documentsPath.appendingPathComponent(url.lastPathComponent)
-        
-        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            guard let self = self, let data = data else {
-                DispatchQueue.main.async { self?.isLoading = false }
+
+        // If the URL is a Firebase Storage reference, get the download URL
+        let storageRef = storage.reference(forURL: url.absoluteString)
+        storageRef.downloadURL { [weak self] downloadURL, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                print("Error getting download URL: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                    self.messages.append(ChatMessage(content: "Failed to get PDF download URL", type: .error))
+                }
                 return
             }
-            
-            do {
-                try data.write(to: localURL)
+
+            guard let downloadURL = downloadURL else {
+                print("No download URL received")
                 DispatchQueue.main.async {
-                    self.selectedPDF = localURL
                     self.isLoading = false
+                    self.messages.append(ChatMessage(content: "Invalid PDF URL", type: .error))
                 }
-            } catch {
-                print("Error saving PDF: \(error)")
-                DispatchQueue.main.async { self.isLoading = false }
+                return
             }
-        }.resume()
+
+            // Download the file using the resolved URL
+            URLSession.shared.dataTask(with: downloadURL) { [weak self] data, response, error in
+                guard let self = self else { return }
+
+                guard let data = data, error == nil else {
+                    print("Error downloading PDF: \(error?.localizedDescription ?? "Unknown error")")
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        self.messages.append(ChatMessage(content: "Failed to download PDF", type: .error))
+                    }
+                    return
+                }
+
+                do {
+                    try data.write(to: localURL)
+                    DispatchQueue.main.async {
+                        self.selectedPDF = localURL
+                        if PDFDocument(url: localURL) == nil {
+                            print("Error: Downloaded file is not a valid PDF")
+                            self.messages.append(ChatMessage(content: "Unable to load PDF: Invalid file", type: .error))
+                        }
+                        self.isLoading = false
+                    }
+                } catch {
+                    print("Error saving PDF: \(error)")
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        self.messages.append(ChatMessage(content: "Error saving PDF: \(error.localizedDescription)", type: .error))
+                    }
+                }
+            }.resume()
+        }
     }
     
     func sendMessage(_ content: String) {
@@ -101,18 +140,27 @@ class AIPageViewController: ObservableObject {
     private func extractPDFPages() {
         guard let url = selectedPDF else { return }
         pdfPages.removeAll()
-        
+
         DispatchQueue.global(qos: .userInitiated).async {
             if let document = PDFDocument(url: url) {
+                var thumbnails: [UIImage] = []
                 for i in 0..<document.pageCount {
                     if let page = document.page(at: i) {
                         let thumbnail = page.thumbnail(of: CGSize(width: 200, height: 300), for: .cropBox)
-                        DispatchQueue.main.async {
-                            self.pdfPages.append(thumbnail)
-                        }
+                        thumbnails.append(thumbnail)
                     }
                 }
-                self.extractTextFromPDF(document: document)
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.pdfPages = thumbnails // Update on main thread
+                    self.extractTextFromPDF(document: document)
+                }
+            } else {
+                print("Error: Could not load PDF from \(url)")
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.messages.append(ChatMessage(content: "Unable to load PDF", type: .error))
+                }
             }
         }
     }
@@ -128,8 +176,14 @@ class AIPageViewController: ObservableObject {
     }
     
     private func saveChatToFirestore(pdfId: String, messages: [ChatMessage]) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Error: No authenticated user found")
+            return
+        }
+
         let chatData: [String: Any] = [
             "pdfId": pdfId,
+            "userId": userId, // Add userId to associate the chat with the authenticated user
             "timestamp": Timestamp(),
             "messages": messages.map { [
                 "content": $0.content,
@@ -137,14 +191,15 @@ class AIPageViewController: ObservableObject {
                 "timestamp": Timestamp(date: $0.timestamp)
             ]}
         ]
-        
+
         db.collection("chats").addDocument(data: chatData) { error in
             if let error = error {
                 print("Error saving chat: \(error)")
+            } else {
+                print("Chat saved successfully")
             }
         }
     }
-    
     func loadChatsForPDF(pdfId: String) {
         db.collection("chats")
             .whereField("pdfId", isEqualTo: pdfId)

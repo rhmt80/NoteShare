@@ -1,5 +1,7 @@
 import UIKit
 import SwiftUI
+import FirebaseAuth
+
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
