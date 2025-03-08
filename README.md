@@ -37,7 +37,7 @@ I am developing **Noteshare** from scratch in **Swift** as part of my training a
 ## 🚀 Getting Started
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/Noteshare.git
+   git clone https://github.com/SanD204/NoteShare
    ```
 2. Open the project in **Xcode**.
 3. Install dependencies if required.
