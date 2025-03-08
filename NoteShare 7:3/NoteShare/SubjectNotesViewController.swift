@@ -64,22 +64,25 @@ class SubjectNotesViewController: UIViewController, UICollectionViewDataSource, 
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let note = notes[indexPath.row]
-        if let pdfURL = URL(string: note.pdfUrl) {
-            let pdfVC = PDFViewerViewController(pdfURL: pdfURL, title: note.title)
-            
-            // Wrapping in Navigation Controller to show Close button
-            let navController = UINavigationController(rootViewController: pdfVC)
-            pdfVC.navigationItem.leftBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .close,
-                target: self,
-                action: #selector(closePDF)
-            )
-            
-            navController.modalPresentationStyle = .fullScreen
-            present(navController, animated: true)
-        } else {
-            print("Invalid PDF URL: \(note.pdfUrl)")
+        FirebaseService.shared.downloadPDF(from: note.pdfUrl) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let url):
+                    let pdfVC = PDFViewerViewController(pdfURL: url, title: note.title)
+                    let navController = UINavigationController(rootViewController: pdfVC)
+                    pdfVC.navigationItem.leftBarButtonItem = UIBarButtonItem(
+                        barButtonSystemItem: .close,
+                        target: self,
+                        action: #selector(self?.closePDF)
+                    )
+                    navController.modalPresentationStyle = .fullScreen
+                    self?.present(navController, animated: true)
+                case .failure(let error):
+                    print("Failed to download PDF: \(error.localizedDescription)")
+                }
+            }
         }
+
     }
     
     // MARK: - UICollectionViewDelegateFlowLayout
