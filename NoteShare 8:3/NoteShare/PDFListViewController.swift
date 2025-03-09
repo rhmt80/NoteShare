@@ -170,14 +170,55 @@ extension PDFListViewController: UICollectionViewDelegate, UICollectionViewDataS
     }
     
     
+    private func showLoadingAlert(completion: @escaping () -> Void) {
+        let alert = UIAlertController(title: nil, message: "Loading PDF...", preferredStyle: .alert)
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.startAnimating()
+        alert.view.addSubview(indicator)
+        
+        NSLayoutConstraint.activate([
+            indicator.centerXAnchor.constraint(equalTo: alert.view.centerXAnchor),
+            indicator.centerYAnchor.constraint(equalTo: alert.view.centerYAnchor, constant: 20)
+        ])
+        
+        present(alert, animated: true, completion: completion)
+    }
+    
+    private func dismissLoadingAlert(completion: @escaping () -> Void) {
+        dismiss(animated: true, completion: completion)
+    }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let pdf = filteredPDFFiles[indexPath.row]
-        let pdfViewerVC = PDFViewerViewController(pdfURL: pdf.url, title: pdf.fileName)
-        let navController = UINavigationController(rootViewController: pdfViewerVC)
-        navController.modalPresentationStyle = .fullScreen
-        onPDFSelected?(pdf.url, pdf.fileName, pdf.subjectName, pdf.subjectCode, pdf.fileSize, pdf.thumbnail)
-        present(navController, animated: true)
+        
+        showLoadingAlert {
+            FirebaseService1.shared.downloadPDF(from: pdf.url.absoluteString) { [weak self] result in
+                DispatchQueue.main.async {
+                    self?.dismissLoadingAlert {
+                        switch result {
+                        case .success(let localURL):
+                            print("Opening PDF at \(localURL.path)")
+                            let pdfViewerVC = PDFViewerViewController(pdfURL: localURL, title: pdf.fileName)
+                            let navController = UINavigationController(rootViewController: pdfViewerVC)
+                            navController.modalPresentationStyle = .fullScreen
+                            self?.present(navController, animated: true)
+                        case .failure(let error):
+                            self?.showAlert(title: "Error", message: "Could not load PDF: \(error.localizedDescription)")
+                        }
+                    }
+                }
+            }
+        }
     }
+
+
 }
 
 // MARK: - UISearchBarDelegate
