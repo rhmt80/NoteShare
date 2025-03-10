@@ -16,7 +16,7 @@ I am developing **Noteshare** from scratch in **Swift** as part of my training a
 - **Language**: Swift
 - **Frameworks**: UIKit, Storyboard
 - **Tools**: Xcode, Figma (for UI/UX design)
-- **Database**: Core Data / Firebase (TBD)
+- **Database**: Core Data, Firebase
 
 ## 📌 Development Process
 - **Conceptualization**: Identifying student challenges in managing notes and brainstorming solutions.
