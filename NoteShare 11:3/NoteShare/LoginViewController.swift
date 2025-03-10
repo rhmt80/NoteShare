@@ -129,10 +129,10 @@ class LoginViewController: UIViewController {
                 return
             }
             
-            // Successful login
-            let collegeSelectionVC = CollegeSelectionViewController() // College selection screen
-            collegeSelectionVC.view.backgroundColor = .systemBackground
-            self?.navigationController?.setViewControllers([collegeSelectionVC], animated: true)
+            // Successful login, go to tab bar
+            if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                sceneDelegate.gototab()
+            }
         }
     }
     

@@ -2,7 +2,6 @@ import UIKit
 import SwiftUI
 import FirebaseAuth
 
-
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
@@ -12,25 +11,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
         
-        // Start with the login screen
-        let landingVC = LandingViewController()
-        let navigationController = UINavigationController(rootViewController: landingVC)
-        window?.rootViewController = navigationController
+        // Check authentication state
+        if let _ = Auth.auth().currentUser {
+            // User is logged in, go to the tab bar interface
+            gototab()
+        } else {
+            // User is not logged in, start with LandingViewController
+            let landingVC = LandingViewController()
+            let navigationController = UINavigationController(rootViewController: landingVC)
+            window?.rootViewController = navigationController
+        }
         
         window?.makeKeyAndVisible()
     }
-
-    
-    
-    func sceneDidDisconnect(_ scene: UIScene) {}
-    func sceneDidBecomeActive(_ scene: UIScene) {}
-    func sceneWillResignActive(_ scene: UIScene) {}
-    func sceneWillEnterForeground(_ scene: UIScene) {}
-    func sceneDidEnterBackground(_ scene: UIScene) {}
     
     func gototab() {
-        let MyNotesViewController = SavedViewController()
-        MyNotesViewController.tabBarItem = UITabBarItem(
+        let myNotesViewController = SavedViewController()
+        myNotesViewController.tabBarItem = UITabBarItem(
             title: "My Notes",
             image: UIImage(systemName: "book"),
             selectedImage: UIImage(systemName: "book.fill")
@@ -43,17 +40,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             image: UIImage(systemName: "apple.intelligence"),
             selectedImage: UIImage(systemName: "apple.intelligence.fill")
         )
-
-    
-        let SearchViewController = PDFListViewController()
-        SearchViewController.tabBarItem = UITabBarItem(
+        
+        let searchViewController = PDFListViewController()
+        searchViewController.tabBarItem = UITabBarItem(
             title: "Search",
             image: UIImage(systemName: "magnifyingglass"),
             selectedImage: UIImage(systemName: "magnifyingglass")
         )
         
-        let HomeViewController = HomeViewController()
-        HomeViewController.tabBarItem = UITabBarItem(
+        let homeViewController = HomeViewController()
+        homeViewController.tabBarItem = UITabBarItem(
             title: "Home",
             image: UIImage(systemName: "house"),
             selectedImage: UIImage(systemName: "house.fill")
@@ -61,13 +57,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [
-            UINavigationController(rootViewController: HomeViewController),
-            UINavigationController(rootViewController: MyNotesViewController),
-            UINavigationController(rootViewController: SearchViewController),
+            UINavigationController(rootViewController: homeViewController),
+            UINavigationController(rootViewController: myNotesViewController),
+            UINavigationController(rootViewController: searchViewController),
             UINavigationController(rootViewController: aiViewController)
         ]
         
-        // Rest of the method remains the same...
+        // Customize tab bar appearance
         let tabBar = tabBarController.tabBar
         tabBar.tintColor = .systemBlue
         tabBar.unselectedItemTintColor = .gray
@@ -91,4 +87,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window?.rootViewController = tabBarController
     }
+    
+    func sceneDidDisconnect(_ scene: UIScene) {}
+    func sceneDidBecomeActive(_ scene: UIScene) {}
+    func sceneWillResignActive(_ scene: UIScene) {}
+    func sceneWillEnterForeground(_ scene: UIScene) {}
+    func sceneDidEnterBackground(_ scene: UIScene) {}
 }
