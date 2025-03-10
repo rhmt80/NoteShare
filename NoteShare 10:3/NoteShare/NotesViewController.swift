@@ -47,6 +47,10 @@ class NotesViewController: UIViewController, UITableViewDataSource, UITableViewD
         tableView.dataSource = self
         tableView.delegate = self
 
+        // Spacing changes 
+        tableView.sectionHeaderHeight = 4 // You can adjust this value as needed
+        tableView.sectionFooterHeight = 4 // You can adjust this value as needed
+
         NSLayoutConstraint.activate([
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -58,7 +62,7 @@ class NotesViewController: UIViewController, UITableViewDataSource, UITableViewD
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-
+    
     func configure(with collegeNotes: [String: [FireNote]]) {
         self.groupedNotes = collegeNotes
         self.sectionTitles = Array(collegeNotes.keys).sorted()
