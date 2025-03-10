@@ -425,14 +425,26 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         ])
     }
     
+//    private func setupDelegates() {
+//        categoryPickerView.delegate = self
+//        categoryPickerView.dataSource = self
+////        categoryTextField.inputView = categoryPickerView
+////
+//        collegePickerView.delegate = self
+//        collegePickerView.dataSource = self
+//        collegePickerTextField.inputView = collegePickerView
+//    }
     private func setupDelegates() {
         categoryPickerView.delegate = self
         categoryPickerView.dataSource = self
-//        categoryTextField.inputView = categoryPickerView
-//
         collegePickerView.delegate = self
         collegePickerView.dataSource = self
-        collegePickerTextField.inputView = collegePickerView
+
+        // Set the text field delegates
+        courseCodeTextField.delegate = self
+        subjectNameTextField.delegate = self
+        fileNameTextField.delegate = self
+        collegePickerTextField.delegate = self
     }
     
     private func setupActions() {
@@ -584,7 +596,8 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
             }
         }
     }
-        
+
+
         @objc private func cancelButtonTapped() {
             dismiss(animated: true, completion: nil)
         }
@@ -620,6 +633,13 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
             present(alert, animated: true)
         }
     }
+extension UploadModalViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder() // Dismiss keyboard
+        return true
+    }
+}
+
 
 
     #Preview {
