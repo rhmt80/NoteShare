@@ -573,17 +573,40 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             return
         }
         
-        let storageRef = Storage.storage().reference().child("profile_images/\(user.uid).jpg")
+        // Use a nested path: profile_images/{userId}/{fileName}
+        let storageRef = Storage.storage().reference().child("profile_images/\(user.uid)/profile.jpg")
+        
+        // Show a loading indicator
+        let loadingAlert = UIAlertController(title: nil, message: "Uploading image...", preferredStyle: .alert)
+        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.style = .medium
+        loadingIndicator.startAnimating()
+        loadingAlert.view.addSubview(loadingIndicator)
+        present(loadingAlert, animated: true, completion: nil)
         
         storageRef.putData(imageData, metadata: nil) { metadata, error in
-            if let error = error {
-                print("Error uploading image: \(error.localizedDescription)")
-                return
-            }
-            
-            storageRef.downloadURL { url, error in
-                if let downloadURL = url {
-                    self.savePhotoURLToFirestore(downloadURL.absoluteString)
+            DispatchQueue.main.async {
+                self.dismiss(animated: true) {
+                    if let error = error {
+                        let alert = UIAlertController(title: "Error", message: "Failed to upload image: \(error.localizedDescription)", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+                        self.present(alert, animated: true)
+                        return
+                    }
+                    
+                    storageRef.downloadURL { url, error in
+                        if let error = error {
+                            let alert = UIAlertController(title: "Error", message: "Failed to get image URL: \(error.localizedDescription)", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .default))
+                            self.present(alert, animated: true)
+                            return
+                        }
+                        
+                        if let downloadURL = url {
+                            self.savePhotoURLToFirestore(downloadURL.absoluteString)
+                        }
+                    }
                 }
             }
         }
@@ -598,6 +621,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         db.collection("users").document(user.uid).setData(["photoURL": photoURL], merge: true) { error in
             if let error = error {
                 print("Error saving photo URL: \(error.localizedDescription)")
+                // Optionally show an alert to the user
+                let alert = UIAlertController(title: "Error", message: "Failed to save photo URL: \(error.localizedDescription)", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                DispatchQueue.main.async {
+                    self.present(alert, animated: true)
+                }
             } else {
                 print("Photo URL saved successfully")
             }
