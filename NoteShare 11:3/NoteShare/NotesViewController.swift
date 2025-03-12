@@ -47,7 +47,7 @@ class NotesViewController: UIViewController, UITableViewDataSource, UITableViewD
         tableView.dataSource = self
         tableView.delegate = self
 
-        // Spacing changes 
+        // Spacing changes
         tableView.sectionHeaderHeight = 4 // You can adjust this value as needed
         tableView.sectionFooterHeight = 4 // You can adjust this value as needed
 

@@ -562,7 +562,7 @@ class NoteCollectionViewCell: UICollectionViewCell {
     private func updateFavoriteButtonImage() {
         let image = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
         favoriteButton.setImage(image, for: .normal)
-        favoriteButton.tintColor = isFavorite ? .systemBlue : .systemGray 
+        favoriteButton.tintColor = isFavorite ? .systemBlue : .systemGray
     }
     
     // Favorite button pressed

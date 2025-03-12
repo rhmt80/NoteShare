@@ -26,5 +26,7 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:803057469692:ios:5bbaa7b342f7bf1cda2f79</string>
+	<key>DATABASE_URL</key>
+	<string>https://noteshare-13-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

@@ -1,4 +1,3 @@
-
 import FirebaseAuth
 import UIKit
 import Firebase
@@ -7,9 +6,6 @@ import FirebaseStorage
 import PhotosUI
 
 class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    // MARK: - UI Components
-    
     private let backButton: UIButton = {
             let button = UIButton(type: .system)
             let image = UIImage(systemName: "chevron.left")
@@ -19,10 +15,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             button.titleLabel?.font = .systemFont(ofSize: 17)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.semanticContentAttribute = .forceLeftToRight
-            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0,right:0)
             return button
         }()
-        
         private var selectedInterests: [String] = [] {
             didSet {
                 updateSelectedInterestsUI()
@@ -461,10 +456,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 self.educationLabel.text = "\(data?["course"] as? String ?? "No Course") Branch"
                 
                 self.institutionLabel.text = "\(data?["college"] as? String ?? "No College")"
-                
-//                self.institutionLabel.text = "\(data?["college"] as? String ?? "No College") , Year : \(data?["year"] as? Int ?? 0)"
-                
-                // Fetch interests
                 if let interests = data?["interests"] as? [String] {
                     self.selectedInterests = interests
                 }
@@ -537,18 +528,52 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         signOutButton.addTarget(self, action: #selector(signOutTapped), for: .touchUpInside)
     }
     
+//    @objc private func signOutTapped() {
+//        do {
+//            try Auth.auth().signOut()
+//            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+//               let window = windowScene.windows.first {
+//                window.rootViewController = LandingViewController()
+//                window.makeKeyAndVisible()
+//            }
+//        } catch {
+//            print("Error signing out: \(error.localizedDescription)")
+//        }
+//    }
     @objc private func signOutTapped() {
-        do {
-            try Auth.auth().signOut()
-            // Navigate back to the login screen or root view controller
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first {
-                window.rootViewController = LandingViewController() // Replace with your login view controller
-                window.makeKeyAndVisible()
+        // Show an alert to confirm sign out
+        let alert = UIAlertController(title: "Sign Out", message: "Are you sure you want to sign out?", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        alert.addAction(UIAlertAction(title: "Sign Out", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            
+            do {
+                try Auth.auth().signOut()
+                
+                // Navigate to the authentication screen
+                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                    sceneDelegate.showLoginScreen()
+                } else {
+                    // Fallback for older iOS versions or if SceneDelegate isn't available
+                    let landingVC = LandingViewController()
+                    let navController = UINavigationController(rootViewController: landingVC)
+                    navController.modalPresentationStyle = .fullScreen
+                    
+                    self.present(navController, animated: true)
+                }
+            } catch {
+                print("Error signing out: \(error.localizedDescription)")
+                
+                // Show error alert
+                let errorAlert = UIAlertController(title: "Error", message: "Failed to sign out: \(error.localizedDescription)", preferredStyle: .alert)
+                errorAlert.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(errorAlert, animated: true)
             }
-        } catch {
-            print("Error signing out: \(error.localizedDescription)")
-        }
+        })
+        
+        present(alert, animated: true)
     }
    
     
