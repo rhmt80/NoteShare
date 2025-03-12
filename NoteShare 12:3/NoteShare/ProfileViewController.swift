@@ -528,20 +528,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         signOutButton.addTarget(self, action: #selector(signOutTapped), for: .touchUpInside)
     }
     
-//    @objc private func signOutTapped() {
-//        do {
-//            try Auth.auth().signOut()
-//            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-//               let window = windowScene.windows.first {
-//                window.rootViewController = LandingViewController()
-//                window.makeKeyAndVisible()
-//            }
-//        } catch {
-//            print("Error signing out: \(error.localizedDescription)")
-//        }
-//    }
+
     @objc private func signOutTapped() {
-        // Show an alert to confirm sign out
         let alert = UIAlertController(title: "Sign Out", message: "Are you sure you want to sign out?", preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
@@ -551,22 +539,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             
             do {
                 try Auth.auth().signOut()
+                UserDefaults.standard.set(false, forKey: "isUserLoggedIn") // Reset login state
                 
-                // Navigate to the authentication screen
                 if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
                     sceneDelegate.showLoginScreen()
-                } else {
-                    // Fallback for older iOS versions or if SceneDelegate isn't available
-                    let landingVC = LandingViewController()
-                    let navController = UINavigationController(rootViewController: landingVC)
-                    navController.modalPresentationStyle = .fullScreen
-                    
-                    self.present(navController, animated: true)
                 }
             } catch {
                 print("Error signing out: \(error.localizedDescription)")
-                
-                // Show error alert
                 let errorAlert = UIAlertController(title: "Error", message: "Failed to sign out: \(error.localizedDescription)", preferredStyle: .alert)
                 errorAlert.addAction(UIAlertAction(title: "OK", style: .default))
                 self.present(errorAlert, animated: true)
