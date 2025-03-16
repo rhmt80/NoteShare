@@ -2,7 +2,6 @@ import UIKit
 import FirebaseAuth
 
 class LoginViewController: UIViewController {
-    
     private let logoLabel: UILabel = {
         let label = UILabel()
         label.text = "NoteShare"

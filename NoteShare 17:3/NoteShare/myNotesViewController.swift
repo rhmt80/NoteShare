@@ -940,92 +940,88 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupUI() {
-            view.backgroundColor = .systemBackground
-            
-            // Add fixed header elements directly to the view
-            [titleLabel, addNoteButton, scanButton, searchBar].forEach {
-                view.addSubview($0)
-            }
-            
-            // Add scroll view for content
-            view.addSubview(scrollView)
-            scrollView.addSubview(contentView)
-            
-            // Add scrollable content to contentView
-            [favoriteNotesLabel, favoriteNotesCollectionView,
-             curatedNotesLabel, curatedNotesCollectionView].forEach {
-                contentView.addSubview($0)
-            }
-            
-            // Add search results table view to main view
-            view.addSubview(searchResultsTableView)
-            curatedNotesCollectionView.addSubview(activityIndicator)
-            
-            NSLayoutConstraint.activate([
-                // Fixed Header Elements
-                titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-                titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                
-                addNoteButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-                addNoteButton.trailingAnchor.constraint(equalTo: scanButton.leadingAnchor, constant: -16),
-                addNoteButton.widthAnchor.constraint(equalToConstant: 30),
-                addNoteButton.heightAnchor.constraint(equalToConstant: 30),
-                
-                scanButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-                scanButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-                scanButton.widthAnchor.constraint(equalToConstant: 30),
-                scanButton.heightAnchor.constraint(equalToConstant: 30),
-                
-                searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-                searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                
-                // ScrollView
-                scrollView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
-                scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                
-                // ContentView
-                contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-                contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-                contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-                contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-                contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-                
-                // Scrollable Content
-                favoriteNotesLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-                favoriteNotesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-                
-                favoriteNotesCollectionView.topAnchor.constraint(equalTo: favoriteNotesLabel.bottomAnchor, constant: 16),
-                favoriteNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                favoriteNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                favoriteNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
-                
-                curatedNotesLabel.topAnchor.constraint(equalTo: favoriteNotesCollectionView.bottomAnchor, constant: 24),
-                curatedNotesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-                
-                curatedNotesCollectionView.topAnchor.constraint(equalTo: curatedNotesLabel.bottomAnchor, constant: 16),
-                curatedNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                curatedNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                curatedNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
-                curatedNotesCollectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
-                
-                // Search Results Table View
-                searchResultsTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
-                searchResultsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                searchResultsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                searchResultsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                
-                // Activity Indicator
-                activityIndicator.centerXAnchor.constraint(equalTo: curatedNotesCollectionView.centerXAnchor),
-                activityIndicator.centerYAnchor.constraint(equalTo: curatedNotesCollectionView.centerYAnchor)
-            ])
-            
-            // Add actions to buttons
-            addNoteButton.addTarget(self, action: #selector(addNoteTapped), for: .touchUpInside)
-            scanButton.addTarget(self, action: #selector(moreOptionsTapped), for: .touchUpInside)
+        view.backgroundColor = .systemBackground
+        
+        // Add fixed header elements directly to the view
+        [titleLabel, addNoteButton, scanButton, searchBar].forEach {
+            view.addSubview($0)
         }
+        
+        // Add scroll view for content
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        // Add scrollable content to contentView
+        [favoriteNotesLabel, favoriteNotesCollectionView,
+         curatedNotesLabel, curatedNotesCollectionView].forEach {
+            contentView.addSubview($0)
+        }
+        
+        // Add search results table view to main view
+        view.addSubview(searchResultsTableView)
+        curatedNotesCollectionView.addSubview(activityIndicator)
+        
+        NSLayoutConstraint.activate([
+            // Fixed Header Elements
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16), // Already consistent
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            addNoteButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+            addNoteButton.trailingAnchor.constraint(equalTo: scanButton.leadingAnchor, constant: -16),
+            addNoteButton.widthAnchor.constraint(equalToConstant: 30),
+            addNoteButton.heightAnchor.constraint(equalToConstant: 30),
+            
+            scanButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+            scanButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            scanButton.widthAnchor.constraint(equalToConstant: 30),
+            scanButton.heightAnchor.constraint(equalToConstant: 30),
+            
+            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            // ScrollView and other constraints remain unchanged
+            scrollView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            favoriteNotesLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            favoriteNotesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            
+            favoriteNotesCollectionView.topAnchor.constraint(equalTo: favoriteNotesLabel.bottomAnchor, constant: 16),
+            favoriteNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            favoriteNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            favoriteNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
+            
+            curatedNotesLabel.topAnchor.constraint(equalTo: favoriteNotesCollectionView.bottomAnchor, constant: 24),
+            curatedNotesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            
+            curatedNotesCollectionView.topAnchor.constraint(equalTo: curatedNotesLabel.bottomAnchor, constant: 16),
+            curatedNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            curatedNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            curatedNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
+            curatedNotesCollectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            
+            searchResultsTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+            searchResultsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            searchResultsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            searchResultsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: curatedNotesCollectionView.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: curatedNotesCollectionView.centerYAnchor)
+        ])
+        
+        // Add actions to buttons
+        addNoteButton.addTarget(self, action: #selector(addNoteTapped), for: .touchUpInside)
+        scanButton.addTarget(self, action: #selector(moreOptionsTapped), for: .touchUpInside)
+    }
     
     private func fetchCuratedNotes() {
             guard let userID = Auth.auth().currentUser?.uid else {

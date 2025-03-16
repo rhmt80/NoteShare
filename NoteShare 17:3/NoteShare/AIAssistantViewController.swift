@@ -52,7 +52,6 @@ class AIPageViewController: ObservableObject {
         isLoading = true
         print("Downloading PDF from URL: \(url.absoluteString)")
         
-        // Normalize URL to avoid issues with special characters
         let normalizedURL = url.absoluteString.removingPercentEncoding.flatMap { URL(string: $0) } ?? url
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let localURL = documentsPath.appendingPathComponent(normalizedURL.lastPathComponent)
@@ -64,18 +63,13 @@ class AIPageViewController: ObservableObject {
                 guard let self = self else { return }
                 print("Setting selectedPDF to cached file at: \(localURL.path)")
                 self.selectedPDF = localURL
-                
-                // Ensure pdfText is loaded if not already available
                 if self.pdfText == nil || self.pdfText?.isEmpty == true {
                     if let document = PDFDocument(url: localURL) {
                         self.extractTextFromPDF(document: document)
                         print("Extracted text from cached PDF: \(self.pdfText?.count ?? 0) characters")
                     }
                 }
-                
                 self.isLoading = false
-                
-                // Verify the PDF was properly set
                 if self.selectedPDF == nil {
                     print("Warning: selectedPDF is still nil after setting to cached file")
                 } else {
@@ -84,8 +78,6 @@ class AIPageViewController: ObservableObject {
             }
             return
         }
-        
-        // File doesn't exist locally, download it
         let task = URLSession.shared.downloadTask(with: normalizedURL) { [weak self] tempFileURL, response, error in
             guard let self = self else {
                 print("Self was deallocated during PDF download")
@@ -235,6 +227,14 @@ class AIPageViewController: ObservableObject {
                     let thumbnail = page.thumbnail(of: CGSize(width: 200, height: 300), for: .cropBox)
                     DispatchQueue.main.async {
                         self.pdfPages.append(thumbnail)
+                        
+                        // Set the first page as the thumbnail for the selected PDF metadata
+                        if i == 0 && self.selectedPDFMetadata != nil {
+                            var updatedMetadata = self.selectedPDFMetadata!
+                            updatedMetadata.thumbnail = thumbnail
+                            self.selectedPDFMetadata = updatedMetadata
+                            print("Set first page as thumbnail for selected PDF")
+                        }
                     }
                 }
             }
@@ -452,6 +452,7 @@ class AIPageViewController: ObservableObject {
     private func downloadPDFThumbnail(from url: URL, completion: @escaping (UIImage?) -> Void) {
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, error == nil else {
+                print("Error downloading PDF for thumbnail: \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil)
                 return
             }
@@ -462,15 +463,47 @@ class AIPageViewController: ObservableObject {
             do {
                 try data.write(to: tempURL)
                 if let document = PDFDocument(url: tempURL), let page = document.page(at: 0) {
-                    let thumbnail = page.thumbnail(of: CGSize(width: 100, height: 130), for: .cropBox)
-                    completion(thumbnail)
+                    // Generate a higher quality thumbnail
+                    let size = CGSize(width: 300, height: 400)
+                    
+                    // Get initial thumbnail from PDF page
+                    let initialThumbnail = page.thumbnail(of: size, for: .cropBox)
+                    
+                    // Improve rendering quality with UIGraphics
+                    UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+                    if let context = UIGraphicsGetCurrentContext() {
+                        // Fill background with white
+                        context.setFillColor(UIColor.white.cgColor)
+                        context.fill(CGRect(origin: .zero, size: size))
+                        
+                        // Draw the PDF page
+                        initialThumbnail.draw(in: CGRect(origin: .zero, size: size))
+                        
+                        if let finalImage = UIGraphicsGetImageFromCurrentImageContext() {
+                            UIGraphicsEndImageContext()
+                            
+                            // Cache the result for future use
+                            let pdfID = url.lastPathComponent
+                            ThumbnailCache.shared.storeThumbnail(finalImage, for: pdfID)
+                            
+                            completion(finalImage)
+                        } else {
+                            UIGraphicsEndImageContext()
+                            completion(initialThumbnail) // Fallback to initial thumbnail
+                        }
+                    } else {
+                        UIGraphicsEndImageContext()
+                        completion(initialThumbnail) // Fallback to initial thumbnail
+                    }
                 } else {
+                    print("Failed to create PDF document or get first page")
                     completion(nil)
                 }
                 
                 // Clean up the temporary file
                 try? FileManager.default.removeItem(at: tempURL)
             } catch {
+                print("Error processing PDF for thumbnail: \(error.localizedDescription)")
                 completion(nil)
             }
         }.resume()
@@ -994,19 +1027,42 @@ struct PDFPreviewView: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            if let thumbnail = metadata.thumbnail {
-                Image(uiImage: thumbnail)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 35, height: 45)
-                    .cornerRadius(6)
-                    .shadow(radius: 1)
+            ZStack {
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color(.systemGray5))
+                    .frame(width: 45, height: 60)
+                
+                if let thumbnail = metadata.thumbnail {
+                    Image(uiImage: thumbnail)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 45, height: 60)
+                        .cornerRadius(6)
+                        .shadow(radius: 1)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
+                        )
+                        .onTapGesture { showFullScreenPDF = true }
+                } else {
+                    // Fallback if no thumbnail is available
+                    VStack(spacing: 2) {
+                        Image(systemName: "doc.text.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(.blue.opacity(0.7))
+                        
+                        Text("PDF")
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                    }
                     .onTapGesture { showFullScreenPDF = true }
+                }
             }
+            .frame(width: 45, height: 60)
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(metadata.fileName)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 15, weight: .medium))
                     .lineLimit(1)
                 
                 Text("\(metadata.subjectName) • \(formatFileSize(metadata.fileSize))")
@@ -1023,11 +1079,11 @@ struct PDFPreviewView: View {
             }
         }
         .padding(.horizontal)
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
         .background(
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: 12)
                 .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.05), radius: 3)
+                .shadow(color: .black.opacity(0.08), radius: 3)
         )
         .padding(.horizontal)
         .padding(.vertical, 4)
@@ -1605,13 +1661,13 @@ struct PDFSelectionView: View {
                             
                             // Section header
                             HStack {
-                                Text("Available PDFs")
+                                Text("Available Notes")
                                     .font(.headline)
                                     .foregroundColor(.primary)
                                 
                                 Spacer()
                                 
-                                Text("\(pdfs.count) PDFs")
+                                Text("\(pdfs.count) Notes")
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                             }
@@ -1641,7 +1697,7 @@ struct PDFSelectionView: View {
                     }
                 }
             }
-            .navigationTitle("Select PDF")
+            .navigationTitle("Select Notes")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -1654,14 +1710,14 @@ struct PDFSelectionView: View {
                     }
                 }
             }
-            .searchable(text: $searchText, prompt: "Search PDFs")
+            .searchable(text: $searchText, prompt: "Search Notes")
             .onAppear {
                 directFetchPDFs()
             }
             .alert(isPresented: $showingLoginPrompt) {
                 Alert(
                     title: Text("Login Required"),
-                    message: Text("You need to be logged in to access your PDFs. Please sign in to continue."),
+                    message: Text("You need to be logged in to access your Notes. Please sign in to continue."),
                     dismissButton: .default(Text("OK")) {
                         dismiss()
                     }
@@ -1714,7 +1770,7 @@ struct PDFSelectionView: View {
                     }
                 }
             
-            Text("Loading PDFs...")
+            Text("Loading Notes...")
                 .font(.headline)
                 .foregroundColor(.secondary)
         }
@@ -1726,7 +1782,7 @@ struct PDFSelectionView: View {
                 .font(.system(size: 50))
                 .foregroundColor(.red)
             
-            Text("Error Loading PDFs")
+            Text("Error Loading Notes")
                 .font(.title3)
                 .bold()
             
@@ -1762,11 +1818,11 @@ struct PDFSelectionView: View {
                     LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
                 )
             
-            Text("No PDFs Found")
+            Text("No Notes Found")
                 .font(.title3)
                 .bold()
             
-            Text("No PDFs are available in the database.\nPlease contact an administrator to add PDFs.")
+            Text("No Notes are available in the database.\nPlease contact an administrator to add Notes.")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -2067,9 +2123,17 @@ struct PDFSelectionView: View {
                 
                 // Generate high-quality thumbnail from the PDF
                 if let document = PDFDocument(url: tempURL), let page = document.page(at: 0) {
-                    // Generate a larger thumbnail for higher quality
-                    let size = CGSize(width: 600, height: 800)
-                    let thumbnailBox = PDFDisplayBox.cropBox  // Use cropBox for better results
+                    // Get the actual page size for better aspect ratio calculation
+                    let pageRect = page.bounds(for: .cropBox)
+                    let aspectRatio = pageRect.width / pageRect.height
+                    
+                    // Size that maintains aspect ratio but provides good quality
+                    let height: CGFloat = 800
+                    let width = height * aspectRatio
+                    let size = CGSize(width: width, height: height)
+                    
+                    // Use mediaBox for better full-page coverage
+                    let thumbnailBox = PDFDisplayBox.mediaBox
                     
                     // Get high-quality thumbnail
                     let highQualThumb = page.thumbnail(of: size, for: thumbnailBox)
@@ -2090,11 +2154,14 @@ struct PDFSelectionView: View {
                                     var updatedPDF = self.pdfs[index]
                                     updatedPDF.thumbnail = finalImage
                                     self.pdfs[index] = updatedPDF
+                                    print("Successfully set thumbnail for \(pdf.fileName)")
                                 }
                             }
                         }
                     }
                     UIGraphicsEndImageContext()
+                } else {
+                    print("Failed to create PDF document or get first page for \(pdf.fileName)")
                 }
                 
                 // Clean up
@@ -2135,27 +2202,32 @@ struct PDFCard: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color(.systemGray5))
-                    .frame(width: 60, height: 80)
+                    .frame(width: 70, height: 90)
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                 
                 if let thumbnail = pdf.thumbnail {
                     Image(uiImage: thumbnail)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 60, height: 80)
+                        .frame(width: 70, height: 90)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 1)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
+                        )
                 } else {
                     // Show a nice placeholder with PDF icon
                     ZStack {
                         if isImageLoading {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle())
-                                .scaleEffect(0.7)
+                                .scaleEffect(0.8)
                         } else {
                             VStack(spacing: 4) {
                                 Image(systemName: "doc.text.fill")
-                                    .font(.system(size: 24))
-                                    .foregroundColor(.gray.opacity(0.8))
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.blue.opacity(0.7))
                                 
                                 Text("PDF")
                                     .font(.caption2)
@@ -2179,7 +2251,7 @@ struct PDFCard: View {
                     }
                 }
             }
-            .frame(width: 60, height: 80)
+            .frame(width: 70, height: 90)
             
             // Info
             VStack(alignment: .leading, spacing: 6) {
@@ -2302,8 +2374,6 @@ struct AdvancedChatView_Previews: PreviewProvider {
         AdvancedChatView()
     }
 }
-
-// Move extension to file scope
 extension DispatchQueue {
     static func ensureMainThread(_ block: @escaping () -> Void) {
         if Thread.isMainThread {

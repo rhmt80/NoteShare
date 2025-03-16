@@ -1,5 +1,7 @@
 import UIKit
+import Foundation
 import PDFKit
+import MobileCoreServices
 import FirebaseStorage
 import FirebaseFirestore
 import FirebaseAuth
@@ -92,34 +94,12 @@ class PDFListViewController: UIViewController {
         return collectionView
     }()
     
-    private let searchContainerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        view.layer.cornerRadius = 10
-        view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.systemGray4.cgColor
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    private let searchIconView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "magnifyingglass")
-        imageView.tintColor = .systemGray
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-    
-    private let searchTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Search notes by title, subject, or code"
-        textField.font = .systemFont(ofSize: 16)
-        textField.clearButtonMode = .whileEditing
-        textField.returnKeyType = .search
-        textField.backgroundColor = .clear
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
+    private let searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "Search notes by title, subject, or code"
+        searchBar.searchBarStyle = .minimal
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        return searchBar
     }()
     
     private let headerView: UIView = {
@@ -242,13 +222,9 @@ class PDFListViewController: UIViewController {
         headerView.addSubview(titleLabel)
         headerView.addSubview(subtitleLabel)
         
-        // Setup search container
-        searchContainerView.addSubview(searchIconView)
-        searchContainerView.addSubview(searchTextField)
-        view.addSubview(searchContainerView)
-        
-        // Setup search text field delegate
-        searchTextField.delegate = self
+        // Setup search bar
+        view.addSubview(searchBar)
+        searchBar.delegate = self
         
         // Setup collection view
         collectionView.delegate = self
@@ -303,26 +279,13 @@ class PDFListViewController: UIViewController {
             subtitleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
             subtitleLabel.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -8),
             
-            // Search container
-            searchContainerView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 8),
-            searchContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            searchContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchContainerView.heightAnchor.constraint(equalToConstant: 44),
-            
-            // Search icon
-            searchIconView.leadingAnchor.constraint(equalTo: searchContainerView.leadingAnchor, constant: 12),
-            searchIconView.centerYAnchor.constraint(equalTo: searchContainerView.centerYAnchor),
-            searchIconView.widthAnchor.constraint(equalToConstant: 20),
-            searchIconView.heightAnchor.constraint(equalToConstant: 20),
-            
-            // Search text field
-            searchTextField.leadingAnchor.constraint(equalTo: searchIconView.trailingAnchor, constant: 8),
-            searchTextField.trailingAnchor.constraint(equalTo: searchContainerView.trailingAnchor, constant: -12),
-            searchTextField.topAnchor.constraint(equalTo: searchContainerView.topAnchor),
-            searchTextField.bottomAnchor.constraint(equalTo: searchContainerView.bottomAnchor),
+            // Search bar
+            searchBar.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 8),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
             
             // Collection view - reduced top space
-            collectionView.topAnchor.constraint(equalTo: searchContainerView.bottomAnchor, constant: 10),
+            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -733,6 +696,32 @@ class PDFCollectionViewCell1: UICollectionViewCell {
         return label
     }()
     
+    private let pageCountBadge: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(red: 0.1, green: 0.4, blue: 0.9, alpha: 1.0)
+        view.layer.cornerRadius = 10
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private let pageCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 11, weight: .medium)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let pageIconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "doc.text")
+        imageView.tintColor = .white
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -748,6 +737,11 @@ class PDFCollectionViewCell1: UICollectionViewCell {
         [coverImageView, titleLabel, authorLabel, descriptionLabel].forEach {
             containerView.addSubview($0)
         }
+        
+        // Setup page count badge
+        pageCountBadge.addSubview(pageIconImageView)
+        pageCountBadge.addSubview(pageCountLabel)
+        containerView.addSubview(pageCountBadge)
         
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3),
@@ -771,7 +765,23 @@ class PDFCollectionViewCell1: UICollectionViewCell {
             descriptionLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 3),
             descriptionLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 12),
             descriptionLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -12),
-            descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: containerView.bottomAnchor, constant: -10)
+            descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: containerView.bottomAnchor, constant: -10),
+            
+            // Page count badge constraints
+            pageCountBadge.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
+            pageCountBadge.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+            pageCountBadge.heightAnchor.constraint(equalToConstant: 22),
+            
+            // Page icon constraints
+            pageIconImageView.leadingAnchor.constraint(equalTo: pageCountBadge.leadingAnchor, constant: 6),
+            pageIconImageView.centerYAnchor.constraint(equalTo: pageCountBadge.centerYAnchor),
+            pageIconImageView.widthAnchor.constraint(equalToConstant: 12),
+            pageIconImageView.heightAnchor.constraint(equalToConstant: 12),
+            
+            // Page count label constraints
+            pageCountLabel.leadingAnchor.constraint(equalTo: pageIconImageView.trailingAnchor, constant: 2),
+            pageCountLabel.trailingAnchor.constraint(equalTo: pageCountBadge.trailingAnchor, constant: -6),
+            pageCountLabel.centerYAnchor.constraint(equalTo: pageCountBadge.centerYAnchor)
         ])
     }
     
@@ -813,6 +823,8 @@ class PDFCollectionViewCell1: UICollectionViewCell {
         titleLabel.text = nil
         authorLabel.text = nil
         descriptionLabel.text = nil
+        pageCountLabel.text = nil
+        pageCountBadge.isHidden = true
     }
     
     func configure(with pdf: (url: URL, fileName: String, subjectName: String, subjectCode: String, fileSize: Int, thumbnail: UIImage?)) {
@@ -830,6 +842,29 @@ class PDFCollectionViewCell1: UICollectionViewCell {
             let config = UIImage.SymbolConfiguration(pointSize: 45, weight: .regular)
             coverImageView.image = UIImage(systemName: "doc.richtext", withConfiguration: config)
             coverImageView.tintColor = .systemBlue.withAlphaComponent(0.8)
+        }
+        
+        // Get page count from PDF document
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            if let document = PDFDocument(url: pdf.url) {
+                let pageCount = document.pageCount
+                DispatchQueue.main.async {
+                    self.pageCountLabel.text = "\(pageCount)"
+                    self.pageCountBadge.isHidden = false
+                    
+                    // Adjust width based on number of pages (more digits need more space)
+                    let widthMultiplier = pageCount > 99 ? 3.0 : (pageCount > 9 ? 2.5 : 2.0)
+                    let badgeWidth = 12 + (widthMultiplier * 10) // icon width + text space
+                    NSLayoutConstraint.activate([
+                        self.pageCountBadge.widthAnchor.constraint(equalToConstant: badgeWidth)
+                    ])
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.pageCountBadge.isHidden = true
+                }
+            }
         }
     }
     
@@ -895,24 +930,14 @@ class PDFDownloaderService: NSObject, PDFDownloader {
     }
 }
 
-// MARK: - UITextField Delegate
-extension PDFListViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
+// MARK: - UISearchBar Delegate
+extension PDFListViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        filterContent(with: searchText)
     }
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let stringRange = Range(range, in: currentText) else { return false }
-        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-        
-        filterContent(with: updatedText)
-        return true
-    }
-    
-    func textFieldDidChangeSelection(_ textField: UITextField) {
-        filterContent(with: textField.text ?? "")
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
     
     private func filterContent(with searchText: String) {

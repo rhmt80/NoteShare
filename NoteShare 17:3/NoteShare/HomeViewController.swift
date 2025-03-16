@@ -417,11 +417,11 @@ class NoteCollectionViewCell: UICollectionViewCell {
     private let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
-        view.layer.cornerRadius = 12
+        view.layer.cornerRadius = 10
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
-        view.layer.shadowRadius = 4
-        view.layer.shadowOpacity = 0.1
+        view.layer.shadowRadius = 6
+        view.layer.shadowOpacity = 0.05
         view.clipsToBounds = false // Allow shadow to show, but we'll clip subviews separately
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -568,7 +568,7 @@ class NoteCollectionViewCell: UICollectionViewCell {
                 coverImageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
                 coverImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
                 coverImageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-                coverImageView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.6),
+                coverImageView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.65),
                 
                 // Title label
                 titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: 8),
@@ -866,9 +866,9 @@ class HomeViewController: UIViewController {
             let layout = UICollectionViewFlowLayout()
             layout.scrollDirection = .horizontal
             layout.itemSize = CGSize(width: 250, height: 150) // Increased height to 150
-            layout.minimumInteritemSpacing = 8
-            layout.minimumLineSpacing = 8
-            layout.sectionInset = UIEdgeInsets(top: 5, left: 16, bottom: 5, right: 16)
+            layout.minimumInteritemSpacing = 20
+            layout.minimumLineSpacing = 16
+            layout.sectionInset = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
             
             let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
             collectionView.backgroundColor = .clear
@@ -1228,6 +1228,11 @@ extension HomeViewController: UICollectionViewDataSource {
             }
         }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = collectionView.bounds.width * 0.7
+        return CGSize(width: width, height: 300)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == notesCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: noteReuseIdentifier, for: indexPath) as! NoteCollectionViewCell
@@ -1276,6 +1281,15 @@ extension HomeViewController: UICollectionViewDataSource {
 
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if let cell = collectionView.cellForItem(at: indexPath) {
+                UIView.animate(withDuration: 0.1, animations: {
+                    cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+                }) { _ in
+                    UIView.animate(withDuration: 0.1) {
+                        cell.transform = .identity
+                    }
+                }
+            }
             if collectionView == collegesCollectionView {
                 let selectedCollege = colleges[indexPath.item]
                 activityIndicator.startAnimating()
