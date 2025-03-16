@@ -393,6 +393,7 @@ class NoteCollectionViewCell1: UICollectionViewCell {
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
         view.layer.shadowRadius = 4
         view.layer.shadowOpacity = 0.1
+        view.clipsToBounds = false // Allow shadow, but we'll constrain subviews
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -410,7 +411,10 @@ class NoteCollectionViewCell1: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.numberOfLines = 2
+        label.numberOfLines = 2 // Allow up to 2 lines for long titles
+        label.lineBreakMode = .byTruncatingTail // Truncate if still too long
+        label.adjustsFontSizeToFitWidth = true // Dynamically adjust font size
+        label.minimumScaleFactor = 0.75 // Minimum font scale
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -483,28 +487,34 @@ class NoteCollectionViewCell1: UICollectionViewCell {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
+            // Container view
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             
+            // Cover image view
             coverImageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
             coverImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
             coverImageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
             coverImageView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.6),
             
+            // Title label
             titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: 8),
             titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
             titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
             
-            detailsStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12), // Increased to match original spacing (was 8+4 from title to author to details)
+            // Details stack view
+            detailsStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
             detailsStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            detailsStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+            detailsStackView.trailingAnchor.constraint(equalTo: favoriteButton.leadingAnchor, constant: -8), // Adjusted to respect favorite button
             
-            favoriteButton.topAnchor.constraint(equalTo: detailsStackView.bottomAnchor, constant: 8), // Restored to original spacing
-            favoriteButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -12), // Consistent spacing
-            favoriteButton.widthAnchor.constraint(equalToConstant: 24), // Consistent size
-            favoriteButton.heightAnchor.constraint(equalToConstant: 24) // Consistent size
+            // Favorite button
+            favoriteButton.centerYAnchor.constraint(equalTo: detailsStackView.centerYAnchor),
+            favoriteButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+            favoriteButton.widthAnchor.constraint(equalToConstant: 24),
+            favoriteButton.heightAnchor.constraint(equalToConstant: 24),
+            favoriteButton.bottomAnchor.constraint(lessThanOrEqualTo: containerView.bottomAnchor, constant: -8) // Ensure it stays within bounds
         ])
     }
     
@@ -512,7 +522,7 @@ class NoteCollectionViewCell1: UICollectionViewCell {
     private func updateFavoriteButtonImage() {
         let image = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
         favoriteButton.setImage(image, for: .normal)
-        favoriteButton.tintColor = isFavorite ? .systemBlue : .systemGray // Blue for filled heart
+        favoriteButton.tintColor = isFavorite ? .systemBlue : .systemGray
     }
     
     // Favorite button pressed
@@ -545,6 +555,9 @@ class NoteCollectionViewCell1: UICollectionViewCell {
         UIView.animate(withDuration: 0.3) {
             self.coverImageView.alpha = 1
         }
+        
+        // Force layout update
+        layoutIfNeeded()
     }
 }
 
@@ -652,6 +665,53 @@ class PDFCollectionViewCell: UICollectionViewCell {
 
 
 class SavedViewController: UIViewController, UIScrollViewDelegate {
+    // MARK: - Previously Read Notes Storage
+    struct PreviouslyReadNote {
+        let id: String
+        let title: String
+        let pdfUrl: String
+        let lastOpened: Date
+    }
+
+    // MARK: - Previously Read Notes Storage
+        private func savePreviouslyReadNote(_ note: PreviouslyReadNote) {
+            guard let userId = Auth.auth().currentUser?.uid else { return }
+            var history = loadPreviouslyReadNotes()
+            
+            history.removeAll { $0.id == note.id }
+            history.append(note)
+            history.sort { $0.lastOpened > $1.lastOpened }
+            if history.count > 5 {
+                history = Array(history.prefix(5))
+            }
+            
+            let historyData = history.map { [
+                "id": $0.id,
+                "title": $0.title,
+                "pdfUrl": $0.pdfUrl,
+                "lastOpened": $0.lastOpened.timeIntervalSince1970 // Convert Date to TimeInterval
+            ]}
+            UserDefaults.standard.set(historyData, forKey: "previouslyReadNotes_\(userId)")
+            
+            NotificationCenter.default.post(name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
+        }
+
+        private func loadPreviouslyReadNotes() -> [PreviouslyReadNote] {
+            guard let userId = Auth.auth().currentUser?.uid else { return [] }
+            guard let historyData = UserDefaults.standard.array(forKey: "previouslyReadNotes_\(userId)") as? [[String: Any]] else {
+                return []
+            }
+            
+            return historyData.compactMap { dict in
+                guard let id = dict["id"] as? String,
+                      let title = dict["title"] as? String,
+                      let pdfUrl = dict["pdfUrl"] as? String,
+                      let lastOpenedTimestamp = dict["lastOpened"] as? TimeInterval else { return nil }
+                
+                return PreviouslyReadNote(id: id, title: title, pdfUrl: pdfUrl, lastOpened: Date(timeIntervalSince1970: lastOpenedTimestamp))
+            }
+        }
+    
     // MARK: - Properties
     
     private var curatedNotes: [SavedFireNote] = []
@@ -682,20 +742,21 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
+    
     private func fetchFavoriteNotes() {
-        guard let userID = Auth.auth().currentUser?.uid else {
-            showAlert(title: "Error", message: "User not authenticated")
-            return
+            guard let userID = Auth.auth().currentUser?.uid else {
+                showAlert(title: "Error", message: "User not authenticated")
+                return
+            }
+            
+            FirebaseService1.shared.fetchFavoriteNotes(userId: userID) { [weak self] notes in
+                guard let self = self else { return }
+                self.favoriteNotes = notes
+                self.updateAllNotes()
+                self.favoriteNotesCollectionView.reloadData()
+            }
         }
-        
-        FirebaseService1.shared.fetchFavoriteNotes(userId: userID) { [weak self] notes in
-            self?.favoriteNotes = notes
-            self?.favoriteNotesCollectionView.reloadData()
-        }
-    }
-
-
-   
+       
     private func showAlert(title : String ,message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -787,41 +848,71 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
     }
     deinit {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
+
     }
+    
+    private var allNotes: [SavedFireNote] = [] // Combined list of all notes
+        private var searchResults: [SavedFireNote] = [] // Filtered search results
+        
+        // Add search results table view
+        private lazy var searchResultsTableView: UITableView = {
+            let tableView = UITableView()
+            tableView.register(UITableViewCell.self, forCellReuseIdentifier: "SearchResultCell")
+            tableView.translatesAutoresizingMaskIntoConstraints = false
+            tableView.isHidden = true
+            tableView.backgroundColor = .systemBackground
+            return tableView
+        }()
+    
+    private func updateAllNotes() {
+            allNotes = (curatedNotes + favoriteNotes).sorted { $0.dateAdded > $1.dateAdded }
+                .removingDuplicates(by: \.id) // Remove duplicates based on id
+            // Update searchResults only when not searching
+            if searchBar.text?.isEmpty ?? true {
+                searchResults = allNotes
+            }
+        }
     
     // MARK: - Lifecycle Methods
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        setupDelegates()
-        configureNavigationBar()
-        fetchCuratedNotes()
-        fetchFavoriteNotes()
-        searchBar.delegate = self
-        scrollView.delegate = self
-
-        
-//        keyboard dismiss
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tapGesture.cancelsTouchesInView = false
-        view.addGestureRecognizer(tapGesture)
-
-        
-        // Add observer for favorite status changes
-        NotificationCenter.default.addObserver(self, selector: #selector(handleFavoriteStatusChange), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
-    }
+            super.viewDidLoad()
+            setupUI()
+            setupDelegates()
+            configureNavigationBar()
+            fetchCuratedNotes()
+            fetchFavoriteNotes()
+            searchBar.delegate = self
+            scrollView.delegate = self
+            
+            // Add table view delegate and data source
+            searchResultsTableView.delegate = self
+            searchResultsTableView.dataSource = self
+            
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+            tapGesture.cancelsTouchesInView = false
+            view.addGestureRecognizer(tapGesture)
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(handleFavoriteStatusChange), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(handlePreviouslyReadNotesUpdated), name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
+            
+            // Enable cancel button for search bar
+//            searchBar.showsCancelButton = true
+        }
+    
     @objc private func handleFavoriteStatusChange() {
         // Refresh the notes when favorite status changes
         fetchCuratedNotes()
         fetchFavoriteNotes()
     }
-
-//    deinit {
-//        // Remove observer when the view controller is deallocated
-//        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
-//    }
-
+    
+    @objc private func handlePreviouslyReadNotesUpdated() {
+        // Optionally refresh curated/favorite notes if they display previously read notes
+        fetchCuratedNotes()
+        fetchFavoriteNotes()
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -849,93 +940,106 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupUI() {
-        view.backgroundColor = .systemBackground
-
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        curatedNotesCollectionView.addSubview(activityIndicator)
-        
-        // Add all UI components to the contentView
-        [titleLabel, addNoteButton, scanButton, searchBar,
-         curatedNotesLabel, curatedNotesCollectionView,
-         favoriteNotesLabel, favoriteNotesCollectionView].forEach {
-            contentView.addSubview($0)
+            view.backgroundColor = .systemBackground
+            
+            // Add fixed header elements directly to the view
+            [titleLabel, addNoteButton, scanButton, searchBar].forEach {
+                view.addSubview($0)
+            }
+            
+            // Add scroll view for content
+            view.addSubview(scrollView)
+            scrollView.addSubview(contentView)
+            
+            // Add scrollable content to contentView
+            [favoriteNotesLabel, favoriteNotesCollectionView,
+             curatedNotesLabel, curatedNotesCollectionView].forEach {
+                contentView.addSubview($0)
+            }
+            
+            // Add search results table view to main view
+            view.addSubview(searchResultsTableView)
+            curatedNotesCollectionView.addSubview(activityIndicator)
+            
+            NSLayoutConstraint.activate([
+                // Fixed Header Elements
+                titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+                titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                
+                addNoteButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+                addNoteButton.trailingAnchor.constraint(equalTo: scanButton.leadingAnchor, constant: -16),
+                addNoteButton.widthAnchor.constraint(equalToConstant: 30),
+                addNoteButton.heightAnchor.constraint(equalToConstant: 30),
+                
+                scanButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+                scanButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+                scanButton.widthAnchor.constraint(equalToConstant: 30),
+                scanButton.heightAnchor.constraint(equalToConstant: 30),
+                
+                searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+                searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                
+                // ScrollView
+                scrollView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
+                scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                
+                // ContentView
+                contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+                contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+                contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+                contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+                contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+                
+                // Scrollable Content
+                favoriteNotesLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+                favoriteNotesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                
+                favoriteNotesCollectionView.topAnchor.constraint(equalTo: favoriteNotesLabel.bottomAnchor, constant: 16),
+                favoriteNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                favoriteNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                favoriteNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
+                
+                curatedNotesLabel.topAnchor.constraint(equalTo: favoriteNotesCollectionView.bottomAnchor, constant: 24),
+                curatedNotesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                
+                curatedNotesCollectionView.topAnchor.constraint(equalTo: curatedNotesLabel.bottomAnchor, constant: 16),
+                curatedNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                curatedNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                curatedNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
+                curatedNotesCollectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+                
+                // Search Results Table View
+                searchResultsTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+                searchResultsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                searchResultsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                searchResultsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                
+                // Activity Indicator
+                activityIndicator.centerXAnchor.constraint(equalTo: curatedNotesCollectionView.centerXAnchor),
+                activityIndicator.centerYAnchor.constraint(equalTo: curatedNotesCollectionView.centerYAnchor)
+            ])
+            
+            // Add actions to buttons
+            addNoteButton.addTarget(self, action: #selector(addNoteTapped), for: .touchUpInside)
+            scanButton.addTarget(self, action: #selector(moreOptionsTapped), for: .touchUpInside)
         }
-        
-        NSLayoutConstraint.activate([
-            // ScrollView constraints
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            // ContentView constraints
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            
-            // Title Label
-            titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            
-            // Add Note Button
-            addNoteButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            addNoteButton.trailingAnchor.constraint(equalTo: scanButton.leadingAnchor, constant: -16),
-            
-            // More Options Button
-            scanButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            scanButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            // Search Bar
-            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            searchBar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            searchBar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            
-            // Favorites Section Label
-            favoriteNotesLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 24),
-            favoriteNotesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            
-            // Favorites Collection View
-            favoriteNotesCollectionView.topAnchor.constraint(equalTo: favoriteNotesLabel.bottomAnchor, constant: 16),
-            favoriteNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            favoriteNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            favoriteNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
-            
-            // Saved Notes Section Label
-            curatedNotesLabel.topAnchor.constraint(equalTo: favoriteNotesCollectionView.bottomAnchor, constant: 24),
-            curatedNotesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            
-            // Saved Notes Collection View
-            curatedNotesCollectionView.topAnchor.constraint(equalTo: curatedNotesLabel.bottomAnchor, constant: 16),
-            curatedNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            curatedNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            curatedNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
-            curatedNotesCollectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
-            
-            // Activity Indicator in the Collection View
-            activityIndicator.centerXAnchor.constraint(equalTo: curatedNotesCollectionView.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: curatedNotesCollectionView.centerYAnchor)
-        ])
-        
-        // Add actions to buttons
-        addNoteButton.addTarget(self, action: #selector(addNoteTapped), for: .touchUpInside)
-        scanButton.addTarget(self, action: #selector(moreOptionsTapped), for: .touchUpInside)
-    }
-
     
     private func fetchCuratedNotes() {
-        guard let userID = Auth.auth().currentUser?.uid else {
-            showAlert(title: "Error", message: "User not authenticated")
-            return
+            guard let userID = Auth.auth().currentUser?.uid else {
+                showAlert(title: "Error", message: "User not authenticated")
+                return
+            }
+            
+            FirebaseService1.shared.observeNotes(userId: userID) { [weak self] notes in
+                guard let self = self else { return }
+                self.curatedNotes = notes
+                self.updateAllNotes()
+                self.curatedNotesCollectionView.reloadData()
+            }
         }
-        
-        FirebaseService1.shared.observeNotes(userId: userID) { [weak self] notes in
-            self?.curatedNotes = notes
-            self?.curatedNotesCollectionView.reloadData()
-        }
-    }
 
     
     // MARK: - Action Methods
@@ -976,21 +1080,94 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
 extension SavedViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty {
-            fetchCuratedNotes() // Reload all notes
+            searchResultsTableView.isHidden = true
+            curatedNotesCollectionView.isHidden = false
+            favoriteNotesCollectionView.isHidden = false
+            favoriteNotesLabel.isHidden = false
+            curatedNotesLabel.isHidden = false
+            fetchCuratedNotes()
+            fetchFavoriteNotes()
         } else {
-            curatedNotes = curatedNotes.filter { $0.title.lowercased().contains(searchText.lowercased()) }
-            curatedNotesCollectionView.reloadData()
+            searchResults = allNotes.filter {
+                $0.title.lowercased().contains(searchText.lowercased())
+            }
+            searchResultsTableView.isHidden = false
+            curatedNotesCollectionView.isHidden = true
+            favoriteNotesCollectionView.isHidden = true
+            favoriteNotesLabel.isHidden = true
+            curatedNotesLabel.isHidden = true
+            searchResultsTableView.reloadData()
         }
     }
-//    dismiss keyboard on scroll
-//    extension SavedViewController: UIScrollViewDelegate {
-//        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-//            view.endEditing(true)
-//        }
-//    }
-
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder() // Dismiss keyboard when search button is pressed
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        searchResultsTableView.isHidden = true
+        curatedNotesCollectionView.isHidden = false
+        favoriteNotesCollectionView.isHidden = false
+        favoriteNotesLabel.isHidden = false
+        curatedNotesLabel.isHidden = false
+        fetchCuratedNotes()
+        fetchFavoriteNotes()
+        searchBar.resignFirstResponder()
+    }
+}
+
+// Table view delegate and data source
+extension SavedViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return searchResults.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultCell", for: indexPath)
+        let note = searchResults[indexPath.row]
+        
+        var content = cell.defaultContentConfiguration()
+        content.text = note.title
+        content.secondaryText = "Pages: \(note.pageCount) • \(note.fileSize) • \(note.isFavorite ? "Favorite" : "")"
+        content.image = note.coverImage ?? UIImage(systemName: "doc.fill")
+        content.imageProperties.maximumSize = CGSize(width: 40, height: 40)
+        content.imageProperties.cornerRadius = 4
+        
+        cell.contentConfiguration = content
+        cell.backgroundColor = .systemBackground
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let selectedNote = searchResults[indexPath.row]
+        
+        showLoadingAlert {
+            FirebaseService1.shared.downloadPDF(from: selectedNote.pdfUrl) { [weak self] result in
+                DispatchQueue.main.async {
+                    self?.dismissLoadingAlert {
+                        switch result {
+                        case .success(let url):
+                            let pdfVC = PDFViewerViewController(pdfURL: url, title: selectedNote.title)
+                            let nav = UINavigationController(rootViewController: pdfVC)
+                            nav.modalPresentationStyle = .fullScreen
+                            self?.present(nav, animated: true)
+                            
+                            let previouslyReadNote = PreviouslyReadNote(
+                                id: selectedNote.id,
+                                title: selectedNote.title,
+                                pdfUrl: selectedNote.pdfUrl,
+                                lastOpened: Date()
+                            )
+                            self?.savePreviouslyReadNote(previouslyReadNote)
+                        case .failure(let error):
+                            self?.showAlert(title: "Error", message: "Could not load PDF: \(error.localizedDescription)")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -1077,6 +1254,22 @@ extension SavedViewController: VNDocumentCameraViewControllerDelegate {
     }
 }
 
+extension Array {
+    func removingDuplicates<T: Hashable>(by keyPath: KeyPath<Element, T>) -> [Element] {
+        var seen = Set<T>()
+        return filter { element in
+            let key = element[keyPath: keyPath]
+            return seen.insert(key).inserted
+        }
+    }
+}
+// Update scroll view delegate to dismiss keyboard
+extension SavedViewController {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        view.endEditing(true)
+    }
+}
+
 // MARK: - UICollectionViewDataSource & UICollectionViewDelegate
 extension SavedViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -1115,6 +1308,15 @@ extension SavedViewController: UICollectionViewDataSource, UICollectionViewDeleg
                             let nav = UINavigationController(rootViewController: pdfVC)
                             nav.modalPresentationStyle = .fullScreen
                             self?.present(nav, animated: true)
+                            
+                            // Update previously read notes
+                            let previouslyReadNote = PreviouslyReadNote(
+                                id: selectedNote.id,
+                                title: selectedNote.title,
+                                pdfUrl: selectedNote.pdfUrl,
+                                lastOpened: Date()
+                            )
+                            self?.savePreviouslyReadNote(previouslyReadNote)
                         case .failure(let error):
                             self?.showAlert(title: "Error", message: "Could not load PDF: \(error.localizedDescription)")
                         }

@@ -231,80 +231,100 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
+        // Add backButton and titleLabel directly to the view (outside the scrollView)
+        view.addSubview(backButton)
+        view.addSubview(titleLabel)
+        
+        // Add scrollView and contentView
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        // Add backButton to the contentView
-        [backButton, titleLabel, profileContainer, interestsLabel, selectedInterestsStackView, interestDropdownButton, saveButton, accountSettingsLabel, signOutButton].forEach { contentView.addSubview($0) }
+        // Add other UI elements to the contentView
+        [profileContainer, interestsLabel, selectedInterestsStackView, interestDropdownButton, saveButton, accountSettingsLabel, signOutButton].forEach { contentView.addSubview($0) }
         
         [profileImageView, nameLabel, emailLabel, educationLabel, institutionLabel]
             .forEach { profileContainer.addSubview($0) }
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            // Constraints for backButton
+            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            // Constraints for titleLabel
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            // Constraints for scrollView
+            scrollView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
+            // Constraints for contentView
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            // Constraints for backButton
-            backButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            
-            profileContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
+            // Constraints for profileContainer
+            profileContainer.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
             profileContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             profileContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
+            // Constraints for profileImageView
             profileImageView.topAnchor.constraint(equalTo: profileContainer.topAnchor, constant: 24),
             profileImageView.centerXAnchor.constraint(equalTo: profileContainer.centerXAnchor),
             profileImageView.widthAnchor.constraint(equalToConstant: 100),
             profileImageView.heightAnchor.constraint(equalToConstant: 100),
             
+            // Constraints for nameLabel
             nameLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 16),
             nameLabel.leadingAnchor.constraint(equalTo: profileContainer.leadingAnchor, constant: 16),
             nameLabel.trailingAnchor.constraint(equalTo: profileContainer.trailingAnchor, constant: -16),
             
+            // Constraints for emailLabel
             emailLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
             emailLabel.leadingAnchor.constraint(equalTo: profileContainer.leadingAnchor, constant: 16),
             emailLabel.trailingAnchor.constraint(equalTo: profileContainer.trailingAnchor, constant: -16),
             
+            // Constraints for educationLabel
             educationLabel.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 16),
             educationLabel.leadingAnchor.constraint(equalTo: profileContainer.leadingAnchor, constant: 16),
             educationLabel.trailingAnchor.constraint(equalTo: profileContainer.trailingAnchor, constant: -16),
             
+            // Constraints for institutionLabel
             institutionLabel.topAnchor.constraint(equalTo: educationLabel.bottomAnchor, constant: 8),
             institutionLabel.leadingAnchor.constraint(equalTo: profileContainer.leadingAnchor, constant: 16),
             institutionLabel.trailingAnchor.constraint(equalTo: profileContainer.trailingAnchor, constant: -16),
             institutionLabel.bottomAnchor.constraint(equalTo: profileContainer.bottomAnchor, constant: -24),
             
+            // Constraints for interestsLabel
             interestsLabel.topAnchor.constraint(equalTo: profileContainer.bottomAnchor, constant: 32),
             interestsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             
+            // Constraints for selectedInterestsStackView
             selectedInterestsStackView.topAnchor.constraint(equalTo: interestsLabel.bottomAnchor, constant: 16),
             selectedInterestsStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             selectedInterestsStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
+            // Constraints for interestDropdownButton
             interestDropdownButton.topAnchor.constraint(equalTo: selectedInterestsStackView.bottomAnchor, constant: 16),
             interestDropdownButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             interestDropdownButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             interestDropdownButton.heightAnchor.constraint(equalToConstant: 50),
             
+            // Constraints for saveButton
             saveButton.topAnchor.constraint(equalTo: interestDropdownButton.bottomAnchor, constant: 32),
             saveButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             saveButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             saveButton.heightAnchor.constraint(equalToConstant: 50),
             
+            // Constraints for accountSettingsLabel
             accountSettingsLabel.topAnchor.constraint(equalTo: saveButton.bottomAnchor, constant: 32),
             accountSettingsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             
+            // Constraints for signOutButton
             signOutButton.topAnchor.constraint(equalTo: accountSettingsLabel.bottomAnchor, constant: 16),
             signOutButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             signOutButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),

@@ -2,6 +2,52 @@
 import UIKit
 
 class SubjectNotesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    // MARK: - Previously Read Notes Storage
+    struct PreviouslyReadNote {
+        let id: String
+        let title: String
+        let pdfUrl: String
+        let lastOpened: Date
+    }
+
+    private func savePreviouslyReadNote(_ note: PreviouslyReadNote) {
+            guard let userId = FirebaseService.shared.currentUserId else { return }
+            var history = loadPreviouslyReadNotes()
+            
+            history.removeAll { $0.id == note.id }
+            history.append(note)
+            history.sort { $0.lastOpened > $1.lastOpened }
+            if history.count > 5 {
+                history = Array(history.prefix(5))
+            }
+            
+        let historyData = history.map { [
+            "id": $0.id,
+            "title": $0.title,
+            "pdfUrl": $0.pdfUrl,
+            "lastOpened": $0.lastOpened.timeIntervalSince1970 // Convert Date to TimeInterval
+        ]}
+        UserDefaults.standard.set(historyData, forKey: "previouslyReadNotes_\(userId)")
+            
+            NotificationCenter.default.post(name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
+        }
+
+        private func loadPreviouslyReadNotes() -> [PreviouslyReadNote] {
+            guard let userId = FirebaseService.shared.currentUserId else { return [] }
+            guard let historyData = UserDefaults.standard.array(forKey: "previouslyReadNotes_\(userId)") as? [[String: Any]] else {
+                return []
+            }
+            
+            return historyData.compactMap { dict in
+                guard let id = dict["id"] as? String,
+                      let title = dict["title"] as? String,
+                      let pdfUrl = dict["pdfUrl"] as? String,
+                      let lastOpenedTimestamp = dict["lastOpened"] as? TimeInterval else { return nil }
+                
+                return PreviouslyReadNote(id: id, title: title, pdfUrl: pdfUrl, lastOpened: Date(timeIntervalSince1970: lastOpenedTimestamp))
+            }
+        }
+    
     private let subjectCode: String
     private var notes: [FireNote] // Changed to var to allow updates
     
@@ -35,14 +81,21 @@ class SubjectNotesViewController: UIViewController, UICollectionViewDataSource, 
         
         // Add observer for favorite status changes
         NotificationCenter.default.addObserver(self, selector: #selector(handleFavoriteStatusChange), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePreviouslyReadNotesUpdated), name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
         
         // Initial sync with current favorite status
         handleFavoriteStatusChange()
     }
     
+    @objc private func handlePreviouslyReadNotesUpdated() {
+        // No direct UI update needed unless SubjectNotes displays previously read notes
+    }
+
     deinit {
         // Remove observer when the view controller is deallocated
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
+
     }
     
     private func setupCollectionView() {
@@ -115,6 +168,16 @@ class SubjectNotesViewController: UIViewController, UICollectionViewDataSource, 
                     )
                     navController.modalPresentationStyle = .fullScreen
                     self?.present(navController, animated: true)
+                    
+                    // Update previously read notes
+                    let previouslyReadNote = PreviouslyReadNote(
+                        id: note.id,
+                        title: note.title,
+                        pdfUrl: note.pdfUrl,
+                        lastOpened: Date()
+                    )
+                    self?.savePreviouslyReadNote(previouslyReadNote)
+                    print(previouslyReadNote)
                 case .failure(let error):
                     print("Failed to download PDF: \(error.localizedDescription)")
                 }

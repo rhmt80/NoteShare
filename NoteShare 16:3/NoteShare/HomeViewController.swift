@@ -36,6 +36,13 @@ struct FireNote {
         ]
     }
 }
+// previously read note struct
+struct PreviouslyReadNote {
+    let id: String
+    let title: String
+    let pdfUrl: String
+    let lastOpened: Date
+}
 
 class FirebaseService {
     static let shared = FirebaseService()
@@ -112,11 +119,6 @@ class FirebaseService {
                 }
             }
         }
-    
-    
-    
-    
-    
     
     // Fetch the current user's favorite note IDs
         private func fetchUserFavorites(completion: @escaping ([String]) -> Void) {
@@ -403,6 +405,15 @@ class FirebaseService {
 class NoteCollectionViewCell: UICollectionViewCell {
     var noteId: String?
     
+    public let lastOpenedDateLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 12)
+        label.textColor = .secondaryLabel
+        label.numberOfLines = 1
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     private let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
@@ -411,6 +422,7 @@ class NoteCollectionViewCell: UICollectionViewCell {
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
         view.layer.shadowRadius = 4
         view.layer.shadowOpacity = 0.1
+        view.clipsToBounds = false // Allow shadow to show, but we'll clip subviews separately
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -425,10 +437,13 @@ class NoteCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    private let titleLabel: UILabel = {
+    public let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.numberOfLines = 2
+        label.numberOfLines = 2 // Allow up to 2 lines for long titles
+        label.lineBreakMode = .byTruncatingTail // Truncate if still too long
+        label.adjustsFontSizeToFitWidth = true // Dynamically adjust font size
+        label.minimumScaleFactor = 0.75 // Minimum font scale to prevent it from getting too small
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -437,6 +452,25 @@ class NoteCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
         label.textColor = .secondaryLabel
+        label.numberOfLines = 1
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    public let subjectNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 12)
+        label.textColor = .secondaryLabel
+        label.numberOfLines = 1
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let subjectCodeLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 12)
+        label.textColor = .secondaryLabel
+        label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -487,7 +521,7 @@ class NoteCollectionViewCell: UICollectionViewCell {
     }()
     
     // Properties
-     var isFavorite: Bool = false {
+    var isFavorite: Bool = false {
         didSet {
             updateFavoriteButtonImage()
         }
@@ -509,7 +543,8 @@ class NoteCollectionViewCell: UICollectionViewCell {
     private func setupUI() {
         contentView.addSubview(containerView)
         
-        [coverImageView, titleLabel, authorLabel, detailsStackView, favoriteButton, recommendedTag].forEach {
+        [coverImageView, titleLabel, authorLabel, subjectNameLabel, subjectCodeLabel,
+         detailsStackView, favoriteButton, recommendedTag, lastOpenedDateLabel].forEach {
             containerView.addSubview($0)
         }
         
@@ -522,79 +557,207 @@ class NoteCollectionViewCell: UICollectionViewCell {
     }
     
     private func setupConstraints() {
-        NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-            
-            coverImageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
-            coverImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            coverImageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            coverImageView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.6),
-            
-            titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: 8),
-            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            
-            authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            authorLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            authorLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            
-            detailsStackView.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant:-1),
-            detailsStackView.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 8),
-            detailsStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            detailsStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            
-            favoriteButton.topAnchor.constraint(equalTo: detailsStackView.bottomAnchor, constant: 8),
-            favoriteButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            favoriteButton.widthAnchor.constraint(equalToConstant: 24),
-            favoriteButton.heightAnchor.constraint(equalToConstant: 24),
-            
-            recommendedTag.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
-            recommendedTag.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            recommendedTag.heightAnchor.constraint(equalToConstant: 20),
-            recommendedTag.widthAnchor.constraint(equalToConstant: 100)
-        ])
-    }
-    
-    // Update UI for favorite button
-    private func updateFavoriteButtonImage() {
-        let image = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
-        favoriteButton.setImage(image, for: .normal)
-        favoriteButton.tintColor = isFavorite ? .systemBlue : .systemGray
-    }
-    
-    // Favorite button pressed
-    @objc private func favoriteButtonPressed() {
-        isFavorite.toggle()
-        updateFavoriteButtonImage()
+            NSLayoutConstraint.activate([
+                // Container view constraints
+                containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+                containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+                containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+                containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+                
+                // Cover image view
+                coverImageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
+                coverImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+                coverImageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+                coverImageView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.6),
+                
+                // Title label
+                titleLabel.topAnchor.constraint(equalTo: coverImageView.bottomAnchor, constant: 8),
+                titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+                titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+                
+                // Author label
+                authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+                authorLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+                authorLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+                
+                // Details stack view
+                detailsStackView.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 8),
+                detailsStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+                detailsStackView.trailingAnchor.constraint(equalTo: favoriteButton.leadingAnchor, constant: -8), // Adjusted to respect favorite button
+                
+                // Favorite button (ensure it stays within container bounds)
+                favoriteButton.centerYAnchor.constraint(equalTo: detailsStackView.centerYAnchor),
+                favoriteButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+                favoriteButton.widthAnchor.constraint(equalToConstant: 24),
+                favoriteButton.heightAnchor.constraint(equalToConstant: 24),
+                favoriteButton.bottomAnchor.constraint(lessThanOrEqualTo: containerView.bottomAnchor, constant: -8), // Ensure it doesn't overflow
+                
+                // Recommended tag
+                recommendedTag.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
+                recommendedTag.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+                recommendedTag.heightAnchor.constraint(equalToConstant: 20),
+                recommendedTag.widthAnchor.constraint(equalToConstant: 100)
+            ])
+        }
         
-        guard let noteId = noteId else { return }
+        // Update UI for favorite button
+        private func updateFavoriteButtonImage() {
+            let image = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
+            favoriteButton.setImage(image, for: .normal)
+            favoriteButton.tintColor = isFavorite ? .systemBlue : .systemGray
+        }
         
-        FirebaseService.shared.updateFavoriteStatus(for: noteId, isFavorite: isFavorite) { error in
-            if let error = error {
-                print("Error updating favorite status: \(error.localizedDescription)")
-                // Optionally revert UI if update fails
-                self.isFavorite.toggle()
-                self.updateFavoriteButtonImage()
+        // Favorite button pressed
+        @objc private func favoriteButtonPressed() {
+            isFavorite.toggle()
+            updateFavoriteButtonImage()
+            
+            guard let noteId = noteId else { return }
+            
+            FirebaseService.shared.updateFavoriteStatus(for: noteId, isFavorite: isFavorite) { error in
+                if let error = error {
+                    print("Error updating favorite status: \(error.localizedDescription)")
+                    self.isFavorite.toggle()
+                    self.updateFavoriteButtonImage()
+                }
             }
         }
-    }
-
-    
-    func configure(with note: FireNote) {
+        
+        override func prepareForReuse() {
+            super.prepareForReuse()
+            titleLabel.text = nil
+            subjectNameLabel.text = nil
+            lastOpenedDateLabel.text = nil
+            authorLabel.text = nil
+            pagesLabel.text = nil
+            fileSizeLabel.text = nil
+            coverImageView.image = nil
+            noteId = nil
+            
+            titleLabel.isHidden = true
+            subjectNameLabel.isHidden = true
+            lastOpenedDateLabel.isHidden = true
+            authorLabel.isHidden = true
+            subjectCodeLabel.isHidden = true
+            fileSizeLabel.isHidden = true
+            pagesLabel.isHidden = true
+            favoriteButton.isHidden = true
+            recommendedTag.isHidden = true
+            detailsStackView.isHidden = true
+            coverImageView.isHidden = true
+            
+            titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+            isFavorite = false
+            updateFavoriteButtonImage()
+            
+            NSLayoutConstraint.deactivate(containerView.constraints)
+            setupConstraints()
+        }
+        
+        func configure(with note: FireNote) {
             print("Configuring note \(note.id) with favorite status: \(note.isFavorite)")
             noteId = note.id
             titleLabel.text = note.title
             authorLabel.text = note.author
             pagesLabel.text = "Pages: \(note.pageCount)"
             fileSizeLabel.text = note.fileSize
-            coverImageView.image = note.coverImage
+            coverImageView.image = note.coverImage ?? UIImage(systemName: "doc.fill")
             isFavorite = note.isFavorite
+            
+            titleLabel.isHidden = false
+            authorLabel.isHidden = false
+            pagesLabel.isHidden = false
+            fileSizeLabel.isHidden = false
+            coverImageView.isHidden = false
+            detailsStackView.isHidden = false
+            favoriteButton.isHidden = false
+            subjectNameLabel.isHidden = true
+            subjectCodeLabel.isHidden = true
+            lastOpenedDateLabel.isHidden = true
+            recommendedTag.isHidden = true
+            
+            titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+            
+            NSLayoutConstraint.deactivate(containerView.constraints)
+            setupConstraints()
+            
+            // Force layout update to ensure everything fits
+            layoutIfNeeded()
         }
-    }
-
+        
+        // Previously read note UI (unchanged for this fix)
+        func configureForPreviouslyRead(with note: PreviouslyReadNote, fullNote: FireNote?) {
+            noteId = note.id
+            titleLabel.text = note.title
+            titleLabel.numberOfLines = 2
+            titleLabel.lineBreakMode = .byTruncatingTail
+            adjustTitleFontSize()
+            titleLabel.isHidden = false
+            
+            subjectNameLabel.text = "Last opened"
+            subjectNameLabel.isHidden = false
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = .medium
+            dateFormatter.timeStyle = .short
+            lastOpenedDateLabel.text = dateFormatter.string(from: note.lastOpened)
+            lastOpenedDateLabel.isHidden = false
+            
+            coverImageView.isHidden = true
+            authorLabel.isHidden = true
+            subjectCodeLabel.isHidden = true
+            fileSizeLabel.isHidden = true
+            pagesLabel.isHidden = true
+            favoriteButton.isHidden = true
+            recommendedTag.isHidden = true
+            detailsStackView.isHidden = true
+            
+            NSLayoutConstraint.deactivate(containerView.constraints)
+            setupConstraints()
+            
+            NSLayoutConstraint.activate([
+                titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
+                titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+                titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+                
+                subjectNameLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+                subjectNameLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+                subjectNameLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+                
+                lastOpenedDateLabel.topAnchor.constraint(equalTo: subjectNameLabel.bottomAnchor, constant: 4),
+                lastOpenedDateLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+                lastOpenedDateLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+                lastOpenedDateLabel.bottomAnchor.constraint(lessThanOrEqualTo: containerView.bottomAnchor, constant: -8)
+            ])
+            
+            if let fullNote = fullNote {
+                isFavorite = fullNote.isFavorite
+            }
+            
+            containerView.layoutIfNeeded()
+        }
+        
+        private func adjustTitleFontSize() {
+            guard let text = titleLabel.text else { return }
+            let maxWidth = containerView.bounds.width - 16 // Padding on both sides
+            
+            let font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+            let attributes: [NSAttributedString.Key: Any] = [.font: font]
+            let attributedText = NSAttributedString(string: text, attributes: attributes)
+            
+            let textRect = attributedText.boundingRect(
+                with: CGSize(width: maxWidth, height: .greatestFiniteMagnitude),
+                options: [.usesLineFragmentOrigin, .usesFontLeading],
+                context: nil
+            )
+            
+            if textRect.height > 40 { // Roughly two lines
+                titleLabel.font = .systemFont(ofSize: 14, weight: .semibold)
+            } else {
+                titleLabel.font = font
+            }
+        }
+}
 
 
 struct College {
@@ -688,6 +851,33 @@ class HomeViewController: UIViewController {
     ]
     
     // MARK: - UI Components
+//    previously read note ui
+    private var previouslyReadNotes: [PreviouslyReadNote] = []
+
+    private let previouslyReadLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Previously Read"
+        label.font = .systemFont(ofSize: 22, weight: .semibold)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private lazy var previouslyReadCollectionView: UICollectionView = {
+            let layout = UICollectionViewFlowLayout()
+            layout.scrollDirection = .horizontal
+            layout.itemSize = CGSize(width: 250, height: 150) // Increased height to 150
+            layout.minimumInteritemSpacing = 8
+            layout.minimumLineSpacing = 8
+            layout.sectionInset = UIEdgeInsets(top: 5, left: 16, bottom: 5, right: 16)
+            
+            let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+            collectionView.backgroundColor = .clear
+            collectionView.showsHorizontalScrollIndicator = false
+            collectionView.register(NoteCollectionViewCell.self, forCellWithReuseIdentifier: noteReuseIdentifier)
+            collectionView.translatesAutoresizingMaskIntoConstraints = false
+            return collectionView
+        }()
+    
     private let activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .medium)
         indicator.hidesWhenStopped = true
@@ -765,6 +955,26 @@ class HomeViewController: UIViewController {
         return label
     }()
     
+    // Add a placeholder view for when there are no previously read notes
+        private let previouslyReadPlaceholderView: UIView = {
+            let view = UIView()
+            view.backgroundColor = .systemGray6
+            view.layer.cornerRadius = 12
+            view.translatesAutoresizingMaskIntoConstraints = false
+            return view
+        }()
+
+        private let placeholderLabel: UILabel = {
+            let label = UILabel()
+            label.text = "Start exploring notes!\nYour recently read notes will appear here."
+            label.font = .systemFont(ofSize: 16, weight: .medium)
+            label.textColor = .secondaryLabel
+            label.numberOfLines = 0
+            label.textAlignment = .center
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+    
     private lazy var collegesCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -785,17 +995,26 @@ class HomeViewController: UIViewController {
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        setupDelegates()
-        fetchNotes()
-        
-        // Add observer for favorite status changes
-        NotificationCenter.default.addObserver(self, selector: #selector(handleFavoriteStatusChange), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+            super.viewDidLoad()
+            setupUI()
+            setupDelegates()
+            fetchNotes()
+            
+            // Load previously read notes and update UI
+            previouslyReadNotes = loadPreviouslyReadNotes()
+            updatePreviouslyReadUI()
+            
+            // Add observers
+            NotificationCenter.default.addObserver(self, selector: #selector(handleFavoriteStatusChange), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(handlePreviouslyReadNotesUpdated), name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
+        }
+
+    // In HomeViewController
+    @objc private func handlePreviouslyReadNotesUpdated() {
+        previouslyReadNotes = loadPreviouslyReadNotes()
+        print("Updated previouslyReadNotes: \(previouslyReadNotes.map { "\($0.id): \($0.title), \($0.lastOpened)" })")
+        updatePreviouslyReadUI()
     }
-
-
-    
     
     @objc private func handleFavoriteStatusChange() {
         // Refresh the notes when favorite status changes
@@ -805,93 +1024,126 @@ class HomeViewController: UIViewController {
     deinit {
         // Remove observer when the view controller is deallocated
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
+
     }
+    private func updatePreviouslyReadUI() {
+            if previouslyReadNotes.isEmpty {
+                previouslyReadCollectionView.isHidden = true
+                previouslyReadPlaceholderView.isHidden = false
+            } else {
+                previouslyReadCollectionView.isHidden = false
+                previouslyReadPlaceholderView.isHidden = true
+                previouslyReadCollectionView.reloadData()
+                previouslyReadCollectionView.collectionViewLayout.invalidateLayout() // Force layout refresh
+            }
+        }
 
     // MARK: - Setup
     private func setupUI() {
-        view.backgroundColor = .systemBackground
-        
-        // Add header view to the main view (outside the scroll view)
-        view.addSubview(headerView)
-        headerView.addSubview(headerLabel)
-        headerView.addSubview(profileButton)
-        
-        // Add scroll view and content view
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        
-        // Add other UI components to the content view
-        [notesLabel, notesCollectionView, collegesLabel, collegesCollectionView].forEach {
-            contentView.addSubview($0)
+            view.backgroundColor = .systemBackground
+            
+            // Add header view
+            view.addSubview(headerView)
+            headerView.addSubview(headerLabel)
+            headerView.addSubview(profileButton)
+            
+            // Add scroll view and content view
+            view.addSubview(scrollView)
+            scrollView.addSubview(contentView)
+            
+            // Add UI components to the content view
+            [notesLabel, notesCollectionView, previouslyReadLabel, previouslyReadCollectionView,
+             previouslyReadPlaceholderView, collegesLabel, collegesCollectionView].forEach {
+                contentView.addSubview($0)
+            }
+            
+            // Add placeholder label to placeholder view
+            previouslyReadPlaceholderView.addSubview(placeholderLabel)
+            
+            // Add activity indicator
+            notesCollectionView.addSubview(activityIndicator)
+            
+            // Constraints for header view (unchanged)
+            NSLayoutConstraint.activate([
+                headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+                headerView.heightAnchor.constraint(equalToConstant: 40),
+                
+                headerLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor),
+                headerLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+                
+                profileButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor),
+                profileButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+                profileButton.widthAnchor.constraint(equalToConstant: 40),
+                profileButton.heightAnchor.constraint(equalToConstant: 40),
+            ])
+            
+            // Constraints for scroll view and content view (unchanged)
+            NSLayoutConstraint.activate([
+                scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+                scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                
+                contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+                contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+                contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+                contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+                contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            ])
+            
+            // Constraints for other UI components
+            NSLayoutConstraint.activate([
+                notesLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+                notesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                notesLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+                
+                notesCollectionView.topAnchor.constraint(equalTo: notesLabel.bottomAnchor, constant: 16),
+                notesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                notesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                notesCollectionView.heightAnchor.constraint(equalToConstant: 280),
+                
+                previouslyReadLabel.topAnchor.constraint(equalTo: notesCollectionView.bottomAnchor, constant: 24),
+                previouslyReadLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                previouslyReadLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+                
+                previouslyReadCollectionView.topAnchor.constraint(equalTo: previouslyReadLabel.bottomAnchor, constant: 8),
+                previouslyReadCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                previouslyReadCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                previouslyReadCollectionView.heightAnchor.constraint(equalToConstant: 150), // Increased to 150
+                
+                previouslyReadPlaceholderView.topAnchor.constraint(equalTo: previouslyReadLabel.bottomAnchor, constant: 8),
+                previouslyReadPlaceholderView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                previouslyReadPlaceholderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+                previouslyReadPlaceholderView.heightAnchor.constraint(equalToConstant: 100),
+                
+                placeholderLabel.centerXAnchor.constraint(equalTo: previouslyReadPlaceholderView.centerXAnchor),
+                placeholderLabel.centerYAnchor.constraint(equalTo: previouslyReadPlaceholderView.centerYAnchor),
+                placeholderLabel.leadingAnchor.constraint(greaterThanOrEqualTo: previouslyReadPlaceholderView.leadingAnchor, constant: 16),
+                placeholderLabel.trailingAnchor.constraint(lessThanOrEqualTo: previouslyReadPlaceholderView.trailingAnchor, constant: -16),
+                
+                collegesLabel.topAnchor.constraint(equalTo: previouslyReadCollectionView.bottomAnchor, constant: 24),
+                collegesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                collegesLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+                
+                collegesCollectionView.topAnchor.constraint(equalTo: collegesLabel.bottomAnchor, constant: 16),
+                collegesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                collegesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                collegesCollectionView.heightAnchor.constraint(equalToConstant: 312),
+                collegesCollectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24),
+                
+                activityIndicator.centerXAnchor.constraint(equalTo: notesCollectionView.centerXAnchor),
+                activityIndicator.centerYAnchor.constraint(equalTo: notesCollectionView.centerYAnchor)
+            ])
         }
-        
-        // Add activity indicator to the notes collection view
-        notesCollectionView.addSubview(activityIndicator)
-        
-        // Constraints for header view
-        NSLayoutConstraint.activate([
-            // Pin headerView to the top of the safe area with no extra space
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            headerView.heightAnchor.constraint(equalToConstant: 40), // Fixed height for the header
-            
-            // Align headerLabel to the top of the headerView
-            headerLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor),
-            headerLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor), // Center vertically
-            
-            // Align profileButton to the trailing edge of the headerView
-            profileButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor),
-            profileButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor), // Center vertically
-            profileButton.widthAnchor.constraint(equalToConstant: 40),
-            profileButton.heightAnchor.constraint(equalToConstant: 40),
-        ])
-        
-        // Constraints for scroll view and content view
-        NSLayoutConstraint.activate([
-            // Pin scrollView below the headerView with no extra space
-            scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            // Pin contentView to the scrollView
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-        ])
-        
-        // Constraints for other UI components
-        NSLayoutConstraint.activate([
-            notesLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            notesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            notesLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            notesCollectionView.topAnchor.constraint(equalTo: notesLabel.bottomAnchor, constant: 16),
-            notesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            notesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            notesCollectionView.heightAnchor.constraint(equalToConstant: 280),
-            
-            collegesLabel.topAnchor.constraint(equalTo: notesCollectionView.bottomAnchor, constant: 24),
-            collegesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            collegesLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            collegesCollectionView.topAnchor.constraint(equalTo: collegesLabel.bottomAnchor, constant: 16),
-            collegesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            collegesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            collegesCollectionView.heightAnchor.constraint(equalToConstant: 312),
-            collegesCollectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24),
-            
-            activityIndicator.centerXAnchor.constraint(equalTo: notesCollectionView.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: notesCollectionView.centerYAnchor)
-        ])
-    }
     
     private func setupDelegates() {
         notesCollectionView.dataSource = self
         notesCollectionView.delegate = self
+        previouslyReadCollectionView.dataSource = self
+        previouslyReadCollectionView.delegate = self
         collegesCollectionView.dataSource = self
         collegesCollectionView.delegate = self
     }
@@ -918,6 +1170,45 @@ class HomeViewController: UIViewController {
         }
     }
     
+    // MARK: - Previously Read Notes Storage
+    private func savePreviouslyReadNote(_ note: PreviouslyReadNote) {
+            guard let userId = FirebaseService.shared.currentUserId else { return }
+            var history = loadPreviouslyReadNotes()
+            
+            history.removeAll { $0.id == note.id }
+            history.append(note)
+            history.sort { $0.lastOpened > $1.lastOpened }
+            if history.count > 5 {
+                history = Array(history.prefix(5))
+            }
+            
+        let historyData = history.map { [
+            "id": $0.id,
+            "title": $0.title,
+            "pdfUrl": $0.pdfUrl,
+            "lastOpened": $0.lastOpened.timeIntervalSince1970 // Convert Date to TimeInterval
+        ]}
+        UserDefaults.standard.set(historyData, forKey: "previouslyReadNotes_\(userId)")
+        
+        NotificationCenter.default.post(name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
+        }
+
+        private func loadPreviouslyReadNotes() -> [PreviouslyReadNote] {
+            guard let userId = FirebaseService.shared.currentUserId else { return [] }
+            guard let historyData = UserDefaults.standard.array(forKey: "previouslyReadNotes_\(userId)") as? [[String: Any]] else {
+                return []
+            }
+            
+            return historyData.compactMap { dict in
+                guard let id = dict["id"] as? String,
+                      let title = dict["title"] as? String,
+                      let pdfUrl = dict["pdfUrl"] as? String,
+                      let lastOpenedTimestamp = dict["lastOpened"] as? TimeInterval else { return nil }
+                
+                return PreviouslyReadNote(id: id, title: title, pdfUrl: pdfUrl, lastOpened: Date(timeIntervalSince1970: lastOpenedTimestamp))
+            }
+        }
+    
     @objc private func profileButtonTapped() {
         let profileVC = ProfileViewController()
         navigationController?.setNavigationBarHidden(true, animated: false)
@@ -928,93 +1219,144 @@ class HomeViewController: UIViewController {
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-           if collectionView == notesCollectionView {
-               return recommendedNotes.count
-           } else {
-               return colleges.count
-           }
-       }
+            if collectionView == notesCollectionView {
+                return recommendedNotes.count
+            } else if collectionView == previouslyReadCollectionView {
+                return previouslyReadNotes.count
+            } else {
+                return colleges.count
+            }
+        }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            if collectionView == notesCollectionView {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: noteReuseIdentifier, for: indexPath) as! NoteCollectionViewCell
-                let note = recommendedNotes[indexPath.item]
-                cell.configure(with: note)
-                
-                // Handle favorite button tap
-                cell.favoriteButtonTapped = { [weak self] in
-                    guard let self = self else { return }
-                    
-                    let newFavoriteStatus = !note.isFavorite
-
-                    // Instantly update UI for a smooth user experience
-                    cell.isFavorite = newFavoriteStatus
-                    self.recommendedNotes[indexPath.item].isFavorite = newFavoriteStatus
-
-                    // Perform Firestore update asynchronously
-                    FirebaseService.shared.updateFavoriteStatus(for: note.id, isFavorite: newFavoriteStatus) { success in
-                        if (success == nil) {
-                            // Revert UI changes if Firestore update fails
-                            DispatchQueue.main.async {
-                                cell.isFavorite = !newFavoriteStatus
-                                self.recommendedNotes[indexPath.item].isFavorite = !newFavoriteStatus
-                            }
+        if collectionView == notesCollectionView {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: noteReuseIdentifier, for: indexPath) as! NoteCollectionViewCell
+            let note = recommendedNotes[indexPath.item]
+            cell.configure(with: note)
+            
+            // Handle favorite button tap
+            cell.favoriteButtonTapped = { [weak self] in
+                guard let self = self else { return }
+                let newFavoriteStatus = !note.isFavorite
+                cell.isFavorite = newFavoriteStatus
+                self.recommendedNotes[indexPath.item].isFavorite = newFavoriteStatus
+                FirebaseService.shared.updateFavoriteStatus(for: note.id, isFavorite: newFavoriteStatus) { success in
+                    if (success == nil) {
+                        DispatchQueue.main.async {
+                            cell.isFavorite = !newFavoriteStatus
+                            self.recommendedNotes[indexPath.item].isFavorite = !newFavoriteStatus
                         }
                     }
                 }
-                
-                return cell
-            } else {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collegeReuseIdentifier, for: indexPath) as! CollegeCell
-                cell.configure(with: colleges[indexPath.item])
-                return cell
             }
+            return cell
+        } else if collectionView == previouslyReadCollectionView {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: noteReuseIdentifier, for: indexPath) as! NoteCollectionViewCell
+            let previouslyReadNote = previouslyReadNotes[indexPath.item]
+            
+            // Find the full note details if available
+            let fullNote = recommendedNotes.first(where: { $0.id == previouslyReadNote.id })
+            cell.configureForPreviouslyRead(with: previouslyReadNote, fullNote: fullNote)
+            
+            // Debug frame after configuration
+            DispatchQueue.main.async {
+                print("Cell \(indexPath.item) frames: title=\(cell.titleLabel.frame), subject=\(cell.subjectNameLabel.frame), date=\(cell.lastOpenedDateLabel.frame)")
+            }
+            
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collegeReuseIdentifier, for: indexPath) as! CollegeCell
+            cell.configure(with: colleges[indexPath.item])
+            return cell
         }
+    }
     }
 
 
 
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == collegesCollectionView {
-            let selectedCollege = colleges[indexPath.item]
-            activityIndicator.startAnimating()
+            if collectionView == collegesCollectionView {
+                let selectedCollege = colleges[indexPath.item]
+                activityIndicator.startAnimating()
 
-            FirebaseService.shared.fetchNotes { notesList, groupedNotes in
-                DispatchQueue.main.async {
-                    self.activityIndicator.stopAnimating()
-                    if let collegeNotes = groupedNotes[selectedCollege.name] {
-                        let notesVC = NotesViewController()
-                        notesVC.configure(with: collegeNotes)
-                        self.navigationController?.pushViewController(notesVC, animated: true)
-                    } else {
-                        self.showAlert(title: "No Notes", message: "No notes available for \(selectedCollege.name).")
+                FirebaseService.shared.fetchNotes { notesList, groupedNotes in
+                    DispatchQueue.main.async {
+                        self.activityIndicator.stopAnimating()
+                        if let collegeNotes = groupedNotes[selectedCollege.name] {
+                            let notesVC = NotesViewController()
+                            notesVC.configure(with: collegeNotes)
+                            self.navigationController?.pushViewController(notesVC, animated: true)
+                        } else {
+                            self.showAlert(title: "No Notes", message: "No notes available for \(selectedCollege.name).")
+                        }
                     }
                 }
-            }
-        } else if collectionView == notesCollectionView {
-            let selectedNote = recommendedNotes[indexPath.item]
-            print("Selected note with pdfUrl: \(selectedNote.pdfUrl)")
-            showLoadingAlert {
-                FirebaseService.shared.downloadPDF(from: selectedNote.pdfUrl) { [weak self] result in
-                    DispatchQueue.main.async {
-                        self?.dismissLoadingAlert {
-                            switch result {
-                            case .success(let url):
-                                print("Opening PDF at \(url.path)")
-                                let pdfVC = PDFViewerViewController(pdfURL: url, title: selectedNote.title)
-                                let nav = UINavigationController(rootViewController: pdfVC)
-                                nav.modalPresentationStyle = .fullScreen
-                                self?.present(nav, animated: true)
-                            case .failure(let error):
-                                self?.showAlert(title: "Error", message: "Could not load PDF: \(error.localizedDescription)")
+            } else if collectionView == notesCollectionView {
+                let selectedNote = recommendedNotes[indexPath.item]
+                print("Selected note with pdfUrl: \(selectedNote.pdfUrl)")
+                showLoadingAlert {
+                    FirebaseService.shared.downloadPDF(from: selectedNote.pdfUrl) { [weak self] result in
+                        DispatchQueue.main.async {
+                            self?.dismissLoadingAlert {
+                                switch result {
+                                case .success(let url):
+                                    print("Opening PDF at \(url.path)")
+                                    let pdfVC = PDFViewerViewController(pdfURL: url, title: selectedNote.title)
+                                    let nav = UINavigationController(rootViewController: pdfVC)
+                                    nav.modalPresentationStyle = .fullScreen
+                                    self?.present(nav, animated: true)
+                                    
+                                    // Update previously read notes
+                                    let previouslyReadNote = PreviouslyReadNote(
+                                        id: selectedNote.id,
+                                        title: selectedNote.title,
+                                        pdfUrl: selectedNote.pdfUrl,
+                                        lastOpened: Date()
+                                    )
+                                    self?.savePreviouslyReadNote(previouslyReadNote)
+                                    self?.previouslyReadNotes = self?.loadPreviouslyReadNotes() ?? []
+                                    self?.previouslyReadCollectionView.reloadData()
+                                case .failure(let error):
+                                    self?.showAlert(title: "Error", message: "Could not load PDF: \(error.localizedDescription)")
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if collectionView == previouslyReadCollectionView {
+                let selectedNote = previouslyReadNotes[indexPath.item]
+                showLoadingAlert {
+                    FirebaseService.shared.downloadPDF(from: selectedNote.pdfUrl) { [weak self] result in
+                        DispatchQueue.main.async {
+                            self?.dismissLoadingAlert {
+                                switch result {
+                                case .success(let url):
+                                    print("Opening PDF at \(url.path)")
+                                    let pdfVC = PDFViewerViewController(pdfURL: url, title: selectedNote.title)
+                                    let nav = UINavigationController(rootViewController: pdfVC)
+                                    nav.modalPresentationStyle = .fullScreen
+                                    self?.present(nav, animated: true)
+                                    
+                                    // Update previously read notes
+                                    let updatedNote = PreviouslyReadNote(
+                                        id: selectedNote.id,
+                                        title: selectedNote.title,
+                                        pdfUrl: selectedNote.pdfUrl,
+                                        lastOpened: Date()
+                                    )
+                                    self?.savePreviouslyReadNote(updatedNote)
+                                    self?.previouslyReadNotes = self?.loadPreviouslyReadNotes() ?? []
+                                    self?.previouslyReadCollectionView.reloadData()
+                                case .failure(let error):
+                                    self?.showAlert(title: "Error", message: "Could not load PDF: \(error.localizedDescription)")
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
     
     // Helper methods for loading alert
     private func showLoadingAlert(completion: @escaping () -> Void) {
