@@ -858,7 +858,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             let termsVC = InformationViewController()
             termsVC.titleText = "Terms & Conditions"
             termsVC.contentText = """
-            Terms and Conditions**
+            Terms and Conditions
 
             Effective Date: 17/03/2025
 
