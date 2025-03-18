@@ -4,7 +4,6 @@ import PDFKit
 import MobileCoreServices
 import FirebaseStorage
 import FirebaseFirestore
-import FirebaseAuth
 
 // Forward declaration of FirebaseService for cross-file access
 protocol PDFDownloader {
@@ -21,7 +20,6 @@ class PDFListViewController: UIViewController {
     }
 
     private func savePreviouslyReadNote(_ note: PreviouslyReadNote) {
-        guard let userId = FirebaseService.shared.currentUserId else { return } // Use FirebaseService to get user ID
         var history = loadPreviouslyReadNotes()
         
         history.removeAll { $0.id == note.id }
@@ -31,20 +29,14 @@ class PDFListViewController: UIViewController {
             history = Array(history.prefix(5))
         }
         
-        let historyData = history.map { [
-            "id": $0.id,
-            "title": $0.title,
-            "pdfUrl": $0.pdfUrl,
-            "lastOpened": $0.lastOpened.timeIntervalSince1970 // Store as timestamp
-        ]}
-        UserDefaults.standard.set(historyData, forKey: "previouslyReadNotes_\(userId)") // Use user-specific key
+        let historyData = history.map { ["id": $0.id, "title": $0.title, "pdfUrl": $0.pdfUrl, "lastOpened": $0.lastOpened] }
+        UserDefaults.standard.set(historyData, forKey: "previouslyReadNotes")
         
         NotificationCenter.default.post(name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
     }
 
     private func loadPreviouslyReadNotes() -> [PreviouslyReadNote] {
-        guard let userId = FirebaseService.shared.currentUserId else { return [] }
-        guard let historyData = UserDefaults.standard.array(forKey: "previouslyReadNotes_\(userId)") as? [[String: Any]] else {
+        guard let historyData = UserDefaults.standard.array(forKey: "previouslyReadNotes") as? [[String: Any]] else {
             return []
         }
         
@@ -52,9 +44,10 @@ class PDFListViewController: UIViewController {
             guard let id = dict["id"] as? String,
                   let title = dict["title"] as? String,
                   let pdfUrl = dict["pdfUrl"] as? String,
-                  let lastOpenedTimestamp = dict["lastOpened"] as? TimeInterval else { return nil }
-            
-            return PreviouslyReadNote(id: id, title: title, pdfUrl: pdfUrl, lastOpened: Date(timeIntervalSince1970: lastOpenedTimestamp))
+                  let lastOpened = dict["lastOpened"] as? Date else {
+                return nil
+            }
+            return PreviouslyReadNote(id: id, title: title, pdfUrl: pdfUrl, lastOpened: lastOpened)
         }
     }
     
@@ -587,14 +580,11 @@ class PDFListViewController: UIViewController {
         navController.modalPresentationStyle = .fullScreen
         self.present(navController, animated: true)
         
-        // Find the original PDF data to get the correct pdfUrl
-        guard let pdf = filteredPDFFiles.first(where: { $0.fileName == fileName }) else { return }
-        
-        // Update previously read notes with the original Firebase URL
+        // Update previously read notes
         let previouslyReadNote = PreviouslyReadNote(
-            id: fileName, // Using fileName as ID for simplicity; consider a unique ID if available
+            id: fileName,
             title: fileName,
-            pdfUrl: pdf.url.absoluteString, // Use the original Firebase URL
+            pdfUrl: localURL.absoluteString,
             lastOpened: Date()
         )
         self.savePreviouslyReadNote(previouslyReadNote)
