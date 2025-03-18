@@ -789,12 +789,10 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     private func handlePrivacyRowSelection(_ row: Int) {
         switch row {
         case 0:
-            // Data management
+            // Privacy Policy 
             let dataManagementVC = InformationViewController()
-            dataManagementVC.titleText = "Data Management"
+            dataManagementVC.titleText = "Privacy Policy"
             dataManagementVC.contentText = """
-            Privacy Policy
-
             Effective Date: 17/03/2025
 
             Welcome to NoteShare! Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your personal information when you use our mobile application ("App"). By using NoteShare, you agree to the terms outlined in this Privacy Policy.
@@ -838,8 +836,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             let helpVC = InformationViewController()
             helpVC.titleText = "Help & Support"
             helpVC.contentText = """
-            Help & Support Center
-
             Getting Started
 
             Creating Your Profile: Customize your academic profile with your specialization and interests
@@ -858,8 +854,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             let termsVC = InformationViewController()
             termsVC.titleText = "Terms & Conditions"
             termsVC.contentText = """
-            Terms and Conditions
-
             Effective Date: 17/03/2025
 
             Welcome to NoteShare! By accessing or using our App, you agree to the following Terms and Conditions.

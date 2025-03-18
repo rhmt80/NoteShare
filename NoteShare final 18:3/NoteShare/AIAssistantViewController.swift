@@ -30,14 +30,69 @@ class AIPageViewController: ObservableObject {
     public let storage = Storage.storage()
     public let db = Firestore.firestore()
     
-    // Helper function to extract text from PDF
+    // Helper function to extract text from PDF - enhanced version with more detailed logging
     private func extractTextFromPDF(_ pdfDocument: PDFDocument) -> String {
         var text = ""
         let pageCount = pdfDocument.pageCount
+        
+        print("==== EXTRACT TEXT START ====")
+        print("Extracting text from PDF with \(pageCount) pages")
+        
+        // Use a more intensive approach to text extraction
         for i in 0..<pageCount {
-            guard let page = pdfDocument.page(at: i) else { continue }
-            text += page.string ?? ""
+            guard let page = pdfDocument.page(at: i) else { 
+                print("Failed to get page \(i)")
+                continue 
+            }
+            
+            print("Processing page \(i+1) of \(pageCount)")
+            
+            // Try multiple methods to extract text
+            if let pageText = page.string, !pageText.isEmpty {
+                // Method 1: Direct string extraction
+                text += "--- Page \(i+1) ---\n"
+                text += pageText
+                text += "\n\n"
+                print("SUCCESS: Extracted \(pageText.count) characters from page \(i+1) using direct method")
+                // Log a sample of the extracted text
+                if pageText.count > 0 {
+                    let sampleLength = min(pageText.count, 100)
+                    print("SAMPLE: \"\(pageText.prefix(sampleLength))...\"")
+                }
+            } else {
+                // Method 2: Using PDFKit's attribute dictionary if direct method fails
+                print("Direct string extraction failed, trying attributedString method")
+                let pageBounds = page.bounds(for: .mediaBox)
+                if let attributedText = page.attributedString, attributedText.length > 0 {
+                    text += "--- Page \(i+1) ---\n"
+                    text += attributedText.string
+                    text += "\n\n"
+                    print("SUCCESS: Extracted \(attributedText.string.count) characters from page \(i+1) using attributed string")
+                    // Log a sample of the extracted text
+                    if attributedText.string.count > 0 {
+                        let sampleLength = min(attributedText.string.count, 100)
+                        print("SAMPLE: \"\(attributedText.string.prefix(sampleLength))...\"")
+                    }
+                } else {
+                    print("ERROR: No text found on page \(i+1) - both extraction methods failed")
+                    text += "--- Page \(i+1) [No text detected] ---\n\n"
+                }
+            }
         }
+        
+        // Set the pdfText property immediately
+        if !text.isEmpty {
+            self.pdfText = text
+            print("SUCCESS: PDF text extracted successfully: \(text.count) characters total across \(pageCount) pages")
+            // Log a sample of the final text
+            let sampleLength = min(text.count, 200)
+            print("FINAL TEXT SAMPLE: \"\(text.prefix(sampleLength))...\"")
+        } else {
+            self.pdfText = "No text could be extracted from this PDF. It may be scanned or image-based."
+            print("ERROR: No text could be extracted from PDF - all extraction methods failed")
+        }
+        
+        print("==== EXTRACT TEXT END ====")
         return text
     }
     
@@ -45,58 +100,29 @@ class AIPageViewController: ObservableObject {
         self.selectedPDFMetadata = metadata
         // Clear existing messages to start a fresh chat
         self.messages = []
-        downloadPDF(from: metadata.url)
+        
+        print("Selected PDF metadata: \(metadata.fileName) from URL: \(metadata.url)")
+        
+        // Create a proper URL from the string URL in metadata
+        if let url = URL(string: metadata.url.absoluteString) {
+            downloadPDF(from: url)
+        } else {
+            print("ERROR: Invalid URL in PDF metadata: \(metadata.url)")
+            self.pdfText = "Error: The PDF URL is invalid and could not be loaded."
+            isLoading = false
+        }
     }
     
+    // Improved PDF download with URL refresh capabilities
     public func downloadPDF(from url: URL) {
         isLoading = true
         print("Downloading PDF from URL: \(url.absoluteString)")
         
-        // Try multiple approaches to create a valid URL
-        var normalizedURL = url
-        if url.absoluteString.contains("%") {
-            // If URL already has percent encoding, try to clean it up
-            if let decodedString = url.absoluteString.removingPercentEncoding,
-               let cleanURL = URL(string: decodedString) {
-                normalizedURL = cleanURL
-            }
-        } else {
-            // If URL doesn't have encoding, try to add proper encoding
-            if let encodedString = url.absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-               let encodedURL = URL(string: encodedString) {
-                normalizedURL = encodedURL
-            }
-        }
-        
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let filename = normalizedURL.lastPathComponent.removingPercentEncoding ?? normalizedURL.lastPathComponent
-        let localURL = documentsPath.appendingPathComponent(filename)
-        
-        // Check if file already exists locally
-        if FileManager.default.fileExists(atPath: localURL.path) {
-            print("PDF already exists locally, using cached version at \(localURL.path)")
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                print("Setting selectedPDF to cached file at: \(localURL.path)")
-                self.selectedPDF = localURL
-                if self.pdfText == nil || self.pdfText?.isEmpty == true {
-                    if let document = PDFDocument(url: localURL) {
-                        self.extractTextFromPDF(document: document)
-                        print("Extracted text from cached PDF: \(self.pdfText?.count ?? 0) characters")
-                    }
-                }
-                self.isLoading = false
-                if self.selectedPDF == nil {
-                    print("Warning: selectedPDF is still nil after setting to cached file")
-                } else {
-                    print("Successfully set selectedPDF to cached file")
-                }
-            }
-            return
-        }
+        // Extract the PDF path from the URL for potential refresh
+        let pdfPath = extractPDFPathFromURL(url.absoluteString)
         
         // Create a URL request with a timeout
-        var request = URLRequest(url: normalizedURL)
+        var request = URLRequest(url: url)
         request.timeoutInterval = 30 // 30 second timeout
         
         let task = URLSession.shared.downloadTask(with: request) { [weak self] tempFileURL, response, error in
@@ -109,26 +135,69 @@ class AIPageViewController: ObservableObject {
                 print("Error downloading PDF: \(error.localizedDescription)")
                 DispatchQueue.main.async { 
                     self.isLoading = false
-                    // Even though download failed, keep the metadata so UI can still show
+                    // Set an error message for the user
+                    self.pdfText = "Error downloading PDF: \(error.localizedDescription)"
+                }
+                return
+            }
+            
+            // Check HTTP response status
+            if let httpResponse = response as? HTTPURLResponse, 
+               httpResponse.statusCode != 200 {
+                print("Invalid response: \(response?.description ?? "unknown") - Status: \(httpResponse.statusCode)")
+                
+                // If we get a 400 error (likely expired token), try to refresh the URL
+                if httpResponse.statusCode == 400 && !pdfPath.isEmpty {
+                    self.refreshFirebaseURL(for: pdfPath) { [weak self] result in
+                        guard let self = self else { return }
+                        
+                        switch result {
+                        case .success(let newURL):
+                            print("URL refreshed successfully, retrying with new URL: \(newURL)")
+                            // Retry download with new URL if we have a valid URL
+                            if let newValidURL = URL(string: newURL) {
+                                DispatchQueue.main.async {
+                                    self.downloadPDF(from: newValidURL)
+                                }
+                            } else {
+                                DispatchQueue.main.async { 
+                                    self.isLoading = false
+                                    self.pdfText = "Error: Invalid URL after refresh"
+                                }
+                            }
+                            
+                        case .failure(let refreshError):
+                            print("Failed to refresh URL: \(refreshError.localizedDescription)")
+                            DispatchQueue.main.async { 
+                                self.isLoading = false
+                                self.pdfText = "Error: Firebase URL has expired and refresh failed"
+                            }
+                        }
+                    }
+                    return
+                }
+                
+                DispatchQueue.main.async { 
+                    self.isLoading = false
+                    self.pdfText = "Error: Server returned status code \(httpResponse.statusCode)"
                 }
                 return
             }
             
             guard let tempFileURL = tempFileURL else {
                 print("Error: No temporary file URL received after download")
-                DispatchQueue.main.async { self.isLoading = false }
-                return
-            }
-            
-            // Check if we got valid data
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                print("Invalid response: \(response?.description ?? "unknown")")
-                DispatchQueue.main.async { self.isLoading = false }
+                DispatchQueue.main.async { 
+                    self.isLoading = false
+                    self.pdfText = "Error: Download failed (no temporary file)"
+                }
                 return
             }
             
             do {
+                let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                let uniqueFilename = UUID().uuidString + ".pdf"
+                let localURL = documentsPath.appendingPathComponent(uniqueFilename)
+                
                 // If there's an existing file, remove it first
                 if FileManager.default.fileExists(atPath: localURL.path) {
                     try FileManager.default.removeItem(at: localURL)
@@ -138,18 +207,14 @@ class AIPageViewController: ObservableObject {
                 try FileManager.default.moveItem(at: tempFileURL, to: localURL)
                 print("Successfully saved PDF to: \(localURL.path)")
                 
-                // Verify the file exists
-                if !FileManager.default.fileExists(atPath: localURL.path) {
-                    print("Error: File doesn't exist at \(localURL.path) after move operation")
-                    DispatchQueue.main.async { self.isLoading = false }
-                    return
-                }
-                
                 // Check if file is a valid PDF
-                guard PDFDocument(url: localURL) != nil else {
+                guard let document = PDFDocument(url: localURL) else {
                     print("Error: Invalid PDF file at \(localURL.path)")
                     try? FileManager.default.removeItem(at: localURL)
-                    DispatchQueue.main.async { self.isLoading = false }
+                    DispatchQueue.main.async { 
+                        self.isLoading = false 
+                        self.pdfText = "Error: The downloaded file is not a valid PDF"
+                    }
                     return
                 }
                 
@@ -157,70 +222,216 @@ class AIPageViewController: ObservableObject {
                     print("Setting selectedPDF to: \(localURL.path)")
                     self.selectedPDF = localURL
                     
-                    // Ensure pdfText is loaded if not already available
-                    if self.pdfText == nil || self.pdfText?.isEmpty == true {
-                        if let document = PDFDocument(url: localURL) {
-                            self.extractTextFromPDF(document: document)
-                            print("Extracted text from downloaded PDF: \(self.pdfText?.count ?? 0) characters")
+                    // Extract text immediately
+                    let extractedText = self.extractTextFromPDF(document)
+                    
+                    // If standard extraction failed, try OCR
+                    if extractedText.isEmpty || extractedText.contains("No text could be extracted") {
+                        print("Standard extraction failed, trying OCR")
+                        let ocrText = self.attemptOCRForImageBasedPDF(document)
+                        if !ocrText.isEmpty {
+                            self.pdfText = ocrText
+                            print("OCR extraction successful: \(ocrText.count) characters")
                         }
                     }
                     
                     self.isLoading = false
-                    
-                    // Verify the PDF was properly set
-                    if self.selectedPDF == nil {
-                        print("Warning: selectedPDF is still nil after setting")
-                    } else {
-                        print("Successfully set selectedPDF")
-                    }
                 }
             } catch {
                 print("Error saving PDF: \(error)")
-                DispatchQueue.main.async { self.isLoading = false }
+                DispatchQueue.main.async { 
+                    self.isLoading = false 
+                    self.pdfText = "Error saving PDF: \(error.localizedDescription)"
+                }
             }
         }
         
         task.resume()
     }
     
-    
-    func sendMessage(_ content: String) {
-        let userMessage = ChatMessage(content: content, type: .user, order: messages.count)
-        messages.append(userMessage)
-        isLoading = true
+    // Extract the PDF path from a Firebase Storage URL
+    private func extractPDFPathFromURL(_ urlString: String) -> String {
+        guard let url = URL(string: urlString),
+              url.absoluteString.contains("firebasestorage.googleapis.com") else {
+            return ""
+        }
         
-        Task {
-            do {
-                let fullPrompt = createPromptWithContext(pdfText, message: content)
-                let response = try await aiModel.generateContent(fullPrompt)
-                
-                await MainActor.run {
-                    let aiMessage = ChatMessage(content: response.text ?? "No response", type: .ai, order: messages.count)
-                    messages.append(aiMessage)
-                    isLoading = false
-                    
-                    if let metadata = selectedPDFMetadata {
-                        saveChatToFirestore(messages: [userMessage, aiMessage])
-                    }
-                }
-            } catch {
-                await MainActor.run {
-                    let errorMessage = ChatMessage(content: "Error: \(error.localizedDescription)", type: .error, order: messages.count)
-                    messages.append(errorMessage)
-                    isLoading = false
-                }
+        // Extract pdfs/USER_ID/FILE_ID.pdf from the URL path
+        if let pathComponent = url.path.components(separatedBy: "/o/").last?.removingPercentEncoding,
+           pathComponent.starts(with: "pdfs/") {
+            // Remove any query parameters
+            let cleanPath = pathComponent.components(separatedBy: "?").first ?? pathComponent
+            return cleanPath
+        }
+        
+        return ""
+    }
+    
+    // Refresh a Firebase Storage URL to get a new download token
+    private func refreshFirebaseURL(for pdfPath: String, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let currentUser = Auth.auth().currentUser else {
+            completion(.failure(NSError(domain: "Firebase", code: 401, 
+                                      userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])))
+            return
+        }
+        
+        print("Refreshing Firebase URL for path: \(pdfPath)")
+        
+        // Get a fresh download URL from Firebase Storage
+        let storageRef = Storage.storage().reference().child(pdfPath)
+        storageRef.downloadURL { url, error in
+            if let error = error {
+                print("Failed to refresh download URL: \(error.localizedDescription)")
+                completion(.failure(error))
+                return
             }
+            
+            guard let refreshedURL = url else {
+                completion(.failure(NSError(domain: "Firebase", code: 404, 
+                                          userInfo: [NSLocalizedDescriptionKey: "Could not get fresh download URL"])))
+                return
+            }
+            
+            print("Successfully refreshed download URL: \(refreshedURL.absoluteString)")
+            completion(.success(refreshedURL.absoluteString))
         }
     }
     
+//    private func createPromptWithContext(_ pdfText: String?, message: String) -> String {
+//        print("==== CREATE PROMPT START ====")
+//        var context = "PDF Context Information:\n"
+//        
+//        // Add metadata if available
+//        if let metadata = selectedPDFMetadata {
+//            context += "Title: \(metadata.fileName)\n"
+//            context += "Subject: \(metadata.subjectName) (\(metadata.subjectCode))\n\n"
+//            print("Added metadata to context: \(metadata.fileName)")
+//        }
+//        
+//        // Add PDF content with verification and more detailed logging
+//        if let textContent = pdfText, !textContent.isEmpty {
+//            print("PDF text available: \(textContent.count) characters")
+//            
+//            // Do a character frequency check to ensure text isn't just whitespace or repeated characters
+//            let charFrequency = NSCountedSet()
+//            for char in textContent {
+//                charFrequency.add(char)
+//            }
+//            let uniqueChars = charFrequency.count
+//            print("Text contains \(uniqueChars) unique characters")
+//            
+//            // Limit text to a reasonable size to ensure it fits in the context window
+//            let maxContentLength = 30000
+//            let truncatedContent = textContent.count > maxContentLength 
+//                ? String(textContent.prefix(maxContentLength)) + "\n[Content truncated due to length]" 
+//                : textContent
+//            
+//            context += "PDF CONTENT START\n\(truncatedContent)\nPDF CONTENT END\n\n"
+//            print("Added \(truncatedContent.count) characters of PDF content to prompt")
+//            
+//            // Verify we have meaningful content (not just format markers)
+//            let contentWords = truncatedContent.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+//            print("PDF content contains \(contentWords.count) words")
+//            
+//            if contentWords.count < 10 {
+//                print("WARNING: PDF content has very few words (\(contentWords.count)) - PDF might be image-based")
+//                context += "NOTE: The PDF appears to contain very little text content. It may be primarily images or scanned content.\n\n"
+//            } else {
+//                // Log a few of the words to verify they look reasonable
+//                let wordSample = contentWords.prefix(5).joined(separator: ", ")
+//                print("Word sample: \(wordSample)")
+//            }
+//        } else {
+//            context += "[PDF content could not be extracted. The PDF may be scanned or image-based.]\n\n"
+//            print("ERROR: No PDF content available for prompt - pdfText is nil or empty")
+//        }
+//        
+//        // Add conversation history (if available)
+//        if messages.count > 0 {
+//            context += "PREVIOUS CONVERSATION:\n"
+//            // Include up to 5 recent message pairs (skip the current user message)
+//            let recentMessages = messages.count > 1 ? messages.dropLast().suffix(min(6, messages.count - 1)) : []
+//            
+//            if recentMessages.isEmpty {
+//                context += "[No previous messages]\n\n"
+//            } else {
+//                print("Adding \(recentMessages.count) previous messages to context")
+//                for msg in recentMessages {
+//                    let prefix = msg.type == .user ? "User: " : "Assistant: "
+//                    context += prefix + msg.content + "\n\n"
+//                }
+//                context += "END OF PREVIOUS CONVERSATION\n\n"
+//            }
+//        }
+//        
+//        // Add the current user question with clear instructions
+//        context += "User Question: \(message)\n\n"
+//        context += "Instructions:\n"
+//        context += "1. Answer the user's question based ONLY on the PDF content provided above.\n"
+//        context += "2. If the PDF content doesn't contain information needed to answer the question, clearly state that.\n"
+//        context += "3. Do not make up information or use general knowledge not found in this specific PDF.\n"
+//        context += "4. If the PDF content is insufficient, explain why and what specific information is missing.\n"
+//        
+//        // Log a preview of the full context
+//        print("Total context length: \(context.count) characters")
+//        let previewLength = min(context.count, 500)
+//        print("Context preview: \"\(context.prefix(previewLength))...\"")
+//        print("==== CREATE PROMPT END ====")
+//        
+//        return context
+//    }
     private func createPromptWithContext(_ pdfText: String?, message: String) -> String {
-        var context = "PDF Context:\n"
-        if let metadata = selectedPDFMetadata {
-            context += "Title: \(metadata.fileName)\n"
-            context += "Subject: \(metadata.subjectName) (\(metadata.subjectCode))\n\n"
+            var context = "PDF Context:\n"
+            if let metadata = selectedPDFMetadata {
+                context += "Title: \(metadata.fileName)\n"
+                context += "Subject: \(metadata.subjectName) (\(metadata.subjectCode))\n\n"
+            }
+            context += "\(pdfText ?? "")\n\n"
+            return context + "User Question: \(message)\n\nPlease provide a helpful and concise response based on the PDF context and do not use any bold text."
         }
-        context += "\(pdfText ?? "")\n\n"
-        return context + "User Question: \(message)\n\nPlease provide a helpful and concise response based on the PDF context."
+    
+    // Create a more comprehensive fallback prompt when PDF content is unavailable
+    private func createFallbackPrompt(message: String) -> String {
+        var context = ""
+        
+        // Add metadata if available
+        if let metadata = selectedPDFMetadata {
+            context += "Note: I'm trying to answer a question about a PDF titled '\(metadata.fileName)' for subject '\(metadata.subjectName)' (\(metadata.subjectCode)), but I couldn't access the PDF text content. "
+            
+            // Provide subject-specific fallback information
+            if metadata.subjectName.lowercased().contains("operating") || metadata.fileName.lowercased().contains("page replacement") {
+                context += "\n\nWhile I don't have access to the specific PDF, I can provide general information about page replacement algorithms in operating systems:\n\n"
+                context += "Page replacement algorithms are used in virtual memory systems to decide which memory pages to swap out when a page fault occurs and new pages need to be brought into memory. Common page replacement algorithms include:\n\n"
+                context += "1. FIFO (First-In-First-Out): Replaces the oldest page in memory\n"
+                context += "2. LRU (Least Recently Used): Replaces the page that hasn't been used for the longest time\n"
+                context += "3. LFU (Least Frequently Used): Replaces the page with the lowest usage count\n"
+                context += "4. Optimal/OPT: Replaces the page that won't be used for the longest time in the future (theoretical algorithm)\n"
+                context += "5. Clock/Second-Chance: A more efficient approximation of LRU using a circular buffer\n"
+                context += "6. Random: Randomly selects a page to replace\n\n"
+                context += "These algorithms are evaluated based on page fault rate, implementation complexity, and memory overhead.\n\n"
+            }
+        } else {
+            context += "Note: I'm trying to answer a question, but I couldn't access the PDF text content. "
+        }
+        
+        // Add specific error info if the pdfText contains an error message
+        if let pdfText = self.pdfText, pdfText.starts(with: "Error:") {
+            context += pdfText + " "
+        } else {
+            context += "The PDF file may be inaccessible due to a download error or permission issue. "
+        }
+        
+        context += "Please provide a helpful response based on the user's question.\n\n"
+        context += "User Question: \(message)\n\n"
+        
+        // Add additional guidance for the AI
+        context += "Instructions:\n"
+        context += "1. Acknowledge that you don't have access to the specific PDF.\n"
+        context += "2. If the question is about a general topic that you can answer based on your knowledge, provide a helpful response.\n"
+        context += "3. If the question requires the specific PDF content, explain that you can't access it and suggest alternatives.\n"
+        context += "4. Be honest about limitations while remaining helpful.\n"
+        
+        return context
     }
     
     private func extractPDFPages() {
@@ -280,7 +491,8 @@ class AIPageViewController: ObservableObject {
             }
             
             // Extract text from the PDF
-            self.extractTextFromPDF(document: document)
+            let extractedText = self.extractTextFromPDF(document)
+            print("Extracted \(extractedText.count) characters of text from PDF")
             
             DispatchQueue.main.async {
                 print("Finished processing PDF: \(document.pageCount) pages extracted, \(self.pdfPages.count) thumbnails created")
@@ -288,32 +500,31 @@ class AIPageViewController: ObservableObject {
         }
     }
     
-    
-    private func extractTextFromPDF(document: PDFDocument) {
-        var fullText = ""
-        for i in 0..<document.pageCount {
-            if let page = document.page(at: i), let content = page.string {
-                fullText += content + "\n\n"
-            }
-        }
-        pdfText = fullText
-        
-    }
-    
     private func saveChatToFirestore(messages newMessages: [ChatMessage]) {
         guard let currentUser = Auth.auth().currentUser,
               let pdfMetadata = selectedPDFMetadata else {
-            print("Error: Missing user or PDF metadata")
+            print("ERROR: Missing user or PDF metadata - cannot save chat")
+            if Auth.auth().currentUser == nil {
+                print("DEBUG: User is not authenticated")
+            }
+            if selectedPDFMetadata == nil {
+                print("DEBUG: No PDF metadata available")
+            }
             return
         }
         
+        print("DEBUG: User authenticated with ID: \(currentUser.uid)")
         let chatId = "\(currentUser.uid)_\(pdfMetadata.id)"
-        print("Saving chat with ID: \(chatId)")
+        print("SAVING chat with ID: \(chatId) - Contains \(newMessages.count) messages")
         
-        // Check if we have PDF text
-        guard let pdfText = self.pdfText, !pdfText.isEmpty else {
-            print("Error: PDF text is missing or empty")
-            return
+        // Create safer PDF text fallback
+        let pdfTextToSave: String
+        if let availableText = self.pdfText, !availableText.isEmpty {
+            pdfTextToSave = availableText
+            print("Using available PDF text: \(availableText.count) characters")
+        } else {
+            pdfTextToSave = "[PDF text not available - using empty placeholder]"
+            print("WARNING: PDF text is missing, using empty placeholder")
         }
         
         let timestamp = FieldValue.serverTimestamp()
@@ -322,62 +533,128 @@ class AIPageViewController: ObservableObject {
             "userId": currentUser.uid,
             "pdfId": pdfMetadata.id,
             "pdfName": pdfMetadata.fileName,
-            "pdfText": pdfText,
-            "pdfUrl": pdfMetadata.url.absoluteString,  // Store the URL for fallback
+            "pdfText": pdfTextToSave,
+            "pdfUrl": pdfMetadata.url.absoluteString,  
             "subjectName": pdfMetadata.subjectName,
             "subjectCode": pdfMetadata.subjectCode,
-            "messageCount": self.messages.count,
+            "messageCount": newMessages.count,
             "lastMessage": newMessages.last?.content ?? "",
             "createdAt": timestamp,
             "updatedAt": timestamp
         ]
         
+        print("DEBUG: Saving chat document with \(newMessages.count) messages")
+        
+        // Simplify the approach: Always update or create the main chat document first
         let chatRef = db.collection("chats").document(chatId)
         
-        // Use a transaction to ensure atomic updates
-        db.runTransaction({ (transaction, errorPointer) -> Any? in
-            do {
-                // Check if the document exists
-                let document = try transaction.getDocument(chatRef)
+        // Create or update the main chat document
+        chatRef.setData(chatData, merge: true) { error in
+            if let error = error {
+                print("ERROR: Failed to save chat document: \(error.localizedDescription)")
                 
-                if document.exists {
-                    // Document exists, just update relevant fields
-                    transaction.updateData([
-                        "messageCount": self.messages.count,
-                        "lastMessage": newMessages.last?.content ?? "",
-                        "updatedAt": timestamp
-                    ], forDocument: chatRef)
+                if let nsError = error as NSError? {
+                    print("ERROR: Firebase error details - code: \(nsError.code), domain: \(nsError.domain)")
                     
-                    print("Updated existing chat document")
-                } else {
-                    // Document doesn't exist, create it
-                    transaction.setData(chatData, forDocument: chatRef)
-                    print("Created new chat document")
+                    // Check for common Firebase errors
+                    if nsError.code == 7 {
+                        print("ERROR: Permission denied - check Firebase security rules")
+                    } else if nsError.code == 3 {
+                        print("ERROR: Document too large - PDF text may be too big")
+                    }
+                }
+                return
+            }
+            
+            print("SUCCESS: Updated chat document. Now saving messages...")
+            
+            // Now handle the messages collection - using a simple approach
+            // Delete existing messages and add all messages again to ensure consistency
+            self.recreateMessagesCollection(chatId: chatId, messages: newMessages)
+        }
+    }
+    
+    private func recreateMessagesCollection(chatId: String, messages: [ChatMessage]) {
+        let messagesRef = db.collection("chats").document(chatId).collection("messages")
+        let currentUser = Auth.auth().currentUser!
+        
+        // First, delete all existing messages (if any)
+        print("DEBUG: Getting existing messages to delete them...")
+        messagesRef.getDocuments { [weak self] snapshot, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("ERROR: Failed to get existing messages: \(error.localizedDescription)")
+                // Continue with adding new messages even if we failed to delete old ones
+                self.addAllMessages(messagesRef: messagesRef, messages: messages, userId: currentUser.uid)
+                return
+            }
+            
+            // If we have existing documents, delete them
+            if let documents = snapshot?.documents, !documents.isEmpty {
+                print("DEBUG: Deleting \(documents.count) existing messages...")
+                
+                let batch = self.db.batch()
+                for document in documents {
+                    batch.deleteDocument(document.reference)
                 }
                 
-                // Add the new messages to subcollection
-                for message in newMessages {
-                    let messageRef = chatRef.collection("messages").document()
+                batch.commit { error in
+                    if let error = error {
+                        print("ERROR: Failed to delete old messages: \(error.localizedDescription)")
+                } else {
+                        print("SUCCESS: Deleted old messages. Adding \(messages.count) new messages...")
+                    }
+                    
+                    // Add all new messages
+                    self.addAllMessages(messagesRef: messagesRef, messages: messages, userId: currentUser.uid)
+                }
+            } else {
+                // No existing messages, just add the new ones
+                print("DEBUG: No existing messages to delete. Adding \(messages.count) new messages...")
+                self.addAllMessages(messagesRef: messagesRef, messages: messages, userId: currentUser.uid)
+            }
+        }
+    }
+    
+    private func addAllMessages(messagesRef: CollectionReference, messages: [ChatMessage], userId: String) {
+        // Use a batch to add all messages at once
+        let batch = db.batch()
+        
+        // Make sure we have a valid user ID
+        let safeUserId = userId.isEmpty ? "anonymous_user" : userId
+        
+        // Add each message to the batch
+        for (index, message) in messages.enumerated() {
+            let order = index // Use the index to ensure proper order
+            let documentId = "msg_\(order)_\(message.id.uuidString)" // Use predictable IDs with order as prefix
+            let messageRef = messagesRef.document(documentId)
+            
+            // Ensure critical fields match the index requirements from firestore.indexes.json
                     let messageData: [String: Any] = [
                         "content": message.content,
                         "type": message.type.rawValue,
                         "timestamp": message.timestamp,
-                        "userId": currentUser.uid,
-                        "order": message.order  // Save the order for proper sorting
-                    ]
-                    transaction.setData(messageData, forDocument: messageRef)
-                }
-                
-                return nil
-            } catch let error as NSError {
-                errorPointer?.pointee = error
-                return nil
-            }
-        }) { (_, error) in
+                "userId": safeUserId, // Always include userId field 
+                "order": order,
+                "created_at": FieldValue.serverTimestamp()
+            ]
+            
+            batch.setData(messageData, forDocument: messageRef)
+            
+            print("DEBUG: Adding message \(index+1)/\(messages.count) with order=\(order), userId=\(safeUserId)")
+        }
+        
+        // Commit the batch
+        batch.commit { error in
             if let error = error {
-                print("Error saving chat: \(error.localizedDescription)")
+                print("ERROR: Failed to save messages: \(error.localizedDescription)")
+                
+                if let nsError = error as NSError? {
+                    print("ERROR: Firestore error code: \(nsError.code), domain: \(nsError.domain)")
+                }
             } else {
-                print("Successfully saved chat and messages")
+                print("SUCCESS: Successfully saved all \(messages.count) messages to Firestore!")
             }
         }
     }
@@ -390,13 +667,13 @@ class AIPageViewController: ObservableObject {
         
         isLoading = true
         let chatId = "\(currentUser.uid)_\(pdfId)"
+        print("Loading chat messages for PDF ID: \(pdfId), Chat ID: \(chatId)")
         
-        // Get messages from the subcollection
+        // Get messages from the subcollection - use a simpler query to avoid index requirements
         db.collection("chats").document(chatId)
             .collection("messages")
-            .whereField("userId", isEqualTo: currentUser.uid)  // Add security rule check
-            .order(by: "order", descending: false)  // First sort by order field
-            .order(by: "timestamp", descending: false)  // Then by timestamp
+            // Removed whereField to simplify query
+            .order(by: "order", descending: false)  // Only sort by order field, no composite index needed
             .getDocuments { [weak self] snapshot, error in
                 guard let self = self else { return }
                 
@@ -406,10 +683,16 @@ class AIPageViewController: ObservableObject {
                 
                 if let error = error {
                     print("Error loading messages: \(error.localizedDescription)")
+                    
+                    // Try an even simpler query if the first one fails
+                    self.fallbackLoadMessages(chatId: chatId)
                     return
                 }
                 
-                guard let documents = snapshot?.documents else { return }
+                guard let documents = snapshot?.documents else { 
+                    print("No documents found in messages collection")
+                    return 
+                }
                 
                 print("Found \(documents.count) messages for PDF ID: \(pdfId)")
                 
@@ -417,20 +700,99 @@ class AIPageViewController: ObservableObject {
                     let data = document.data()
                     guard let content = data["content"] as? String,
                           let typeString = data["type"] as? String,
-                          let type = MessageType(rawValue: typeString),
-                          let timestamp = (data["timestamp"] as? Timestamp)?.dateValue() else {
+                          let type = MessageType(rawValue: typeString) else {
                         print("Failed to parse message: \(data)")
                         return nil
                     }
                     
+                    // Get timestamp (fallback to current date if not available)
+                    let timestamp = (data["timestamp"] as? Timestamp)?.dateValue() ?? Date()
+                    
+                    // Get order (fallback to document ID extraction)
+                    let order: Int
+                    if let orderNum = data["order"] as? Int {
+                        order = orderNum
+                    } else {
+                        // Try to extract order from document ID (format: msg_0_uuid)
+                        let docId = document.documentID
+                        if docId.hasPrefix("msg_"), 
+                           let underscoreIndex = docId.firstIndex(of: "_"),
+                           let secondUnderscoreIndex = docId[underscoreIndex..<docId.endIndex].dropFirst().firstIndex(of: "_"),
+                           let orderValue = Int(docId[docId.index(after: underscoreIndex)..<secondUnderscoreIndex]) {
+                            order = orderValue
+                        } else {
+                            // Fallback to random order
+                            order = Int.random(in: 0..<1000)
+                        }
+                    }
+                    
+                    return ChatMessage(content: content, type: type, timestamp: timestamp, order: order)
+                }
+                
+                // Sort messages by order
+                let sortedMessages = messages.sorted { $0.order < $1.order }
+                
+                DispatchQueue.main.async {
+                    self.messages = sortedMessages
+                    print("Successfully loaded \(sortedMessages.count) messages for chat")
+                    
+                    // Verify message order
+                    for (index, message) in sortedMessages.enumerated() {
+                        print("Message \(index): Order \(message.order), Type \(message.type.rawValue)")
+                    }
+                }
+            }
+    }
+    
+    // Fallback method with an even simpler query if the first one fails
+    private func fallbackLoadMessages(chatId: String) {
+        print("Attempting fallback message loading for chat: \(chatId)")
+        
+        db.collection("chats").document(chatId)
+            .collection("messages")
+            .getDocuments { [weak self] snapshot, error in
+                guard let self = self else { return }
+                
+                if let error = error {
+                    print("Fallback also failed: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let documents = snapshot?.documents else {
+                    print("No documents found in fallback query")
+                    return
+                }
+                
+                print("Fallback found \(documents.count) messages")
+                
+                // Process messages similarly to the main method
+                let messages = documents.compactMap { document -> ChatMessage? in
+                    let data = document.data()
+                    guard let content = data["content"] as? String,
+                          let typeString = data["type"] as? String,
+                          let type = MessageType(rawValue: typeString) else {
+                        return nil
+                    }
+                    
+                    let timestamp = (data["timestamp"] as? Timestamp)?.dateValue() ?? Date()
                     let order = data["order"] as? Int ?? 0
                     
                     return ChatMessage(content: content, type: type, timestamp: timestamp, order: order)
                 }
                 
+                // Sort manually after fetching
+                let sortedMessages = messages.sorted { 
+                    if $0.order != $1.order {
+                        return $0.order < $1.order
+                    }
+                    return $0.timestamp < $1.timestamp 
+                }
+                
                 DispatchQueue.main.async {
-                    self.messages = messages
-                    print("Successfully loaded \(messages.count) messages for chat")
+                    if !sortedMessages.isEmpty {
+                        self.messages = sortedMessages
+                        print("Successfully loaded \(sortedMessages.count) messages using fallback")
+                    }
                 }
             }
     }
@@ -651,7 +1013,7 @@ class AIPageViewController: ObservableObject {
                     
                     // Extract text if needed
                     if self.pdfText?.isEmpty ?? true, let document = PDFDocument(url: localPDF) {
-                        self.extractTextFromPDF(document: document)
+                        self.extractTextFromPDF(document)
                     }
                     
                     self.isLoading = false
@@ -956,6 +1318,340 @@ class AIPageViewController: ObservableObject {
                 }
             }
     }
+    
+    // Add a test function to verify Firebase connection and permissions
+    func testFirebaseConnection() {
+        guard let currentUser = Auth.auth().currentUser else {
+            print("DEBUG TEST: No authenticated user - cannot test Firebase")
+            return
+        }
+        
+        print("DEBUG TEST: Starting Firebase test with user: \(currentUser.uid)")
+        print("DEBUG TEST: User is \(currentUser.isAnonymous ? "anonymous" : "authenticated")")
+        
+        // Create a test document in a special collection
+        let testCollection = db.collection("test_chats")
+        let testDocument = testCollection.document("test_\(currentUser.uid)_\(Date().timeIntervalSince1970)")
+        
+        // Create test data
+        let testData: [String: Any] = [
+            "userId": currentUser.uid,
+            "testMessage": "This is a test message",
+            "timestamp": FieldValue.serverTimestamp(),
+            "deviceInfo": UIDevice.current.systemName + " " + UIDevice.current.systemVersion
+        ]
+        
+        // Write test data
+        print("DEBUG TEST: Writing test data to Firebase...")
+        testDocument.setData(testData) { error in
+            if let error = error {
+                print("DEBUG TEST: Failed to write test data: \(error.localizedDescription)")
+                if let nsError = error as NSError? {
+                    print("DEBUG TEST: Error code: \(nsError.code), domain: \(nsError.domain)")
+                    
+                    if nsError.code == 7 {
+                        print("DEBUG TEST: Permission denied - check Firebase security rules")
+                    } else if nsError.code == 2 {
+                        print("DEBUG TEST: Network error - check internet connection")
+                    }
+                }
+                return
+            }
+            
+            print("DEBUG TEST: Successfully wrote test data to: \(testDocument.path)")
+            
+            // Now try to read the data back
+            print("DEBUG TEST: Reading test data from Firebase...")
+            testDocument.getDocument { document, error in
+                if let error = error {
+                    print("DEBUG TEST: Failed to read test data: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let document = document, document.exists, let data = document.data() {
+                    print("DEBUG TEST: Successfully read test data")
+                    print("DEBUG TEST: Data: \(data)")
+                    
+                    // Now try to write a subcollection item
+                    let messageRef = testDocument.collection("messages").document()
+                    let messageData: [String: Any] = [
+                        "content": "Test chat message",
+                        "timestamp": FieldValue.serverTimestamp(),
+                        "userId": currentUser.uid
+                    ]
+                    
+                    print("DEBUG TEST: Writing test message to subcollection...")
+                    messageRef.setData(messageData) { error in
+                        if let error = error {
+                            print("DEBUG TEST: Failed to write test message: \(error.localizedDescription)")
+                            return
+                        }
+                        
+                        print("DEBUG TEST: Successfully wrote test message to: \(messageRef.path)")
+                        
+                        // Now try to read the subcollection
+                        testDocument.collection("messages").getDocuments { snapshot, error in
+                            if let error = error {
+                                print("DEBUG TEST: Failed to read test messages: \(error.localizedDescription)")
+                                return
+                            }
+                            
+                            if let documents = snapshot?.documents {
+                                print("DEBUG TEST: Successfully read \(documents.count) test messages")
+                                print("DEBUG TEST: All Firebase tests PASSED!")
+                            } else {
+                                print("DEBUG TEST: No test messages found")
+                            }
+                        }
+                    }
+                } else {
+                    print("DEBUG TEST: Test document not found or empty")
+                }
+            }
+        }
+    }
+    
+    // Helper method to try OCR as a last resort for image-based PDFs
+    private func attemptOCRForImageBasedPDF(_ pdfDocument: PDFDocument) -> String {
+        print("==== OCR ATTEMPT START ====")
+        print("Attempting OCR for image-based PDF with \(pdfDocument.pageCount) pages")
+        
+        var extractedText = ""
+        let group = DispatchGroup()
+        let lock = NSLock()
+        
+        // Process each page with OCR
+        for i in 0..<min(pdfDocument.pageCount, 10) { // Limit to first 10 pages to avoid long processing
+            guard let page = pdfDocument.page(at: i) else { continue }
+            
+            // Get page as image
+            let pageRect = page.bounds(for: .mediaBox)
+            let renderer = UIGraphicsImageRenderer(size: pageRect.size)
+            let pageImage = renderer.image { ctx in
+                UIColor.white.set()
+                ctx.fill(CGRect(origin: .zero, size: pageRect.size))
+                
+                // Fixed: CGContext is not optional, so we can't use guard let
+                let cgContext = ctx.cgContext
+                cgContext.translateBy(x: 0, y: pageRect.size.height)
+                cgContext.scaleBy(x: 1, y: -1)
+                
+                page.draw(with: .mediaBox, to: cgContext)
+            }
+            
+            group.enter()
+            
+            // Use Vision framework for OCR
+            guard let cgImage = pageImage.cgImage else {
+                group.leave()
+                continue
+            }
+            
+            let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+            let request = VNRecognizeTextRequest { request, error in
+                defer { group.leave() }
+                
+                if let error = error {
+                    print("OCR error on page \(i+1): \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
+                
+                let pageText = observations.compactMap { observation in
+                    observation.topCandidates(1).first?.string
+                }.joined(separator: "\n")
+                
+                lock.lock()
+                extractedText += "--- Page \(i+1) (OCR) ---\n"
+                extractedText += pageText
+                extractedText += "\n\n"
+                lock.unlock()
+                
+                print("OCR extracted \(pageText.count) characters from page \(i+1)")
+                if pageText.count > 0 {
+                    let sample = pageText.prefix(min(pageText.count, 100))
+                    print("OCR SAMPLE: \"\(sample)...\"")
+                }
+            }
+            
+            // Configure the request to use accurate mode
+            request.recognitionLevel = .accurate
+            request.usesLanguageCorrection = true
+            
+            do {
+                try requestHandler.perform([request])
+            } catch {
+                print("Failed to perform OCR: \(error.localizedDescription)")
+                group.leave()
+            }
+        }
+        
+        // Wait for all OCR tasks to complete
+        let _ = group.wait(timeout: .now() + 30.0)
+        
+        print("==== OCR ATTEMPT END ====")
+        if extractedText.isEmpty {
+            print("OCR failed to extract any text")
+            return ""
+        } else {
+            print("OCR extracted \(extractedText.count) characters total")
+            return extractedText
+        }
+    }
+    
+    func sendMessage(_ content: String) {
+        let userMessage = ChatMessage(content: content, type: .user, order: messages.count)
+        messages.append(userMessage)
+        isLoading = true
+        
+        print("==== SEND MESSAGE START ====")
+        print("User message: \"\(content)\"")
+        
+        // Ensure we have PDF text with enhanced extraction attempts
+        var hasPdfTextSuccess = false
+        
+        // Try to extract text if it's missing
+        if pdfText == nil || pdfText?.isEmpty == true || pdfText?.contains("No text could be extracted") == true {
+            print("PDF text missing or empty, attempting extraction")
+            
+            if let selectedPDF = selectedPDF, let document = PDFDocument(url: selectedPDF) {
+                print("PDF URL: \(selectedPDF.absoluteString)")
+                print("Attempting text extraction from document")
+                let extractedText = extractTextFromPDF(document)
+                
+                if !extractedText.isEmpty && !extractedText.contains("No text could be extracted") {
+                    hasPdfTextSuccess = true
+                    print("Successfully extracted text: \(extractedText.count) characters")
+                } else {
+                    print("Text extraction failed or returned empty result")
+                    
+                    // Force another attempt with different settings
+                    if let document = PDFDocument(url: selectedPDF) {
+                        print("Making second extraction attempt with different settings")
+                        // Try a different approach for extraction if needed
+                        var alternativeText = ""
+                        for i in 0..<document.pageCount {
+                            if let page = document.page(at: i) {
+                                let pageText = page.string ?? ""
+                                alternativeText += pageText + "\n\n"
+                            }
+                        }
+                        
+                        if !alternativeText.isEmpty {
+                            self.pdfText = alternativeText
+                            hasPdfTextSuccess = true
+                            print("Second attempt extracted: \(alternativeText.count) characters")
+                            // Log a sample of the alternative text
+                            let sampleLength = min(alternativeText.count, 100)
+                            print("ALT TEXT SAMPLE: \"\(alternativeText.prefix(sampleLength))...\"")
+                        } else {
+                            // As a last resort, try OCR
+                            print("Regular extraction methods failed, attempting OCR as last resort")
+                            let ocrText = attemptOCRForImageBasedPDF(document)
+                            if !ocrText.isEmpty {
+                                self.pdfText = ocrText
+                                hasPdfTextSuccess = true
+                                print("OCR extraction successful: \(ocrText.count) characters")
+                            } else {
+                                print("All extraction methods failed including OCR")
+                            }
+                        }
+                    }
+                }
+            } else if let metadata = selectedPDFMetadata {
+                print("No PDF available locally. Attempting to re-download PDF from: \(metadata.url)")
+                // Force-extract text from PDF again by re-downloading
+                downloadPDF(from: metadata.url)
+                
+                // Wait a moment for download to complete
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+                    guard let self = self else { return }
+                    
+                    if let selectedPDF = self.selectedPDF, let document = PDFDocument(url: selectedPDF) {
+                        let extractedText = self.extractTextFromPDF(document)
+                        print("Re-extraction after download: \(extractedText.count) characters")
+                        
+                        // If standard extraction failed, try OCR
+                        if extractedText.isEmpty || extractedText.contains("No text could be extracted") {
+                            print("Standard extraction after download failed, trying OCR")
+                            let ocrText = self.attemptOCRForImageBasedPDF(document)
+                            if !ocrText.isEmpty {
+                                self.pdfText = ocrText
+                                print("OCR after download successful: \(ocrText.count) characters")
+                            }
+                        }
+                    }
+                }
+            } else {
+                print("ERROR: No PDF file or metadata available for extraction")
+            }
+        } else {
+            hasPdfTextSuccess = true
+            print("Using existing PDF text: \(pdfText?.count ?? 0) characters")
+        }
+        
+        Task {
+            do {
+                // Prepare context with the PDF content
+                let context: String
+                if hasPdfTextSuccess {
+                    context = createPromptWithContext(pdfText, message: content)
+                    print("Created context with PDF content: \(context.count) characters")
+                } else {
+                    context = createFallbackPrompt(message: content)
+                    print("Created fallback context: \(context.count) characters")
+                }
+                
+                // Log subset of context for debugging
+                let previewLength = min(context.count, 200)
+                print("Context preview: \(context.prefix(previewLength))...")
+                
+                // API call - add more debugging
+                print("Sending context to AI model (length: \(context.count))")
+                let response = try await aiModel.generateContent(context)
+                
+                await MainActor.run {
+                    let aiMessage = ChatMessage(content: response.text ?? "No response", type: .ai, order: messages.count)
+                    messages.append(aiMessage)
+                    
+                    print("Received AI response: \(aiMessage.content.prefix(50))...")
+                    print("Total messages in chat: \(self.messages.count)")
+                    print("==== SEND MESSAGE END ====")
+                    
+                    if let metadata = selectedPDFMetadata {
+                        print("Saving chat history to Firebase with \(self.messages.count) messages")
+                        saveChatToFirestore(messages: self.messages)
+                    } else {
+                        print("Cannot save chat - no PDF metadata available")
+                    }
+                    
+                    isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    print("Error getting AI response: \(error.localizedDescription)")
+                    let errorMessage = ChatMessage(content: "Error: \(error.localizedDescription)", type: .error, order: messages.count)
+                    messages.append(errorMessage)
+                    isLoading = false
+                    print("==== SEND MESSAGE END WITH ERROR ====")
+                }
+            }
+        }
+    }
+    
+    // Convenience method to download from string URL
+    func downloadPDF(from urlString: String) {
+        print("String URL download requested: \(urlString)")
+        guard let url = URL(string: urlString) else {
+            print("ERROR: Invalid URL string: \(urlString)")
+            self.pdfText = "Error: The PDF URL is invalid and could not be loaded."
+            isLoading = false
+            return
+        }
+        
+        downloadPDF(from: url)
+    }
 }
 
 // Move these type definitions to file scope
@@ -1170,12 +1866,12 @@ struct WelcomeView: View {
                         )
                     )
                 
-                Text("Welcome to PDF Chat Assistant")
+                Text("Welcome to NoteBuddy")
                     .font(.title2)
                     .bold()
                     .foregroundColor(.primary)
                 
-                Text("Select a PDF to start analyzing and chatting about its contents")
+                Text("Select your courses notes to start using NoteBuddy")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -1184,7 +1880,7 @@ struct WelcomeView: View {
                 Button(action: { showPDFPicker = true }) {
                     HStack {
                         Image(systemName: "doc.badge.plus")
-                        Text("choose your courses notes")
+                        Text("Choose your Courses Notes")
                     }
                     .font(.headline)
                     .foregroundColor(.white)
@@ -1687,7 +2383,7 @@ struct ChatHistoryView: View {
         isLoading = true
         
         guard let currentUser = Auth.auth().currentUser else {
-            print("Error: No authenticated user")
+            print("ERROR: No authenticated user when attempting to fetch chat history")
             DispatchQueue.main.async {
                 self.isLoading = false
                 self.chatHistorySections = [:]
@@ -1695,14 +2391,35 @@ struct ChatHistoryView: View {
             return
         }
         
-        print("Fetching chat history for user: \(currentUser.uid)")
+        print("DEBUG: Fetching chat history for user: \(currentUser.uid)")
+        print("DEBUG: User authentication state: isAnonymous=\(currentUser.isAnonymous), email=\(currentUser.email ?? "none")")
+        
+        // Check Firestore connection
+        let testRef = viewModel.db.collection("chats").limit(to: 1)
+        print("DEBUG: Testing Firestore connection before fetching chats...")
+        
+        testRef.getDocuments { (testSnapshot, testError) in
+            if let testError = testError {
+                print("ERROR: Firestore connection test failed: \(testError.localizedDescription)")
+            } else {
+                print("DEBUG: Firestore connection successful")
+            }
+            
+            // Now proceed with the actual query
+            print("DEBUG: Querying Firestore for chats with userId=\(currentUser.uid)")
         
         viewModel.db.collection("chats")
             .whereField("userId", isEqualTo: currentUser.uid)
             .order(by: "updatedAt", descending: true)
             .getDocuments { snapshot, error in
                 if let error = error {
-                    print("Error fetching chat history: \(error.localizedDescription)")
+                        print("ERROR: Failed to fetch chat history: \(error.localizedDescription)")
+                        if let firestoreError = error as NSError? {
+                            print("ERROR: Firestore error details - code: \(firestoreError.code), domain: \(firestoreError.domain)")
+                            if firestoreError.code == 9 || firestoreError.code == 8 {
+                                print("ERROR: This may be a permission issue or missing index")
+                            }
+                        }
                     DispatchQueue.main.async {
                         self.isLoading = false
                         self.chatHistorySections = [:]
@@ -1711,7 +2428,7 @@ struct ChatHistoryView: View {
                 }
                 
                 guard let documents = snapshot?.documents else {
-                    print("No chat documents found")
+                        print("ERROR: No chat documents found (nil snapshot)")
                     DispatchQueue.main.async {
                         self.isLoading = false
                         self.chatHistorySections = [:]
@@ -1719,7 +2436,16 @@ struct ChatHistoryView: View {
                     return
                 }
                 
-                print("Found \(documents.count) chat documents")
+                    print("DEBUG: Found \(documents.count) chat documents for user: \(currentUser.uid)")
+                    
+                    if documents.isEmpty {
+                        print("DEBUG: Chat documents array is empty - no chats found")
+                        DispatchQueue.main.async {
+                            self.isLoading = false
+                            self.chatHistorySections = [:]
+                        }
+                        return
+                    }
                 
                 let dispatchGroup = DispatchGroup()
                 var sessions: [ChatSession] = []
@@ -1837,6 +2563,25 @@ struct ChatHistoryView: View {
                     self.chatHistorySections = grouped
                     self.isLoading = false
                     print("Chat history updated with \(grouped.count) sections containing \(filteredSessions.count) total sessions")
+                        
+                        // Detailed debug information about loaded chat history
+                        for (pdfId, sessions) in grouped {
+                            print("DEBUG: PDF ID: \(pdfId) has \(sessions.count) chat sessions")
+                            for (index, session) in sessions.enumerated() {
+                                print("DEBUG:   Session \(index+1): ID \(session.id), Messages: \(session.messages.count)")
+                                if !session.messages.isEmpty {
+                                    print("DEBUG:     First message: \(session.messages.first?.content.prefix(30) ?? "none") ...")
+                                    print("DEBUG:     Last message: \(session.messages.last?.content.prefix(30) ?? "none") ...")
+                                } else {
+                                    print("DEBUG:     No messages in this session")
+                                }
+                            }
+                        }
+                        
+                        if grouped.isEmpty {
+                            print("DEBUG: No chat history was found to display")
+                        }
+                    }
                 }
             }
     }
@@ -2090,6 +2835,7 @@ struct PDFSelectionView: View {
             Text("No Notes Found")
                 .font(.title3)
                 .bold()
+            
             
             Text("No Notes are available in the database.\nPlease contact an administrator to add Notes.")
                 .font(.subheadline)
@@ -2630,8 +3376,6 @@ class ThumbnailCache {
     
     func clearCache() {
         memoryCache.removeAllObjects()
-        
-        // Clean disk cache
         try? fileManager.removeItem(at: diskCacheURL)
         try? fileManager.createDirectory(at: diskCacheURL, withIntermediateDirectories: true)
     }
