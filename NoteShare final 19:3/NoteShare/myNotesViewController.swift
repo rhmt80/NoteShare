@@ -1,4 +1,5 @@
 import UIKit
+import AuthenticationServices
 import VisionKit
 import FirebaseStorage
 import FirebaseFirestore
@@ -780,7 +781,7 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
         button.titleLabel?.font = .systemFont(ofSize: 22, weight: .semibold)
         button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
         button.semanticContentAttribute = .forceLeftToRight
-        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: -8)
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: -248)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -866,7 +867,7 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
         button.titleLabel?.font = .systemFont(ofSize: 22, weight: .semibold)
         button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
         button.semanticContentAttribute = .forceLeftToRight
-        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: -8)
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: -360)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
