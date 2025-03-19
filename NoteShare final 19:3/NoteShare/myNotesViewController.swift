@@ -769,6 +769,9 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
     private var isLoading = false
     private var favoriteNotes: [SavedFireNote] = []
     
+    private var curatedPlaceholderView: PlaceholderView?
+    private var favoritePlaceholderView: PlaceholderView?
+    
     
 //    fav section
     private let favoriteNotesButton: UIButton = {
@@ -804,11 +807,14 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
                 return
             }
             
+            activityIndicator.startAnimating()
             FirebaseService1.shared.fetchFavoriteNotes(userId: userID) { [weak self] notes in
                 guard let self = self else { return }
                 self.favoriteNotes = notes
                 self.updateAllNotes()
                 self.favoriteNotesCollectionView.reloadData()
+                self.updatePlaceholderVisibility()
+                self.activityIndicator.stopAnimating()
             }
         }
        
@@ -943,8 +949,6 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
             fetchFavoriteNotes()
             searchBar.delegate = self
             scrollView.delegate = self
-            
-            // Add table view delegate and data source
             searchResultsTableView.delegate = self
             searchResultsTableView.dataSource = self
             
@@ -953,11 +957,7 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
             view.addGestureRecognizer(tapGesture)
             
             NotificationCenter.default.addObserver(self, selector: #selector(handleFavoriteStatusChange), name: NSNotification.Name("FavoriteStatusChanged"), object: nil)
-            
             NotificationCenter.default.addObserver(self, selector: #selector(handlePreviouslyReadNotesUpdated), name: NSNotification.Name("PreviouslyReadNotesUpdated"), object: nil)
-            
-            // Enable cancel button for search bar
-//            searchBar.showsCancelButton = true
         }
     
     @objc private func handleFavoriteStatusChange() {
@@ -1000,25 +1000,21 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        // Add fixed header elements directly to the view
-        [titleLabel, addNoteButton, scanButton, searchBar].forEach {
-            view.addSubview($0)
-        }
+        // Add fixed header elements
+        [titleLabel, addNoteButton, scanButton, searchBar].forEach { view.addSubview($0) }
         
         // Add scroll view for content
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
+        // Add scrollable content
+        [favoriteNotesButton, favoriteNotesCollectionView, curatedNotesButton, curatedNotesCollectionView].forEach {
+            contentView.addSubview($0)
+        }
         
-        // Add scrollable content to contentView
-            [favoriteNotesButton, favoriteNotesCollectionView,
-             curatedNotesButton, curatedNotesCollectionView].forEach {
-                contentView.addSubview($0)
-            }
-        
-        // Add search results table view to main view
-            view.addSubview(searchResultsTableView)
-            curatedNotesCollectionView.addSubview(activityIndicator)
+        // Add search results table view
+        view.addSubview(searchResultsTableView)
+        curatedNotesCollectionView.addSubview(activityIndicator)
         
         NSLayoutConstraint.activate([
             // Fixed Header Elements
@@ -1066,7 +1062,7 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
             favoriteNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             favoriteNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             favoriteNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
-                        
+            
             curatedNotesCollectionView.topAnchor.constraint(equalTo: curatedNotesButton.bottomAnchor, constant: 16),
             curatedNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             curatedNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
@@ -1082,12 +1078,58 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
             activityIndicator.centerYAnchor.constraint(equalTo: curatedNotesCollectionView.centerYAnchor)
         ])
         
-        // Add actions to buttons
         favoriteNotesButton.addTarget(self, action: #selector(viewFavoritesTapped), for: .touchUpInside)
         curatedNotesButton.addTarget(self, action: #selector(viewUploadedTapped), for: .touchUpInside)
         addNoteButton.addTarget(self, action: #selector(addNoteTapped), for: .touchUpInside)
         scanButton.addTarget(self, action: #selector(moreOptionsTapped), for: .touchUpInside)
+        
+        setupPlaceholders()
+    }
+    private func setupPlaceholders() {
+            // Favorite Notes Placeholder
+            favoritePlaceholderView = PlaceholderView(
+                image: UIImage(systemName: "heart"),
+                title: "No Favorites Yet",
+                message: "Mark notes as favorites to see them here.",
+                buttonTitle: "Upload a Note",
+                action: { [weak self] in self?.addNoteTapped() }
+            )
+            favoritePlaceholderView?.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview(favoritePlaceholderView!)
+            
+            // Curated Notes Placeholder
+            curatedPlaceholderView = PlaceholderView(
+                image: UIImage(systemName: "doc.text"),
+                title: "No Uploaded Notes",
+                message: "Upload or scan a document to get started.",
+                buttonTitle: "Scan Now",
+                action: { [weak self] in self?.moreOptionsTapped() }
+            )
+            curatedPlaceholderView?.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview(curatedPlaceholderView!)
+            
+            NSLayoutConstraint.activate([
+                favoritePlaceholderView!.topAnchor.constraint(equalTo: favoriteNotesButton.bottomAnchor, constant: 16),
+                favoritePlaceholderView!.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                favoritePlaceholderView!.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                favoritePlaceholderView!.heightAnchor.constraint(equalToConstant: 280),
+                
+                curatedPlaceholderView!.topAnchor.constraint(equalTo: curatedNotesButton.bottomAnchor, constant: 16),
+                curatedPlaceholderView!.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                curatedPlaceholderView!.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                curatedPlaceholderView!.heightAnchor.constraint(equalToConstant: 280)
+            ])
+            
+            updatePlaceholderVisibility()
         }
+
+        private func updatePlaceholderVisibility() {
+            favoritePlaceholderView?.isHidden = !favoriteNotes.isEmpty
+            favoriteNotesCollectionView.isHidden = favoriteNotes.isEmpty
+            curatedPlaceholderView?.isHidden = !curatedNotes.isEmpty
+            curatedNotesCollectionView.isHidden = curatedNotes.isEmpty
+        }
+    
     
     
     private func fetchCuratedNotes() {
@@ -1096,14 +1138,17 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
                 return
             }
             
+            activityIndicator.startAnimating()
             FirebaseService1.shared.observeNotes(userId: userID) { [weak self] notes in
                 guard let self = self else { return }
                 self.curatedNotes = notes
                 self.updateAllNotes()
                 self.curatedNotesCollectionView.reloadData()
+                self.updatePlaceholderVisibility()
+                self.activityIndicator.stopAnimating()
             }
         }
-
+    
     
     // MARK: - Action Methods
     
@@ -1349,28 +1394,27 @@ extension SavedViewController {
 
 // MARK: - UICollectionViewDataSource & UICollectionViewDelegate
 extension SavedViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == curatedNotesCollectionView {
-            return curatedNotes.count
-        } else {
-            return favoriteNotes.count
+            if collectionView == curatedNotesCollectionView {
+                return curatedNotes.isEmpty ? 0 : curatedNotes.count
+            } else {
+                return favoriteNotes.isEmpty ? 0 : favoriteNotes.count
+            }
         }
-    }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == curatedNotesCollectionView {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CuratedNoteCell", for: indexPath) as! NoteCollectionViewCell1
-            cell.configure(with: curatedNotes[indexPath.item])
-            // Only add long press gesture for curated (uploaded) notes
-            setupLongPressGesture(for: cell, note: curatedNotes[indexPath.item])
-            return cell
-        } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavoriteNoteCell", for: indexPath) as! NoteCollectionViewCell1
-            cell.configure(with: favoriteNotes[indexPath.item])
-            // Do NOT add long press gesture for favorite notes
-            return cell
+            if collectionView == curatedNotesCollectionView {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CuratedNoteCell", for: indexPath) as! NoteCollectionViewCell1
+                cell.configure(with: curatedNotes[indexPath.item])
+                setupLongPressGesture(for: cell, note: curatedNotes[indexPath.item])
+                return cell
+            } else {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavoriteNoteCell", for: indexPath) as! NoteCollectionViewCell1
+                cell.configure(with: favoriteNotes[indexPath.item])
+                return cell
+            }
         }
-    }
     
     private func setupLongPressGesture(for cell: NoteCollectionViewCell1, note: SavedFireNote) {
             let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
