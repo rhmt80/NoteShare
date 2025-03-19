@@ -20,7 +20,6 @@ class FirebaseManager {
         userId: String,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
-        // Ensure user is authenticated
         guard let currentUserId = Auth.auth().currentUser?.uid else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])))
             return
@@ -29,20 +28,17 @@ class FirebaseManager {
         let storageRef = Storage.storage().reference()
         let pdfRef = storageRef.child("pdfs/\(currentUserId)/\(UUID().uuidString).pdf")
 
-        print("Uploading to path: \(pdfRef.fullPath)") // Debugging
+        print("Uploading to path: \(pdfRef.fullPath)")
 
-        // ✅ Add metadata for PDF
         let metadata = StorageMetadata()
         metadata.contentType = "application/pdf"
 
-        // ✅ Upload the file with metadata
         pdfRef.putFile(from: fileURL, metadata: metadata) { metadata, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
 
-            // ✅ Retrieve download URL
             pdfRef.downloadURL { url, error in
                 if let error = error {
                     completion(.failure(error))
@@ -54,21 +50,19 @@ class FirebaseManager {
                     return
                 }
 
-                // ✅ Prepare Firestore document
                 let document: [String: Any] = [
                     "fileName": fileName,
                     "category": category,
                     "collegeName": collegeName,
                     "subjectCode": subjectCode,
                     "subjectName": subjectName,
-                    "privacy": privacy,
+                    "privacy": privacy,  // This will now be either "public" or "private"
                     "downloadURL": downloadURL.absoluteString,
                     "uploadDate": FieldValue.serverTimestamp(),
                     "fileSize": metadata?.size ?? 0,
                     "userId": currentUserId
                 ]
 
-                // ✅ Save to Firestore
                 Firestore.firestore().collection("pdfs").addDocument(data: document) { error in
                     if let error = error {
                         completion(.failure(error))
@@ -79,7 +73,6 @@ class FirebaseManager {
             }
         }
     }
-
 
     func fetchUserData(userID: String, completion: @escaping (Result<[String: Any], Error>) -> Void) {
         self.db.collection("users").document(userID).getDocument { document, error in
@@ -94,7 +87,6 @@ class FirebaseManager {
     }
 }
 
-// MARK: - BottomSheetPresentationController
 class BottomSheetPresentationController: UIPresentationController {
     private let blurEffectView: UIVisualEffectView = {
         let blur = UIBlurEffect(style: .dark)
@@ -147,12 +139,12 @@ class BottomSheetPresentationController: UIPresentationController {
     }
 }
 
-// MARK: - BottomSheetTransitionDelegate
 class BottomSheetTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         return BottomSheetPresentationController(presentedViewController: presented, presenting: presenting)
     }
 }
+
 class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UIDocumentPickerDelegate {
     private let transitionDelegate = BottomSheetTransitionDelegate()
     
@@ -212,10 +204,9 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
         field.leftViewMode = .always
         field.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        field.isHidden = true // Hide it from UI
+        field.isHidden = true
         return field
     }()
-
     
     private let courseCodeTextField: UITextField = {
         let field = UITextField()
@@ -251,6 +242,29 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         field.leftViewMode = .always
         field.heightAnchor.constraint(equalToConstant: 50).isActive = true
         return field
+    }()
+    
+    // New Privacy Toggle Components
+    private let privacyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Public"
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        return label
+    }()
+    
+    private let privacySwitch: UISwitch = {
+        let toggle = UISwitch()
+        toggle.isOn = true // Default to public
+        toggle.onTintColor = .systemBlue
+        return toggle
+    }()
+    
+    private let privacyStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.spacing = 10
+        stack.alignment = .center
+        return stack
     }()
     
     private let uploadCardView: UIView = {
@@ -351,10 +365,13 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         scrollView.addSubview(containerView)
         
         [titleLabel, categoryDropdownButton, collegePickerTextField, courseCodeTextField,
-         subjectNameTextField, fileNameTextField, uploadCardView,
+         subjectNameTextField, fileNameTextField, privacyStackView, uploadCardView,
          submitButton, cancelButton].forEach {
             containerView.addSubview($0)
         }
+        
+        privacyStackView.addArrangedSubview(privacyLabel)
+        privacyStackView.addArrangedSubview(privacySwitch)
     }
     
     private func setupUploadCard() {
@@ -365,8 +382,9 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     private func setupConstraints() {
         [scrollView, containerView, titleLabel, categoryDropdownButton, collegePickerTextField,
-         courseCodeTextField, subjectNameTextField, fileNameTextField, uploadCardView,
-         uploadStackView, uploadButton, selectedFileLabel, submitButton, cancelButton].forEach {
+         courseCodeTextField, subjectNameTextField, fileNameTextField, privacyStackView,
+         uploadCardView, uploadStackView, uploadButton, selectedFileLabel, submitButton,
+         cancelButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         collegePickerTextField.isHidden = true
@@ -391,10 +409,6 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
             categoryDropdownButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
             courseCodeTextField.topAnchor.constraint(equalTo: categoryDropdownButton.bottomAnchor, constant: 16),
-                courseCodeTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-                courseCodeTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
-            
-            courseCodeTextField.topAnchor.constraint(equalTo: categoryDropdownButton.bottomAnchor, constant: 16),
             courseCodeTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             courseCodeTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
@@ -406,7 +420,11 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
             fileNameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             fileNameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            uploadCardView.topAnchor.constraint(equalTo: fileNameTextField.bottomAnchor, constant: 24),
+            privacyStackView.topAnchor.constraint(equalTo: fileNameTextField.bottomAnchor, constant: 16),
+            privacyStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            privacyStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            
+            uploadCardView.topAnchor.constraint(equalTo: privacyStackView.bottomAnchor, constant: 16),
             uploadCardView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             uploadCardView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             uploadCardView.heightAnchor.constraint(equalToConstant: 120),
@@ -425,22 +443,12 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         ])
     }
     
-//    private func setupDelegates() {
-//        categoryPickerView.delegate = self
-//        categoryPickerView.dataSource = self
-////        categoryTextField.inputView = categoryPickerView
-////
-//        collegePickerView.delegate = self
-//        collegePickerView.dataSource = self
-//        collegePickerTextField.inputView = collegePickerView
-//    }
     private func setupDelegates() {
         categoryPickerView.delegate = self
         categoryPickerView.dataSource = self
         collegePickerView.delegate = self
         collegePickerView.dataSource = self
 
-        // Set the text field delegates
         courseCodeTextField.delegate = self
         subjectNameTextField.delegate = self
         fileNameTextField.delegate = self
@@ -450,6 +458,7 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
     private func setupActions() {
         submitButton.addTarget(self, action: #selector(submitButtonTapped), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+        privacySwitch.addTarget(self, action: #selector(privacySwitchChanged), for: .valueChanged)
     }
     
     private func updateUploadButtonState(isFileSelected: Bool) {
@@ -500,60 +509,53 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-            let label = UILabel()
-            label.textAlignment = .center
-            label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-            label.textColor = .darkGray
-            label.text = pickerView == categoryPickerView ? categories[row] : colleges[row]
-            return label
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        label.textColor = .darkGray
+        label.text = pickerView == categoryPickerView ? categories[row] : colleges[row]
+        return label
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 40
+    }
+    
+    // MARK: - Button Actions
+    @objc private func uploadButtonTapped() {
+        if selectedFileURL != nil {
+            selectedFileURL = nil
+            updateUploadButtonState(isFileSelected: false)
+            fileNameTextField.text = ""
+        } else {
+            let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf])
+            documentPicker.delegate = self
+            documentPicker.allowsMultipleSelection = false
+            present(documentPicker, animated: true, completion: nil)
         }
-        
-        func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-            return 40
-        }
-        
-//        func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-//            if pickerView == categoryPickerView {
-//                categoryTextField.text = categories[row]
-//            } else {
-//                collegePickerTextField.text = colleges[row]
-//            }
-//            view.endEditing(true)
-//        }
-        
-        // MARK: - Button Actions
-        @objc private func uploadButtonTapped() {
-            if selectedFileURL != nil {
-                // If file is already selected, clear it
-                selectedFileURL = nil
-                updateUploadButtonState(isFileSelected: false)
-                fileNameTextField.text = ""
-            } else {
-                // If no file is selected, show document picker
-                let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf])
-                documentPicker.delegate = self
-                documentPicker.allowsMultipleSelection = false
-                present(documentPicker, animated: true, completion: nil)
-            }
-        }
-        
+    }
+    
+    @objc private func privacySwitchChanged(_ sender: UISwitch) {
+        privacyLabel.text = sender.isOn ? "Public" : "Private"
+    }
+    
     @objc private func submitButtonTapped() {
         guard let userID = Auth.auth().currentUser?.uid else {
             showAlert(title: "Error", message: "User not logged in.")
             return
         }
-        let college = userCollege ?? "Unknown"
-        print("Authenticated User ID: \(userID)") // Add this line for debugging
-
+        
         guard let fileURL = selectedFileURL,
-                  let category = categoryDropdownButton.titleLabel?.text, category != "Select Category",
-                  let college = collegePickerTextField.text, !college.isEmpty,
-                  let courseCode = courseCodeTextField.text, !courseCode.isEmpty,
-                  let subjectName = subjectNameTextField.text, !subjectName.isEmpty,
-                  let fileName = fileNameTextField.text, !fileName.isEmpty else {
-                showAlert(title: "Error", message: "Please fill in all fields and select a file")
-                return
-            }
+              let category = categoryDropdownButton.titleLabel?.text, category != "Select Category",
+              let college = collegePickerTextField.text, !college.isEmpty,
+              let courseCode = courseCodeTextField.text, !courseCode.isEmpty,
+              let subjectName = subjectNameTextField.text, !subjectName.isEmpty,
+              let fileName = fileNameTextField.text, !fileName.isEmpty else {
+            showAlert(title: "Error", message: "Please fill in all fields and select a file")
+            return
+        }
+        
+        let privacy = privacySwitch.isOn ? "public" : "private"
 
         let loadingAlert = UIAlertController(title: nil, message: "Uploading...", preferredStyle: .alert)
         let loadingIndicator = UIActivityIndicatorView(style: .medium)
@@ -576,7 +578,7 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 collegeName: college,
                 subjectCode: courseCode,
                 subjectName: subjectName,
-                privacy: "public",
+                privacy: privacy,
                 userId: userID
             ) { [weak self] result in
                 DispatchQueue.main.async {
@@ -597,51 +599,46 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
     }
 
-
-        @objc private func cancelButtonTapped() {
-            dismiss(animated: true, completion: nil)
-        }
-        
-        // MARK: - UIDocumentPickerDelegate
+    @objc private func cancelButtonTapped() {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    // MARK: - UIDocumentPickerDelegate
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let url = urls.first else { return }
 
-        // Secure URL access
         url.startAccessingSecurityScopedResource()
         defer { url.stopAccessingSecurityScopedResource() }
 
-        // Copy the file to a temporary location
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(url.lastPathComponent)
         do {
             if FileManager.default.fileExists(atPath: tempURL.path) {
                 try FileManager.default.removeItem(at: tempURL)
             }
             try FileManager.default.copyItem(at: url, to: tempURL)
-            selectedFileURL = tempURL // Use this new URL for uploading
+            selectedFileURL = tempURL
             fileNameTextField.text = tempURL.lastPathComponent.replacingOccurrences(of: ".pdf", with: "")
             updateUploadButtonState(isFileSelected: true)
         } catch {
             showAlert(title: "Error", message: "Failed to copy file: \(error.localizedDescription)")
         }
     }
-
-        
-        // MARK: - Helper Methods
-        private func showAlert(title: String, message: String) {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
-        }
+    
+    // MARK: - Helper Methods
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
+}
+
 extension UploadModalViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder() // Dismiss keyboard
+        textField.resignFirstResponder()
         return true
     }
 }
 
-
-
-    #Preview {
-        UploadModalViewController()
-    }
+#Preview {
+    UploadModalViewController()
+}

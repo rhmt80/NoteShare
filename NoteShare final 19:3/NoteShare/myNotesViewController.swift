@@ -14,23 +14,61 @@ struct SavedFireNote {
     let dateAdded: Date
     let pageCount: Int
     let fileSize: String
-    var userID : String
+    var userID: String
     var isFavorite: Bool
-    var dictionary: [String: Any]{
+    let subjectCode: String?
+    let subjectName: String?
+    let privacy: String?
+    
+    init(id: String,
+         title: String,
+         description: String,
+         author: String,
+         coverImage: UIImage?,
+         pdfUrl: String,
+         dateAdded: Date,
+         pageCount: Int,
+         fileSize: String,
+         userID: String,
+         isFavorite: Bool,
+         subjectCode: String?,
+         subjectName: String?,
+         privacy: String?) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.author = author
+        self.coverImage = coverImage
+        self.pdfUrl = pdfUrl
+        self.dateAdded = dateAdded
+        self.pageCount = pageCount
+        self.fileSize = fileSize
+        self.userID = userID
+        self.isFavorite = isFavorite
+        self.subjectCode = subjectCode
+        self.subjectName = subjectName
+        self.privacy = privacy
+    }
+    
+    var dictionary: [String: Any] {
         return [
             "id": id,
-            "title": title,
-            "description": description,
-            "author": author,
-            "pdfUrl": pdfUrl,
-            "dateAdded": dateAdded,
+            "fileName": title,
+            "category": description,
+            "collegeName": author,
+            "downloadURL": pdfUrl,
+            "uploadDate": dateAdded,
             "pageCount": pageCount,
             "fileSize": fileSize,
+            "userId": userID,
             "isFavorite": isFavorite,
-            "userId" : userID
+            "subjectCode": subjectCode ?? "",
+            "subjectName": subjectName ?? "",
+            "privacy": privacy ?? "public"
         ]
     }
 }
+
 
 class FirebaseService1 {
     static let shared = FirebaseService1()
@@ -39,56 +77,60 @@ class FirebaseService1 {
     
     // Fetch notes for a specific user
     func observeNotes(userId: String, completion: @escaping ([SavedFireNote]) -> Void) {
-        db.collection("pdfs")
-            .whereField("userId", isEqualTo: userId)
-            .addSnapshotListener { (snapshot, error) in
-                if let error = error {
-                    print("Error observing notes: \(error.localizedDescription)")
-                    return
-                }
+            db.collection("pdfs")
+                .whereField("userId", isEqualTo: userId)
+                .addSnapshotListener { (snapshot, error) in
+                    if let error = error {
+                        print("Error observing notes: \(error.localizedDescription)")
+                        completion([])
+                        return
+                    }
 
-                guard let documents = snapshot?.documents else {
-                    completion([])
-                    return
-                }
+                    guard let documents = snapshot?.documents else {
+                        completion([])
+                        return
+                    }
 
-                var notes: [SavedFireNote] = []
-                let group = DispatchGroup()
+                    var notes: [SavedFireNote] = []
+                    let group = DispatchGroup()
 
-                for document in documents {
-                    group.enter()
-                    let data = document.data()
-                    let pdfUrl = data["downloadURL"] as? String ?? ""
-                    let noteId = document.documentID
+                    for document in documents {
+                        group.enter()
+                        let data = document.data()
+                        let pdfUrl = data["downloadURL"] as? String ?? ""
+                        let noteId = document.documentID
 
-                    self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
-                        let fileSize = self.formatFileSize(metadata?.size ?? 0)
+                        self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
+                            let fileSize = self.formatFileSize(metadata?.size ?? 0)
 
-                        self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
-                            let note = SavedFireNote(
-                                id: noteId,
-                                title: data["fileName"] as? String ?? "Untitled",
-                                description: data["category"] as? String ?? "",
-                                author: data["collegeName"] as? String ?? "Unknown Author",
-                                coverImage: image,
-                                pdfUrl: pdfUrl,
-                                dateAdded: (metadata?.timeCreated ?? Date()),
-                                pageCount: pageCount,
-                                fileSize: fileSize,
-                                userID: userId,
-                                isFavorite: false
-                            )
-                            notes.append(note)
-                            group.leave()
+                            self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
+                                let note = SavedFireNote(
+                                    id: noteId,
+                                    title: data["fileName"] as? String ?? "Untitled",
+                                    description: data["category"] as? String ?? "",
+                                    author: data["collegeName"] as? String ?? "Unknown Author",
+                                    coverImage: image,
+                                    pdfUrl: pdfUrl,
+                                    dateAdded: (data["uploadDate"] as? Timestamp)?.dateValue() ?? Date(),
+                                    pageCount: pageCount,
+                                    fileSize: fileSize,
+                                    userID: userId,
+                                    isFavorite: false,
+                                    subjectCode: data["subjectCode"] as? String,
+                                    subjectName: data["subjectName"] as? String,
+                                    privacy: data["privacy"] as? String
+                                )
+                                notes.append(note)
+                                group.leave()
+                            }
                         }
                     }
-                }
 
-                group.notify(queue: .main) {
-                    completion(notes.sorted { $0.dateAdded > $1.dateAdded })
+                    group.notify(queue: .main) {
+                        completion(notes.sorted { $0.dateAdded > $1.dateAdded })
+                    }
                 }
-            }
-    }
+        }
 
     
     
@@ -309,11 +351,14 @@ class FirebaseService1 {
                                         author: data["collegeName"] as? String ?? "Unknown Author",
                                         coverImage: image,
                                         pdfUrl: pdfUrl,
-                                        dateAdded: (metadata?.timeCreated ?? Date()),
+                                        dateAdded: (data["uploadDate"] as? Timestamp)?.dateValue() ?? Date(),
                                         pageCount: pageCount,
                                         fileSize: fileSize,
                                         userID: data["userId"] as? String ?? userId,
-                                        isFavorite: true
+                                        isFavorite: true,
+                                        subjectCode: data["subjectCode"] as? String,
+                                        subjectName: data["subjectName"] as? String,
+                                        privacy: data["privacy"] as? String
                                     )
                                     favoriteNotes.append(note)
                                     group.leave()
@@ -550,14 +595,20 @@ class NoteCollectionViewCell1: UICollectionViewCell {
         coverImageView.image = note.coverImage ?? UIImage(systemName: "doc.fill")
         isFavorite = note.isFavorite
         
-        // Add fade animation
+        // Add subject code/name display
+        detailsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        let subjectLabel = UILabel()
+        subjectLabel.font = .systemFont(ofSize: 12)
+        subjectLabel.textColor = .secondaryLabel
+        subjectLabel.text = "\(note.subjectCode ?? "") - \(note.subjectName ?? "")"
+        detailsStackView.addArrangedSubview(subjectLabel)
+        detailsStackView.addArrangedSubview(pagesLabel)
+        detailsStackView.addArrangedSubview(fileSizeLabel)
+        
         coverImageView.alpha = 0
         UIView.animate(withDuration: 0.3) {
             self.coverImageView.alpha = 1
         }
-        
-        // Force layout update
-        layoutIfNeeded()
     }
 }
 
@@ -718,13 +769,17 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
     private var isLoading = false
     private var favoriteNotes: [SavedFireNote] = []
     
+    
 //    fav section
-    private let favoriteNotesLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Favourites"
-        label.font = .systemFont(ofSize: 22, weight: .semibold)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    private let favoriteNotesButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Favourites", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 22, weight: .semibold)
+        button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
+        button.semanticContentAttribute = .forceLeftToRight
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: -8)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
 
     private lazy var favoriteNotesCollectionView: UICollectionView = {
@@ -799,12 +854,15 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
         return searchBar
     }()
     
-    private let curatedNotesLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Uploaded Notes"
-        label.font = .systemFont(ofSize: 22, weight: .semibold)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    private let curatedNotesButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Uploaded Notes", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 22, weight: .semibold)
+        button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
+        button.semanticContentAttribute = .forceLeftToRight
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: -8)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
     private lazy var curatedNotesCollectionView: UICollectionView = {
@@ -951,15 +1009,16 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
+        
         // Add scrollable content to contentView
-        [favoriteNotesLabel, favoriteNotesCollectionView,
-         curatedNotesLabel, curatedNotesCollectionView].forEach {
-            contentView.addSubview($0)
-        }
+            [favoriteNotesButton, favoriteNotesCollectionView,
+             curatedNotesButton, curatedNotesCollectionView].forEach {
+                contentView.addSubview($0)
+            }
         
         // Add search results table view to main view
-        view.addSubview(searchResultsTableView)
-        curatedNotesCollectionView.addSubview(activityIndicator)
+            view.addSubview(searchResultsTableView)
+            curatedNotesCollectionView.addSubview(activityIndicator)
         
         NSLayoutConstraint.activate([
             // Fixed Header Elements
@@ -980,6 +1039,14 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
+            favoriteNotesButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            favoriteNotesButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            favoriteNotesButton.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -16),
+            
+            curatedNotesButton.topAnchor.constraint(equalTo: favoriteNotesCollectionView.bottomAnchor, constant: 24),
+            curatedNotesButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            curatedNotesButton.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -16),
+            
             // ScrollView and other constraints remain unchanged
             scrollView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -992,18 +1059,15 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            favoriteNotesLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            favoriteNotesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            favoriteNotesButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            favoriteNotesButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             
-            favoriteNotesCollectionView.topAnchor.constraint(equalTo: favoriteNotesLabel.bottomAnchor, constant: 16),
+            favoriteNotesCollectionView.topAnchor.constraint(equalTo: favoriteNotesButton.bottomAnchor, constant: 16),
             favoriteNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             favoriteNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             favoriteNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
-            
-            curatedNotesLabel.topAnchor.constraint(equalTo: favoriteNotesCollectionView.bottomAnchor, constant: 24),
-            curatedNotesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            
-            curatedNotesCollectionView.topAnchor.constraint(equalTo: curatedNotesLabel.bottomAnchor, constant: 16),
+                        
+            curatedNotesCollectionView.topAnchor.constraint(equalTo: curatedNotesButton.bottomAnchor, constant: 16),
             curatedNotesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             curatedNotesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             curatedNotesCollectionView.heightAnchor.constraint(equalToConstant: 280),
@@ -1019,9 +1083,12 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
         ])
         
         // Add actions to buttons
+        favoriteNotesButton.addTarget(self, action: #selector(viewFavoritesTapped), for: .touchUpInside)
+        curatedNotesButton.addTarget(self, action: #selector(viewUploadedTapped), for: .touchUpInside)
         addNoteButton.addTarget(self, action: #selector(addNoteTapped), for: .touchUpInside)
         scanButton.addTarget(self, action: #selector(moreOptionsTapped), for: .touchUpInside)
-    }
+        }
+    
     
     private func fetchCuratedNotes() {
             guard let userID = Auth.auth().currentUser?.uid else {
@@ -1040,6 +1107,17 @@ class SavedViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - Action Methods
     
+    @objc private func viewFavoritesTapped() {
+            let favoritesVC = FavoriteNotesViewController()
+            favoritesVC.configure(with: favoriteNotes)
+            navigationController?.pushViewController(favoritesVC, animated: true)
+        }
+
+        @objc private func viewUploadedTapped() {
+            let uploadedVC = UploadedNotesViewController()
+            uploadedVC.configure(with: curatedNotes)
+            navigationController?.pushViewController(uploadedVC, animated: true)
+        }
 
     @objc private func moreOptionsTapped() {
         openDocumentScanner()
@@ -1079,8 +1157,8 @@ extension SavedViewController: UISearchBarDelegate {
             searchResultsTableView.isHidden = true
             curatedNotesCollectionView.isHidden = false
             favoriteNotesCollectionView.isHidden = false
-            favoriteNotesLabel.isHidden = false
-            curatedNotesLabel.isHidden = false
+            favoriteNotesButton.isHidden = false
+            curatedNotesButton.isHidden = false
             fetchCuratedNotes()
             fetchFavoriteNotes()
         } else {
@@ -1090,8 +1168,8 @@ extension SavedViewController: UISearchBarDelegate {
             searchResultsTableView.isHidden = false
             curatedNotesCollectionView.isHidden = true
             favoriteNotesCollectionView.isHidden = true
-            favoriteNotesLabel.isHidden = true
-            curatedNotesLabel.isHidden = true
+            favoriteNotesButton.isHidden = true
+            curatedNotesButton.isHidden = true
             searchResultsTableView.reloadData()
         }
     }
@@ -1105,8 +1183,8 @@ extension SavedViewController: UISearchBarDelegate {
         searchResultsTableView.isHidden = true
         curatedNotesCollectionView.isHidden = false
         favoriteNotesCollectionView.isHidden = false
-        favoriteNotesLabel.isHidden = false
-        curatedNotesLabel.isHidden = false
+        favoriteNotesButton.isHidden = false
+        curatedNotesButton.isHidden = false
         fetchCuratedNotes()
         fetchFavoriteNotes()
         searchBar.resignFirstResponder()
@@ -1202,7 +1280,9 @@ extension SavedViewController: VNDocumentCameraViewControllerDelegate {
         }
 
         let storageRef = Storage.storage().reference()
-        let pdfRef = storageRef.child("scanned_documents/\(UUID().uuidString).pdf")
+        // Use userID and a unique document ID in the path
+        let documentId = UUID().uuidString
+        let pdfRef = storageRef.child("pdfs/\(userID)/\(documentId).pdf")
 
         pdfRef.putData(pdfData, metadata: nil) { metadata, error in
             if let error = error {
@@ -1214,15 +1294,15 @@ extension SavedViewController: VNDocumentCameraViewControllerDelegate {
             pdfRef.downloadURL { url, error in
                 if let downloadURL = url {
                     print("PDF uploaded successfully! Download URL: \(downloadURL)")
-                    self.savePDFMetadataToFirestore(downloadURL: downloadURL.absoluteString, userID: userID)
+                    self.savePDFMetadataToFirestore(downloadURL: downloadURL.absoluteString, userID: userID, documentId: documentId)
                 } else {
                     self.showAlert(title: "Error", message: "Failed to get download URL.")
                 }
             }
         }
     }
-
-    private func savePDFMetadataToFirestore(downloadURL: String, userID: String) {
+    
+    private func savePDFMetadataToFirestore(downloadURL: String, userID: String, documentId: String) {
         let db = Firestore.firestore()
         let pdfMetadata: [String: Any] = [
             "downloadURL": downloadURL,
@@ -1234,7 +1314,8 @@ extension SavedViewController: VNDocumentCameraViewControllerDelegate {
             "dateAdded": Timestamp(date: Date())
         ]
 
-        db.collection("pdfs").addDocument(data: pdfMetadata) { error in
+        // Use the documentId to set the Firestore document ID
+        db.collection("pdfs").document(documentId).setData(pdfMetadata) { error in
             if let error = error {
                 self.showAlert(title: "Error", message: "Failed to save PDF metadata: \(error.localizedDescription)")
             } else {
@@ -1280,11 +1361,156 @@ extension SavedViewController: UICollectionViewDataSource, UICollectionViewDeleg
         if collectionView == curatedNotesCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CuratedNoteCell", for: indexPath) as! NoteCollectionViewCell1
             cell.configure(with: curatedNotes[indexPath.item])
+            // Only add long press gesture for curated (uploaded) notes
+            setupLongPressGesture(for: cell, note: curatedNotes[indexPath.item])
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavoriteNoteCell", for: indexPath) as! NoteCollectionViewCell1
             cell.configure(with: favoriteNotes[indexPath.item])
+            // Do NOT add long press gesture for favorite notes
             return cell
+        }
+    }
+    
+    private func setupLongPressGesture(for cell: NoteCollectionViewCell1, note: SavedFireNote) {
+            let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+            longPress.minimumPressDuration = 0.5
+            cell.addGestureRecognizer(longPress)
+            cell.noteId = note.id
+        }
+        
+        @objc private func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
+            guard gesture.state == .began,
+                  let cell = gesture.view as? NoteCollectionViewCell1,
+                  let noteId = cell.noteId else { return }
+            
+            // Haptic feedback
+            let impact = UIImpactFeedbackGenerator(style: .medium)
+            impact.impactOccurred()
+            
+            showEditDeleteActionSheet(for: noteId)
+        }
+    private func showEditDeleteActionSheet(for noteId: String) {
+            let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            
+            alert.addAction(UIAlertAction(title: "Edit", style: .default) { _ in
+                self.showEditNoteAlert(for: noteId)
+            })
+            
+            alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in
+                self.deleteNote(noteId: noteId)
+            })
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            
+            present(alert, animated: true)
+        }
+        
+    private func showEditNoteAlert(for noteId: String) {
+        let note = (curatedNotes + favoriteNotes).first { $0.id == noteId }
+        guard let note = note else { return }
+        
+        let alert = UIAlertController(title: "Edit Note", message: "Update note details", preferredStyle: .alert)
+        
+        alert.addTextField { textField in
+            textField.text = note.title
+            textField.placeholder = "Title"
+        }
+        alert.addTextField { textField in
+            textField.text = note.subjectName
+            textField.placeholder = "Subject Name"
+        }
+        alert.addTextField { textField in
+            textField.text = note.subjectCode
+            textField.placeholder = "Subject Code"
+        }
+        
+        alert.addAction(UIAlertAction(title: "Save", style: .default) { [weak self] _ in
+            guard let self = self,
+                  let titleField = alert.textFields?[0].text, !titleField.isEmpty,
+                  let subjectNameField = alert.textFields?[1].text, !subjectNameField.isEmpty,
+                  let subjectCodeField = alert.textFields?[2].text, !subjectCodeField.isEmpty else {
+                self?.showAlert(title: "Error", message: "All fields must be filled.")
+                return
+            }
+            self.updateNoteDetails(noteId: noteId, title: titleField, subjectName: subjectNameField, subjectCode: subjectCodeField)
+        })
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
+    }
+    
+    private func updateNoteDetails(noteId: String, title: String, subjectName: String, subjectCode: String) {
+        let db = Firestore.firestore()
+        db.collection("pdfs").document(noteId).updateData([
+            "fileName": title,
+            "subjectName": subjectName,
+            "subjectCode": subjectCode
+        ]) { [weak self] error in
+            if let error = error {
+                self?.showAlert(title: "Error", message: "Failed to update note: \(error.localizedDescription)")
+            } else {
+                self?.fetchCuratedNotes()
+                self?.fetchFavoriteNotes()
+            }
+        }
+    }
+        
+//        private func updateNoteTitle(noteId: String, newTitle: String) {
+//            let db = Firestore.firestore()
+//            db.collection("pdfs").document(noteId).updateData(["fileName": newTitle]) { error in
+//                if let error = error {
+//                    self.showAlert(title: "Error", message: "Failed to update note: \(error.localizedDescription)")
+//                } else {
+//                    self.fetchCuratedNotes()
+//                    self.fetchFavoriteNotes()
+//                }
+//            }
+//        }
+        
+    private func deleteNote(noteId: String) {
+        let db = Firestore.firestore()
+        let storage = Storage.storage()
+        
+        guard let userId = Auth.auth().currentUser?.uid else {
+            showAlert(title: "Error", message: "User not authenticated")
+            return
+        }
+        
+        // Find the note to get its pdfUrl
+        guard let note = (curatedNotes + favoriteNotes).first(where: { $0.id == noteId }) else {
+            showAlert(title: "Error", message: "Note not found")
+            return
+        }
+        
+        // Delete from Firestore
+        db.collection("pdfs").document(noteId).delete { [weak self] error in
+            guard let self = self else { return }
+            if let error = error {
+                self.showAlert(title: "Error", message: "Failed to delete note from Firestore: \(error.localizedDescription)")
+                return
+            }
+            
+            // Delete from favorites if it exists
+            db.collection("userFavorites").document(userId)
+                .collection("favorites").document(noteId).delete { error in
+                    if let error = error {
+                        print("Error deleting from favorites: \(error.localizedDescription)")
+                    }
+                }
+            
+            // Delete from Storage
+            let storageRef = storage.reference(forURL: note.pdfUrl)
+            storageRef.delete { error in
+                if let error = error {
+                    self.showAlert(title: "Warning", message: "Note deleted from database but failed to delete file: \(error.localizedDescription)")
+                } else {
+                    print("Note successfully deleted from storage")
+                }
+                // Refresh notes regardless of storage deletion success
+                self.fetchCuratedNotes()
+                self.fetchFavoriteNotes()
+            }
         }
     }
     

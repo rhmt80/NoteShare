@@ -152,8 +152,8 @@ class LoginViewController: UIViewController {
             UserDefaults.standard.set(true, forKey: "isUserLoggedIn")
             
             // Save credentials to keychain
-            KeychainManager.shared.saveCredential(service: "NoteShare", account: "userEmail", password: email)
-            KeychainManager.shared.saveCredential(service: "NoteShare", account: "userPassword", password: password)
+//            KeychainManager.shared.saveCredential(service: "NoteShare", account: "userEmail", password: email)
+//            KeychainManager.shared.saveCredential(service: "NoteShare", account: "userPassword", password: password)
             
             // Navigate to main screen with tab bar
             self.navigateToMainScreen()
