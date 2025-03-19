@@ -36,6 +36,93 @@ struct FireNote {
         ]
     }
 }
+
+extension FirebaseService {
+    func fetchNotes() async throws -> ([FireNote], [String: [String: [FireNote]]]) {
+        return try await withCheckedThrowingContinuation { continuation in
+            db.collection("pdfs")
+                .whereField("privacy", isEqualTo: "public")
+                .getDocuments { (snapshot, error) in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+
+                    var notes: [FireNote] = []
+                    var groupedNotes: [String: [String: [FireNote]]] = [:]
+                    let group = DispatchGroup()
+
+                    snapshot?.documents.forEach { document in
+                        group.enter()
+                        let data = document.data()
+                        let pdfUrl = data["downloadURL"] as? String ?? ""
+                        let collegeName = data["collegeName"] as? String ?? "Unknown College"
+                        let subjectCode = data["subjectCode"] as? String ?? "Unknown Subject"
+
+                        self.getStorageReference(from: pdfUrl)?.getMetadata { metadata, error in
+                            if let error = error { print("Metadata error for \(pdfUrl): \(error)") }
+                            let fileSize = self.formatFileSize(metadata?.size ?? 0)
+
+                            self.fetchPDFCoverImage(from: pdfUrl) { (image, pageCount) in
+                                let note = FireNote(
+                                    id: document.documentID,
+                                    title: data["fileName"] as? String ?? "Untitled",
+                                    description: data["category"] as? String ?? "",
+                                    author: collegeName,
+                                    coverImage: image,
+                                    pdfUrl: pdfUrl,
+                                    dateAdded: (metadata?.timeCreated ?? Date()),
+                                    pageCount: pageCount,
+                                    fileSize: fileSize,
+                                    isFavorite: false,
+                                    category: data["category"] as? String ?? "",
+                                    subjectCode: subjectCode,
+                                    subjectName: data["subjectName"] as? String ?? ""
+                                )
+                                notes.append(note)
+                                if groupedNotes[collegeName] == nil { groupedNotes[collegeName] = [:] }
+                                if groupedNotes[collegeName]?[subjectCode] != nil {
+                                    groupedNotes[collegeName]?[subjectCode]?.append(note)
+                                } else {
+                                    groupedNotes[collegeName]?[subjectCode] = [note]
+                                }
+                                group.leave()
+                            }
+                        }
+                    }
+
+                    group.notify(queue: .main) {
+                        self.fetchUserFavorites { favoriteNoteIds in
+                            let updatedNotes = notes.map { note in
+                                var updatedNote = note
+                                updatedNote.isFavorite = favoriteNoteIds.contains(note.id)
+                                return updatedNote
+                            }
+                            continuation.resume(returning: (updatedNotes.sorted { $0.dateAdded > $1.dateAdded }, groupedNotes))
+                        }
+                    }
+                }
+        }
+    }
+
+    // Similarly refactor fetchUserFavorites to async/await
+    private func fetchUserFavorites() async throws -> [String] {
+        guard let userId = currentUserId else { return [] }
+        return try await withCheckedThrowingContinuation { continuation in
+            db.collection("userFavorites").document(userId).collection("favorites")
+                .whereField("isFavorite", isEqualTo: true)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    let favoriteIds = snapshot?.documents.map { $0.documentID } ?? []
+                    continuation.resume(returning: favoriteIds)
+                }
+        }
+    }
+}
+
 // previously read note struct
 struct PreviouslyReadNote {
     let id: String
@@ -796,19 +883,28 @@ class CollegeCell: UICollectionViewCell {
         return label
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupUI()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    private let activityIndicator: UIActivityIndicatorView = {
+            let indicator = UIActivityIndicatorView(style: .medium)
+            indicator.color = .gray
+            indicator.hidesWhenStopped = true
+            indicator.translatesAutoresizingMaskIntoConstraints = false
+            return indicator
+        }()
+        
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            setupUI()
+        }
+        
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
     
     private func setupUI() {
         contentView.addSubview(containerView)
         containerView.addSubview(logoImageView)
         containerView.addSubview(nameLabel)
+        containerView.addSubview(activityIndicator) // Add the activity indicator
         
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -824,7 +920,10 @@ class CollegeCell: UICollectionViewCell {
             nameLabel.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 8),
             nameLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
             nameLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            nameLabel.bottomAnchor.constraint(lessThanOrEqualTo: containerView.bottomAnchor, constant: -8)
+            nameLabel.bottomAnchor.constraint(lessThanOrEqualTo: containerView.bottomAnchor, constant: -8),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+                        activityIndicator.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
         ])
     }
     
@@ -1284,30 +1383,40 @@ extension HomeViewController: UICollectionViewDataSource {
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let cell = collectionView.cellForItem(at: indexPath) {
-                UIView.animate(withDuration: 0.1, animations: {
-                    cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-                }) { _ in
-                    UIView.animate(withDuration: 0.1) {
-                        cell.transform = .identity
-                    }
+            UIView.animate(withDuration: 0.1, animations: {
+                cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            }) { _ in
+                UIView.animate(withDuration: 0.1) {
+                    cell.transform = .identity
                 }
             }
-            if collectionView == collegesCollectionView {
-                let selectedCollege = colleges[indexPath.item]
-                activityIndicator.startAnimating()
+        }
 
-                FirebaseService.shared.fetchNotes { notesList, groupedNotes in
-                    DispatchQueue.main.async {
-                        self.activityIndicator.stopAnimating()
-                        if let collegeNotes = groupedNotes[selectedCollege.name] {
-                            let notesVC = NotesViewController()
-                            notesVC.configure(with: collegeNotes)
-                            self.navigationController?.pushViewController(notesVC, animated: true)
-                        } else {
-                            self.showAlert(title: "No Notes", message: "No notes available for \(selectedCollege.name).")
-                        }
+        if collectionView == collegesCollectionView {
+            let selectedCollege = colleges[indexPath.item]
+            Task { @MainActor in
+                do {
+                    activityIndicator.startAnimating()
+                    collectionView.isUserInteractionEnabled = false // Disable taps during fetch
+
+                    let (_, groupedNotes) = try await FirebaseService.shared.fetchNotes()
+
+                    activityIndicator.stopAnimating()
+                    collectionView.isUserInteractionEnabled = true // Re-enable taps
+
+                    if let collegeNotes = groupedNotes[selectedCollege.name] {
+                        let notesVC = NotesViewController()
+                        notesVC.configure(with: collegeNotes)
+                        navigationController?.pushViewController(notesVC, animated: true)
+                    } else {
+                        showAlert(title: "No Notes", message: "No notes available for \(selectedCollege.name).")
                     }
+                } catch {
+                    activityIndicator.stopAnimating()
+                    collectionView.isUserInteractionEnabled = true
+                    showAlert(title: "Error", message: "Failed to fetch notes: \(error.localizedDescription)")
                 }
+            }
             } else if collectionView == notesCollectionView {
                 let selectedNote = recommendedNotes[indexPath.item]
                 print("Selected note with pdfUrl: \(selectedNote.pdfUrl)")
