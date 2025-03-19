@@ -55,7 +55,9 @@ class FirebaseService {
     
     // Fetch all notes (unchanged, but removing isFavorite from note fetch)
     func fetchNotes(completion: @escaping ([FireNote], [String: [String: [FireNote]]]) -> Void) {
-            db.collection("pdfs").getDocuments { (snapshot, error) in
+        db.collection("pdfs")
+            .whereField("privacy", isEqualTo: "public") // Filter for public PDFs only
+            .getDocuments { (snapshot, error) in
                 if let error = error {
                     print("Error fetching notes: \(error.localizedDescription)")
                     completion([], [:])
@@ -118,7 +120,7 @@ class FirebaseService {
                     }
                 }
             }
-        }
+    }
     
     // Fetch the current user's favorite note IDs
         private func fetchUserFavorites(completion: @escaping ([String]) -> Void) {

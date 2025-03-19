@@ -339,7 +339,6 @@ class PDFListViewController: UIViewController {
     private func fetchPDFsFromFirebase(useRefreshControl: Bool = false) {
         // Only show the center loading indicator if we're not using the refresh control
         if !useRefreshControl {
-            // Make container visible when loading starts
             if let loadingContainer = view.subviews.first(where: { $0.subviews.contains(where: { $0 is UIActivityIndicatorView }) }) {
                 loadingContainer.isHidden = false
             }
@@ -348,61 +347,67 @@ class PDFListViewController: UIViewController {
         
         emptyStateView.isHidden = true
         
-        db.collection("pdfs").getDocuments { [weak self] (snapshot, error) in
-            guard let self = self else { return }
-            
-            // Always stop both loading indicators when done
-            self.loadingIndicator.stopAnimating()
-            
-            // Explicitly hide the loading container
-            if let loadingContainer = self.view.subviews.first(where: { $0.subviews.contains(where: { $0 is UIActivityIndicatorView }) }) {
-                loadingContainer.isHidden = true
-            }
-            
-            self.collectionView.refreshControl?.endRefreshing()
-            
-            if let error = error {
-                print("Error getting documents: \(error)")
-                self.showErrorAlert(message: "Failed to fetch notes: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let documents = snapshot?.documents, !documents.isEmpty else {
-                self.emptyStateView.isHidden = false
-                return
-            }
-            
-            let group = DispatchGroup()
-            
-            for document in documents {
-                let data = document.data()
+        // Modified query to only fetch public PDFs
+        db.collection("pdfs")
+            .whereField("privacy", isEqualTo: "public")
+            .getDocuments { [weak self] (snapshot, error) in
+                guard let self = self else { return }
                 
-                guard let downloadURLString = data["downloadURL"] as? String,
-                      let url = URL(string: downloadURLString),
-                      let fileName = data["fileName"] as? String,
-                      let subjectName = data["subjectName"] as? String,
-                      let subjectCode = data["subjectCode"] as? String,
-                      let fileSize = data["fileSize"] as? Int else {
-                    continue
+                // Always stop both loading indicators when done
+                self.loadingIndicator.stopAnimating()
+                
+                // Explicitly hide the loading container
+                if let loadingContainer = self.view.subviews.first(where: { $0.subviews.contains(where: { $0 is UIActivityIndicatorView }) }) {
+                    loadingContainer.isHidden = true
                 }
                 
-                group.enter()
-                self.generateThumbnail(for: url) { thumbnail in
-                    let pdf = (url: url, fileName: fileName, subjectName: subjectName, subjectCode: subjectCode, fileSize: fileSize, thumbnail: thumbnail)
-                    self.pdfFiles.append(pdf)
-                    self.filteredPDFFiles.append(pdf)
-                    group.leave()
-                }
-            }
-            
-            group.notify(queue: .main) {
-                self.emptyStateView.isHidden = !self.pdfFiles.isEmpty
-                self.filteredPDFFiles.sort { $0.fileName < $1.fileName } // Sort alphabetically
-                self.collectionView.reloadData()
+                self.collectionView.refreshControl?.endRefreshing()
                 
-                // Add a subtle animation to the cells as they appear
-                self.animateCollectionViewCells()
-            }
+                if let error = error {
+                    print("Error getting documents: \(error)")
+                    self.showErrorAlert(message: "Failed to fetch notes: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let documents = snapshot?.documents, !documents.isEmpty else {
+                    self.emptyStateView.isHidden = false
+                    return
+                }
+                
+                let group = DispatchGroup()
+                
+                for document in documents {
+                    let data = document.data()
+                    
+                    guard let downloadURLString = data["downloadURL"] as? String,
+                          let url = URL(string: downloadURLString),
+                          let fileName = data["fileName"] as? String,
+                          let subjectName = data["subjectName"] as? String,
+                          let subjectCode = data["subjectCode"] as? String,
+                          let fileSize = data["fileSize"] as? Int,
+                          let privacy = data["privacy"] as? String, // Verify privacy field exists
+                          privacy == "public" // Double-check privacy (redundant but ensures safety)
+                    else {
+                        continue
+                    }
+                    
+                    group.enter()
+                    self.generateThumbnail(for: url) { thumbnail in
+                        let pdf = (url: url, fileName: fileName, subjectName: subjectName, subjectCode: subjectCode, fileSize: fileSize, thumbnail: thumbnail)
+                        self.pdfFiles.append(pdf)
+                        self.filteredPDFFiles.append(pdf)
+                        group.leave()
+                    }
+                }
+                
+                group.notify(queue: .main) {
+                    self.emptyStateView.isHidden = !self.pdfFiles.isEmpty
+                    self.filteredPDFFiles.sort { $0.fileName < $1.fileName } // Sort alphabetically
+                    self.collectionView.reloadData()
+                    
+                    // Add a subtle animation to the cells as they appear
+                    self.animateCollectionViewCells()
+                }
         }
     }
     
