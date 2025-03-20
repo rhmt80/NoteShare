@@ -234,7 +234,7 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     private let fileNameTextField: UITextField = {
         let field = UITextField()
-        field.placeholder = "Major Topics"
+        field.placeholder = "Major Topics Covered"
         field.borderStyle = .none
         field.backgroundColor = .systemGray6
         field.layer.cornerRadius = 12
@@ -416,11 +416,7 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
             subjectNameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             subjectNameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            fileNameTextField.topAnchor.constraint(equalTo: subjectNameTextField.bottomAnchor, constant: 16),
-            fileNameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            fileNameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
-            
-            privacyStackView.topAnchor.constraint(equalTo: fileNameTextField.bottomAnchor, constant: 16),
+            privacyStackView.topAnchor.constraint(equalTo: subjectNameTextField.bottomAnchor, constant: 16),
             privacyStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             privacyStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
@@ -432,7 +428,12 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
             uploadStackView.centerXAnchor.constraint(equalTo: uploadCardView.centerXAnchor),
             uploadStackView.centerYAnchor.constraint(equalTo: uploadCardView.centerYAnchor),
             
-            submitButton.topAnchor.constraint(equalTo: uploadCardView.bottomAnchor, constant: 24),
+            // Moved fileNameTextField to come after uploadCardView
+            fileNameTextField.topAnchor.constraint(equalTo: uploadCardView.bottomAnchor, constant: 16),
+            fileNameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            fileNameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            
+            submitButton.topAnchor.constraint(equalTo: fileNameTextField.bottomAnchor, constant: 24),
             submitButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             submitButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
@@ -442,7 +443,6 @@ class UploadModalViewController: UIViewController, UIPickerViewDelegate, UIPicke
             cancelButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20)
         ])
     }
-    
     private func setupDelegates() {
         categoryPickerView.delegate = self
         categoryPickerView.dataSource = self

@@ -18,55 +18,101 @@ class ScannedPDFUploadViewController: UIViewController, UIPickerViewDelegate, UI
     }
 
     // UI Components
-    private let titleLabel = UILabel()
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Upload Scanned PDF"
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 28, weight: .bold)
+        label.textColor = .label
+        return label
+    }()
+    
     private lazy var categoryDropdownButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Select Category", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.setTitleColor(.label, for: .normal)
-        button.backgroundColor = .systemGray5
-        button.layer.cornerRadius = 10
+        button.backgroundColor = .systemGray6
+        button.layer.cornerRadius = 12
         button.layer.masksToBounds = true
         button.menu = createCategoryMenu()
         button.showsMenuAsPrimaryAction = true
-        NSLayoutConstraint.activate([
-            button.heightAnchor.constraint(equalToConstant: 50)
-        ])
+        button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
         return button
     }()
-    private let collegePickerTextField = UITextField()
-    private let subjectCodeTextField = UITextField()
-    private let subjectNameTextField = UITextField()
-    private let fileNameTextField = UITextField()
-    private let uploadButton = UIButton(type: .system)
-    private let cancelButton = UIButton(type: .system)
-
-    private let collegePickerView = UIPickerView()
+    
+    private let subjectCodeTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Subject Code"
+        textField.borderStyle = .none
+        textField.backgroundColor = .systemGray6
+        textField.layer.cornerRadius = 12
+        textField.font = .systemFont(ofSize: 16)
+        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
+        textField.leftViewMode = .always
+        return textField
+    }()
+    
+    private let subjectNameTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Subject Name"
+        textField.borderStyle = .none
+        textField.backgroundColor = .systemGray6
+        textField.layer.cornerRadius = 12
+        textField.font = .systemFont(ofSize: 16)
+        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
+        textField.leftViewMode = .always
+        return textField
+    }()
+    
+    private let fileNameTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Major Topics"
+        textField.borderStyle = .none
+        textField.backgroundColor = .systemGray6
+        textField.layer.cornerRadius = 12
+        textField.font = .systemFont(ofSize: 16)
+        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
+        textField.leftViewMode = .always
+        return textField
+    }()
+    
+    private let uploadButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Upload", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
+        button.backgroundColor = .systemBlue
+        button.layer.cornerRadius = 12
+        button.setTitleColor(.white, for: .normal)
+        button.contentEdgeInsets = UIEdgeInsets(top: 14, left: 20, bottom: 14, right: 20)
+        return button
+    }()
+    
+    private let cancelButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Cancel", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
+        button.backgroundColor = .systemRed.withAlphaComponent(0.9)
+        button.layer.cornerRadius = 12
+        button.setTitleColor(.white, for: .normal)
+        button.contentEdgeInsets = UIEdgeInsets(top: 14, left: 20, bottom: 14, right: 20)
+        return button
+    }()
 
     private let categories = [
-        "Core Cse",
-        "Web & App Development",
-        "AIML",
-        "Core ECE",
-        "Core Mechanical",
-        "Core Civil",
-        "Core Electrical",
-        "Physics",
-        "Maths"
+        "Core Cse", "Web & App Development", "AIML", "Core ECE",
+        "Core Mechanical", "Core Civil", "Core Electrical", "Physics", "Maths"
     ]
 
     private var selectedCategory: String?
-    private let colleges = ["SRM", "VIT", "KIIT", "Manipal", "LPU", "Amity"]
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupUI()
-        setupDelegates()
         setupActions()
-        fetchUserCollege()
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -83,136 +129,53 @@ class ScannedPDFUploadViewController: UIViewController, UIPickerViewDelegate, UI
         return UIMenu(title: "", children: actions)
     }
 
-    // MARK: - Fetch User College
-    private func fetchUserCollege() {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-
-        let loadingIndicator = UIActivityIndicatorView(style: .medium)
-        loadingIndicator.startAnimating()
-        loadingIndicator.center = collegePickerTextField.center
-        view.addSubview(loadingIndicator)
-
-        db.collection("users").document(userId).getDocument { [weak self] (document, error) in
-            DispatchQueue.main.async {
-                loadingIndicator.removeFromSuperview()
-                
-                guard let self = self else { return }
-                
-                if let error = error {
-                    self.showAlert(title: "Error", message: "Failed to fetch college: \(error.localizedDescription)")
-                    return
-                }
-                
-                if let document = document, document.exists,
-                   let college = document.data()?["college"] as? String {
-                    self.collegePickerTextField.text = college
-                }
-            }
-        }
-    }
-
     // MARK: - Setup UI
     private func setupUI() {
-        titleLabel.text = "Upload Scanned PDF"
-        titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 24)
-
-        collegePickerTextField.placeholder = "Select College"
-        collegePickerTextField.borderStyle = .roundedRect
-
-        subjectCodeTextField.placeholder = "Subject Code"
-        subjectCodeTextField.borderStyle = .roundedRect
-
-        subjectNameTextField.placeholder = "Subject Name"
-        subjectNameTextField.borderStyle = .roundedRect
-
-        fileNameTextField.placeholder = "Major Topics"
-        fileNameTextField.borderStyle = .roundedRect
-
-        uploadButton.setTitle("Upload", for: .normal)
-        uploadButton.backgroundColor = .systemBlue
-        uploadButton.layer.cornerRadius = 10
-        uploadButton.setTitleColor(.white, for: .normal)
-
-        cancelButton.setTitle("Cancel", for: .normal)
-        cancelButton.backgroundColor = .systemRed
-        cancelButton.layer.cornerRadius = 10
-        cancelButton.setTitleColor(.white, for: .normal)
-
-        // Add subviews
-        [titleLabel, categoryDropdownButton, collegePickerTextField, subjectCodeTextField,
-         subjectNameTextField, fileNameTextField, uploadButton, cancelButton].forEach {
+        [titleLabel, categoryDropdownButton, subjectCodeTextField, subjectNameTextField,
+         fileNameTextField, uploadButton, cancelButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
 
-        // Constraints
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
-            categoryDropdownButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
+            categoryDropdownButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 40),
             categoryDropdownButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             categoryDropdownButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            categoryDropdownButton.heightAnchor.constraint(equalToConstant: 50),
 
-            collegePickerTextField.topAnchor.constraint(equalTo: categoryDropdownButton.bottomAnchor, constant: 20),
-            collegePickerTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            collegePickerTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-
-            subjectCodeTextField.topAnchor.constraint(equalTo: collegePickerTextField.bottomAnchor, constant: 20),
+            subjectCodeTextField.topAnchor.constraint(equalTo: categoryDropdownButton.bottomAnchor, constant: 20),
             subjectCodeTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             subjectCodeTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            subjectCodeTextField.heightAnchor.constraint(equalToConstant: 50),
 
             subjectNameTextField.topAnchor.constraint(equalTo: subjectCodeTextField.bottomAnchor, constant: 20),
             subjectNameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             subjectNameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            subjectNameTextField.heightAnchor.constraint(equalToConstant: 50),
 
             fileNameTextField.topAnchor.constraint(equalTo: subjectNameTextField.bottomAnchor, constant: 20),
             fileNameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             fileNameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            fileNameTextField.heightAnchor.constraint(equalToConstant: 50),
 
-            uploadButton.topAnchor.constraint(equalTo: fileNameTextField.bottomAnchor, constant: 30),
+            uploadButton.topAnchor.constraint(equalTo: fileNameTextField.bottomAnchor, constant: 40),
             uploadButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             uploadButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            uploadButton.heightAnchor.constraint(equalToConstant: 50),
 
-            cancelButton.topAnchor.constraint(equalTo: uploadButton.bottomAnchor, constant: 20),
+            cancelButton.topAnchor.constraint(equalTo: uploadButton.bottomAnchor, constant: 15),
             cancelButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            cancelButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            cancelButton.heightAnchor.constraint(equalToConstant: 50)
+            cancelButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
-    }
-
-    // MARK: - Setup Delegates
-    private func setupDelegates() {
-        collegePickerView.delegate = self
-        collegePickerView.dataSource = self
-        collegePickerTextField.inputView = collegePickerView
     }
 
     // MARK: - Setup Actions
     private func setupActions() {
         uploadButton.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
-    }
-
-    // MARK: - Picker View Methods
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return colleges.count
-    }
-
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return colleges[row]
-    }
-
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        collegePickerTextField.text = colleges[row]
-        dismissKeyboard()
     }
 
     // MARK: - Dismiss Keyboard
@@ -225,18 +188,10 @@ class ScannedPDFUploadViewController: UIViewController, UIPickerViewDelegate, UI
         guard let scannedPDFData = scannedPDFData,
               let fileName = fileNameTextField.text, !fileName.isEmpty,
               let category = selectedCategory,
-              let college = collegePickerTextField.text, !college.isEmpty,
               let subjectCode = subjectCodeTextField.text, !subjectCode.isEmpty,
               let subjectName = subjectNameTextField.text, !subjectName.isEmpty else {
             showAlert(title: "Error", message: "Please fill in all fields.")
             return
-        }
-
-        // Update user's college in Firestore
-        if let userId = Auth.auth().currentUser?.uid {
-            db.collection("users").document(userId).setData([
-                "college": college
-            ], merge: true)
         }
 
         let loadingAlert = UIAlertController(title: nil, message: "Uploading...", preferredStyle: .alert)
@@ -251,7 +206,6 @@ class ScannedPDFUploadViewController: UIViewController, UIPickerViewDelegate, UI
         ])
 
         present(loadingAlert, animated: true) {
-            // Save the scanned PDF data to a temporary file
             let tempDir = FileManager.default.temporaryDirectory
             let tempFileURL = tempDir.appendingPathComponent("\(UUID().uuidString).pdf")
             do {
@@ -261,12 +215,11 @@ class ScannedPDFUploadViewController: UIViewController, UIPickerViewDelegate, UI
                 return
             }
 
-            // Upload the temporary file to Firebase
             FirebaseManager.shared.uploadPDF(
                 fileURL: tempFileURL,
                 fileName: fileName,
                 category: category,
-                collegeName: college,
+                collegeName: "", // Removed college from UI, passing empty string
                 subjectCode: subjectCode,
                 subjectName: subjectName,
                 privacy: "public",
@@ -300,4 +253,11 @@ class ScannedPDFUploadViewController: UIViewController, UIPickerViewDelegate, UI
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
+
+    // MARK: - Picker View Methods (Removed since college is no longer used)
+    func numberOfComponents(in pickerView: UIPickerView) -> Int { return 0 }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int { return 0 }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? { return nil }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {}
 }
+
