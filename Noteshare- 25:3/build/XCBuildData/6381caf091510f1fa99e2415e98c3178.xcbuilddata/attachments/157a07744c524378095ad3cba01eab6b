@@ -1,0 +1,4 @@
+module GoogleUtilities_MethodSwizzler {
+umbrella "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/GoogleUtilities/GoogleUtilities/MethodSwizzler/Public"
+export *
+}

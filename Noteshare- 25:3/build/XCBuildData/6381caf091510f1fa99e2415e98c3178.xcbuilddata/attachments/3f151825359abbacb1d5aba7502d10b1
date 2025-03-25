@@ -1,0 +1,288 @@
+{
+  "" : {
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NoteShare-master.dia",
+    "emit-module-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NoteShare-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NoteShare-master-emit-module.dia",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NoteShare-master.swiftdeps"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/AIAssistantViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AIAssistantViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AIAssistantViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AIAssistantViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AIAssistantViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AIAssistantViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AIAssistantViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AIAssistantViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AIAssistantViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/AppDelegate.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AppDelegate.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AppDelegate.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AppDelegate.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AppDelegate.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AppDelegate.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AppDelegate.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AppDelegate.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/AppDelegate~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/CollegeSelectionViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/CollegeSelectionViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/CollegeSelectionViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/CollegeSelectionViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/CollegeSelectionViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/CollegeSelectionViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/CollegeSelectionViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/CollegeSelectionViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/CollegeSelectionViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/ExploreCollegeSubjectsViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ExploreCollegeSubjectsViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ExploreCollegeSubjectsViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ExploreCollegeSubjectsViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ExploreCollegeSubjectsViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ExploreCollegeSubjectsViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ExploreCollegeSubjectsViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ExploreCollegeSubjectsViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ExploreCollegeSubjectsViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/FavoriteNotesViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FavoriteNotesViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FavoriteNotesViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FavoriteNotesViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FavoriteNotesViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FavoriteNotesViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FavoriteNotesViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FavoriteNotesViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FavoriteNotesViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/FeaturesViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FeaturesViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FeaturesViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FeaturesViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FeaturesViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FeaturesViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FeaturesViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FeaturesViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/FeaturesViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/HomeViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/HomeViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/HomeViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/HomeViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/HomeViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/HomeViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/HomeViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/HomeViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/HomeViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/InformationViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InformationViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InformationViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InformationViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InformationViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InformationViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InformationViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InformationViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InformationViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/InterestEditingViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InterestEditingViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InterestEditingViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InterestEditingViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InterestEditingViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InterestEditingViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InterestEditingViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InterestEditingViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/InterestEditingViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/LandingViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LandingViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LandingViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LandingViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LandingViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LandingViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LandingViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LandingViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LandingViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/LoginViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LoginViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LoginViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LoginViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LoginViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LoginViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LoginViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LoginViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/LoginViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/NotesSubjectCell.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesSubjectCell.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesSubjectCell.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesSubjectCell.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesSubjectCell.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesSubjectCell.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesSubjectCell.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesSubjectCell.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesSubjectCell~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/NotesViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/NotesViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/PDFListViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PDFListViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PDFListViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PDFListViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PDFListViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PDFListViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PDFListViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PDFListViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PDFListViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/Package.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/Package.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/Package.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/Package.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/Package.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/Package.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/Package.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/Package.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/Package~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/PdfViewer.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PdfViewer.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PdfViewer.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PdfViewer.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PdfViewer.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PdfViewer.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PdfViewer.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PdfViewer.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PdfViewer~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/PlaceholderView.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PlaceholderView.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PlaceholderView.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PlaceholderView.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PlaceholderView.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PlaceholderView.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PlaceholderView.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PlaceholderView.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/PlaceholderView~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/ProfileViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ProfileViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ProfileViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ProfileViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ProfileViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ProfileViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ProfileViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ProfileViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ProfileViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/RegistrationViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/RegistrationViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/RegistrationViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/RegistrationViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/RegistrationViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/RegistrationViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/RegistrationViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/RegistrationViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/RegistrationViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/ScannedPDFUploadViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ScannedPDFUploadViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ScannedPDFUploadViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ScannedPDFUploadViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ScannedPDFUploadViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ScannedPDFUploadViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ScannedPDFUploadViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ScannedPDFUploadViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/ScannedPDFUploadViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/SceneDelegate.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SceneDelegate.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SceneDelegate.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SceneDelegate.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SceneDelegate.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SceneDelegate.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SceneDelegate.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SceneDelegate.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SceneDelegate~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/SubjectNotesViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SubjectNotesViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SubjectNotesViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SubjectNotesViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SubjectNotesViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SubjectNotesViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SubjectNotesViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SubjectNotesViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/SubjectNotesViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/UploadViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/UploadedNotesViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedNotesViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedNotesViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedNotesViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedNotesViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedNotesViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedNotesViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedNotesViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedNotesViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/UploadedSubjectNotesViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedSubjectNotesViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedSubjectNotesViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedSubjectNotesViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedSubjectNotesViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedSubjectNotesViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedSubjectNotesViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedSubjectNotesViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/UploadedSubjectNotesViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/dataModel.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/dataModel.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/dataModel.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/dataModel.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/dataModel.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/dataModel.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/dataModel.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/dataModel.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/dataModel~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/NoteShare/myNotesViewController.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/myNotesViewController.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/myNotesViewController.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/myNotesViewController.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/myNotesViewController.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/myNotesViewController.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/myNotesViewController.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/myNotesViewController.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/myNotesViewController~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Desktop/NoteShare/build/NoteShare.build/Debug-iphoneos/NoteShare.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

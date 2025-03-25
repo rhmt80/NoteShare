@@ -1,0 +1,4 @@
+module FirebaseStorageCombineSwift {
+header "FirebaseStorageCombineSwift-Swift.h"
+export *
+}

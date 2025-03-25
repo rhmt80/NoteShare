@@ -1,0 +1,4 @@
+module FirebaseDatabaseInternal {
+umbrella "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/firebase-ios-sdk/FirebaseDatabase/Sources/Public"
+export *
+}

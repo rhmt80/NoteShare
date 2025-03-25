@@ -1,0 +1,4 @@
+module FirebaseFunctionsCombineSwift {
+header "FirebaseFunctionsCombineSwift-Swift.h"
+export *
+}

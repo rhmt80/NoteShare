@@ -1,0 +1,4 @@
+module leveldb {
+umbrella "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/leveldb/include"
+export *
+}

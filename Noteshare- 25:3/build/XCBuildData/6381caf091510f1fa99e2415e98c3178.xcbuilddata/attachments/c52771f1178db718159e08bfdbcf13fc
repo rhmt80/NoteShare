@@ -1,0 +1,4 @@
+module FirebaseAuthCombineSwift {
+header "FirebaseAuthCombineSwift-Swift.h"
+export *
+}

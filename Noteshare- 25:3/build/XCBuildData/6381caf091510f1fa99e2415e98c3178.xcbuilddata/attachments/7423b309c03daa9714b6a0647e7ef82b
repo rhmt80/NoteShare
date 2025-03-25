@@ -1,0 +1,4 @@
+module FirebaseInAppMessaging {
+header "FirebaseInAppMessaging-Swift.h"
+export *
+}

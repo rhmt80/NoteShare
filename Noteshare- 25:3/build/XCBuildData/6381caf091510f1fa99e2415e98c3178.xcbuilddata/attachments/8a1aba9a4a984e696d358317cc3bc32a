@@ -1,0 +1,368 @@
+{
+  "" : {
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Cache-master.dia",
+    "emit-module-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Cache-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Cache-master-emit-module.dia",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Cache-master.swiftdeps"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Mac/NSImage+Extensions.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/NSImage+Extensions.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/NSImage+Extensions.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/NSImage+Extensions.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/NSImage+Extensions.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/NSImage+Extensions.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/NSImage+Extensions.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/NSImage+Extensions.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/NSImage+Extensions~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Configuration/DiskConfig.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskConfig.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskConfig.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskConfig.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskConfig.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskConfig.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskConfig.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskConfig.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskConfig~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Configuration/MemoryConfig.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryConfig.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryConfig.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryConfig.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryConfig.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryConfig.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryConfig.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryConfig.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryConfig~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Extensions/Date+Extensions.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Date+Extensions.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Date+Extensions.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Date+Extensions.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Date+Extensions.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Date+Extensions.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Date+Extensions.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Date+Extensions.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Date+Extensions~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Extensions/FileManager+Extensions.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/FileManager+Extensions.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/FileManager+Extensions.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/FileManager+Extensions.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/FileManager+Extensions.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/FileManager+Extensions.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/FileManager+Extensions.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/FileManager+Extensions.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/FileManager+Extensions~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Extensions/Hasher+constantAccrossExecutions.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Hasher+constantAccrossExecutions.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Hasher+constantAccrossExecutions.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Hasher+constantAccrossExecutions.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Hasher+constantAccrossExecutions.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Hasher+constantAccrossExecutions.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Hasher+constantAccrossExecutions.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Hasher+constantAccrossExecutions.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Hasher+constantAccrossExecutions~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Extensions/JSONDecoder+Extensions.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDecoder+Extensions.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDecoder+Extensions.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDecoder+Extensions.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDecoder+Extensions.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDecoder+Extensions.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDecoder+Extensions.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDecoder+Extensions.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDecoder+Extensions~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Extensions/URL+Extensions.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/URL+Extensions.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/URL+Extensions.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/URL+Extensions.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/URL+Extensions.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/URL+Extensions.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/URL+Extensions.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/URL+Extensions.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/URL+Extensions~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/DataSerializer.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DataSerializer.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DataSerializer.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DataSerializer.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DataSerializer.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DataSerializer.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DataSerializer.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DataSerializer.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DataSerializer~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/Entry.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Entry.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Entry.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Entry.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Entry.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Entry.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Entry.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Entry.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Entry~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/ExpirationMode.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ExpirationMode.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ExpirationMode.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ExpirationMode.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ExpirationMode.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ExpirationMode.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ExpirationMode.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ExpirationMode.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ExpirationMode~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/Expiry.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Expiry.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Expiry.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Expiry.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Expiry.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Expiry.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Expiry.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Expiry.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Expiry~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/ImageWrapper.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ImageWrapper.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ImageWrapper.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ImageWrapper.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ImageWrapper.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ImageWrapper.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ImageWrapper.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ImageWrapper.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ImageWrapper~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/JSONArrayWrapper.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONArrayWrapper.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONArrayWrapper.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONArrayWrapper.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONArrayWrapper.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONArrayWrapper.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONArrayWrapper.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONArrayWrapper.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONArrayWrapper~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/JSONDictionaryWrapper.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDictionaryWrapper.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDictionaryWrapper.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDictionaryWrapper.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDictionaryWrapper.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDictionaryWrapper.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDictionaryWrapper.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDictionaryWrapper.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/JSONDictionaryWrapper~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/MD5.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MD5.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MD5.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MD5.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MD5.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MD5.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MD5.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MD5.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MD5~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/MemoryCapsule.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryCapsule.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryCapsule.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryCapsule.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryCapsule.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryCapsule.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryCapsule.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryCapsule.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryCapsule~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/ObservationToken.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ObservationToken.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ObservationToken.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ObservationToken.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ObservationToken.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ObservationToken.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ObservationToken.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ObservationToken.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/ObservationToken~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/Optional+Extension.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Optional+Extension.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Optional+Extension.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Optional+Extension.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Optional+Extension.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Optional+Extension.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Optional+Extension.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Optional+Extension.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Optional+Extension~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/StorageError.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageError.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageError.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageError.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageError.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageError.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageError.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageError.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageError~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/Transformer.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Transformer.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Transformer.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Transformer.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Transformer.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Transformer.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Transformer.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Transformer.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Transformer~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/TransformerFactory.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TransformerFactory.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TransformerFactory.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TransformerFactory.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TransformerFactory.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TransformerFactory.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TransformerFactory.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TransformerFactory.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TransformerFactory~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/TypeWrapper.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TypeWrapper.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TypeWrapper.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TypeWrapper.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TypeWrapper.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TypeWrapper.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TypeWrapper.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TypeWrapper.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/TypeWrapper~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Library/Types.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Types.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Types.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Types.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Types.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Types.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Types.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Types.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Types~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Storage/AsyncStorage.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/AsyncStorage.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/AsyncStorage.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/AsyncStorage.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/AsyncStorage.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/AsyncStorage.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/AsyncStorage.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/AsyncStorage.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/AsyncStorage~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Storage/DiskStorage.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskStorage.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskStorage.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskStorage.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskStorage.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskStorage.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskStorage.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskStorage.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/DiskStorage~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Storage/HybridStorage.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/HybridStorage.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/HybridStorage.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/HybridStorage.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/HybridStorage.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/HybridStorage.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/HybridStorage.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/HybridStorage.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/HybridStorage~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Storage/KeyObservationRegistry.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/KeyObservationRegistry.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/KeyObservationRegistry.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/KeyObservationRegistry.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/KeyObservationRegistry.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/KeyObservationRegistry.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/KeyObservationRegistry.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/KeyObservationRegistry.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/KeyObservationRegistry~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Storage/MemoryStorage.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryStorage.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryStorage.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryStorage.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryStorage.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryStorage.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryStorage.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryStorage.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/MemoryStorage~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Storage/Storage+Transform.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage+Transform.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage+Transform.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage+Transform.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage+Transform.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage+Transform.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage+Transform.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage+Transform.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage+Transform~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Storage/Storage.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/Storage~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Storage/StorageAware.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageAware.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageAware.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageAware.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageAware.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageAware.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageAware.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageAware.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageAware~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Storage/StorageObservationRegistry.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageObservationRegistry.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageObservationRegistry.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageObservationRegistry.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageObservationRegistry.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageObservationRegistry.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageObservationRegistry.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageObservationRegistry.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/StorageObservationRegistry~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/Shared/Storage/SyncStorage.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/SyncStorage.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/SyncStorage.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/SyncStorage.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/SyncStorage.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/SyncStorage.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/SyncStorage.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/SyncStorage.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/SyncStorage~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/Source/iOS/UIImage+Extensions.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/UIImage+Extensions.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/UIImage+Extensions.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/UIImage+Extensions.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/UIImage+Extensions.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/UIImage+Extensions.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/UIImage+Extensions.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/UIImage+Extensions.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/UIImage+Extensions~partial.swiftmodule"
+  },
+  "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/DerivedSources/resource_bundle_accessor.swift" : {
+    "const-values" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/resource_bundle_accessor.swiftconstvalues",
+    "dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/resource_bundle_accessor.d",
+    "diagnostics" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/resource_bundle_accessor.dia",
+    "index-unit-output-path" : "/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/resource_bundle_accessor.o",
+    "llvm-bc" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/resource_bundle_accessor.bc",
+    "object" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/resource_bundle_accessor.o",
+    "swift-dependencies" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/resource_bundle_accessor.swiftdeps",
+    "swiftmodule" : "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/Cache/build/Cache.build/Debug-iphoneos/Cache.build/Objects-normal/arm64/resource_bundle_accessor~partial.swiftmodule"
+  }
+}

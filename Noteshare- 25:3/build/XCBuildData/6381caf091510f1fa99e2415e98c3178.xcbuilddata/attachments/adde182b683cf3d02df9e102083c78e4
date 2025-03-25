@@ -1,0 +1,4 @@
+module FirebaseRemoteConfig {
+header "FirebaseRemoteConfig-Swift.h"
+export *
+}

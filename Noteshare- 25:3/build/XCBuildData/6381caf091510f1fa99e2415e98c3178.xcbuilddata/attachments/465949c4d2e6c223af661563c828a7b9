@@ -1,0 +1,4 @@
+module FirebaseMessagingInterop {
+umbrella "/Users/shubranshushekhar/Library/Developer/Xcode/DerivedData/NoteShare-fsjqsjamuxboqyfkkyrgowzwfscm/SourcePackages/checkouts/firebase-ios-sdk/FirebaseMessaging/Interop"
+export *
+}

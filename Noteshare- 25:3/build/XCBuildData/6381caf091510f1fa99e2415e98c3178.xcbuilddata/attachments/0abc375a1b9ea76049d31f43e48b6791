@@ -1,0 +1,4 @@
+module FirebaseVertexAI {
+header "FirebaseVertexAI-Swift.h"
+export *
+}

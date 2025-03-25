@@ -1,0 +1,4 @@
+module GoogleGenerativeAI {
+header "GoogleGenerativeAI-Swift.h"
+export *
+}

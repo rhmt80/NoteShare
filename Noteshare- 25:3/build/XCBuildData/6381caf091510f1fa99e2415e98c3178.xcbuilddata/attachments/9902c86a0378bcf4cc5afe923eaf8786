@@ -1,0 +1,4 @@
+module Cache {
+header "Cache-Swift.h"
+export *
+}
