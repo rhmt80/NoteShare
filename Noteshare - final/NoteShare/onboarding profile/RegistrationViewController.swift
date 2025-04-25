@@ -2,6 +2,7 @@ import UIKit
 import AuthenticationServices
 import FirebaseAuth
 import FirebaseFirestore
+import SafariServices
 
 class RegistrationViewController: UIViewController {
     
@@ -25,7 +26,6 @@ class RegistrationViewController: UIViewController {
             
             guard let userId = result?.user.uid else { return }
             
-            // Store user data in Firestore
             let userData: [String: Any] = [
                 "name": name,
                 "email": email,
@@ -38,12 +38,10 @@ class RegistrationViewController: UIViewController {
                     return
                 }
                 
-                // Update display name
                 let changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
                 changeRequest?.displayName = name
                 changeRequest?.commitChanges(completion: nil)
                 
-                // Navigate to college selection
                 let collegeSelectionVC = CollegeSelectionViewController()
                 self.navigationController?.pushViewController(collegeSelectionVC, animated: true)
             }
@@ -57,6 +55,7 @@ class RegistrationViewController: UIViewController {
         label.textColor = UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityLabel = "NoteShare logo"
         return label
     }()
     
@@ -72,6 +71,7 @@ class RegistrationViewController: UIViewController {
         textField.leftViewMode = .always
         textField.isSecureTextEntry = isSecure
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.accessibilityHint = "Enter your \(placeholder.lowercased())"
         return textField
     }
     
@@ -87,17 +87,19 @@ class RegistrationViewController: UIViewController {
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         button.layer.cornerRadius = 25
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityLabel = "Register"
+        button.accessibilityHint = "Tap to create a new account"
         return button
     }()
     
-    /*
     private let signInWithAppleButton: ASAuthorizationAppleIDButton = {
         let button = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
         button.cornerRadius = 25
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityLabel = "Sign in with Apple"
+        button.accessibilityHint = "Tap to sign in using your Apple ID"
         return button
     }()
-    */
     
     private let termsLabel: UILabel = {
         let label = UILabel()
@@ -113,14 +115,29 @@ class RegistrationViewController: UIViewController {
             .foregroundColor: UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
         ]
         
-        let attributedString = NSMutableAttributedString(string: "By tapping Register you agree to our\n", attributes: regularAttributes)
-        attributedString.append(NSAttributedString(string: "Terms of Use", attributes: linkAttributes))
-        attributedString.append(NSAttributedString(string: " and ", attributes: regularAttributes))
-        attributedString.append(NSAttributedString(string: "Privacy Policy", attributes: linkAttributes))
+        let attributedString = NSMutableAttributedString(
+            string: "By tapping Register you agree to our\n",
+            attributes: regularAttributes
+        )
+        attributedString.append(NSAttributedString(
+            string: "Terms of Use",
+            attributes: linkAttributes
+        ))
+        attributedString.append(NSAttributedString(
+            string: " and ",
+            attributes: regularAttributes
+        ))
+        attributedString.append(NSAttributedString(
+            string: "Privacy Policy",
+            attributes: linkAttributes
+        ))
         
         label.attributedText = attributedString
         label.numberOfLines = 0
         label.textAlignment = .center
+        label.isUserInteractionEnabled = true
+        label.accessibilityLabel = "Terms and Privacy Policy"
+        label.accessibilityHint = "Tap Terms of Use or Privacy Policy to view details"
         return label
     }()
 
@@ -138,20 +155,25 @@ class RegistrationViewController: UIViewController {
             .foregroundColor: UIColor(red: 0.33, green: 0.49, blue: 1.0, alpha: 1.0)
         ]
         
-        let attributedString = NSMutableAttributedString(string: "Have an account? ", attributes: regularAttributes)
-        attributedString.append(NSAttributedString(string: "Login", attributes: linkAttributes))
+        let attributedString = NSMutableAttributedString(
+            string: "Have an account? ",
+            attributes: regularAttributes
+        )
+        attributedString.append(NSAttributedString(
+            string: "Login",
+            attributes: linkAttributes
+        ))
         
         button.setAttributedTitle(attributedString, for: .normal)
+        button.accessibilityLabel = "Login prompt"
+        button.accessibilityHint = "Tap to go to the login screen"
         return button
     }()
     
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        view.addGestureRecognizer(tapGesture)
+        setupTermsLabelTapGestures()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -159,20 +181,19 @@ class RegistrationViewController: UIViewController {
         navigationController?.isNavigationBarHidden = true
     }
     
-    // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        // Add subviews, excluding signInWithAppleButton
         [logoLabel, nameTextField, emailTextField, passwordTextField,
-         registerButton, /*signInWithAppleButton,*/ termsLabel, loginPromptButton].forEach { view.addSubview($0) }
+         registerButton, signInWithAppleButton, termsLabel, loginPromptButton].forEach {
+            view.addSubview($0)
+        }
         
-        // Setup constraints
         NSLayoutConstraint.activate([
             logoLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60),
             logoLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            nameTextField.topAnchor.constraint(equalTo: logoLabel.bottomAnchor, constant: 60),
+            nameTextField.topAnchor.constraint(equalTo: logoLabel.bottomAnchor, constant: 48),
             nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             nameTextField.heightAnchor.constraint(equalToConstant: 50),
@@ -192,14 +213,12 @@ class RegistrationViewController: UIViewController {
             registerButton.trailingAnchor.constraint(equalTo: nameTextField.trailingAnchor),
             registerButton.heightAnchor.constraint(equalToConstant: 50),
             
-            /*
             signInWithAppleButton.topAnchor.constraint(equalTo: registerButton.bottomAnchor, constant: 16),
             signInWithAppleButton.leadingAnchor.constraint(equalTo: nameTextField.leadingAnchor),
             signInWithAppleButton.trailingAnchor.constraint(equalTo: nameTextField.trailingAnchor),
             signInWithAppleButton.heightAnchor.constraint(equalToConstant: 50),
-            */
             
-            termsLabel.topAnchor.constraint(equalTo: registerButton.bottomAnchor, constant: 24), // Adjusted to anchor to registerButton
+            termsLabel.topAnchor.constraint(equalTo: signInWithAppleButton.bottomAnchor, constant: 24),
             termsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             termsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             
@@ -208,15 +227,62 @@ class RegistrationViewController: UIViewController {
         ])
         
         registerButton.addTarget(self, action: #selector(registerTapped), for: .touchUpInside)
-        // signInWithAppleButton.addTarget(self, action: #selector(signInWithAppleTapped), for: .touchUpInside)
+        signInWithAppleButton.addTarget(self, action: #selector(signInWithAppleTapped), for: .touchUpInside)
         loginPromptButton.addTarget(self, action: #selector(loginPromptTapped), for: .touchUpInside)
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
     }
     
-    // MARK: - Actions
-    /*
+    private func setupTermsLabelTapGestures() {
+        let termsRange = (termsLabel.attributedText?.string as NSString?)?.range(of: "Terms of Use")
+        let privacyRange = (termsLabel.attributedText?.string as NSString?)?.range(of: "Privacy Policy")
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTermsTap(_:)))
+        termsLabel.addGestureRecognizer(tapGesture)
+        
+        self.termsRange = termsRange
+        self.privacyRange = privacyRange
+    }
+    
+    private var termsRange: NSRange?
+    private var privacyRange: NSRange?
+    
+    @objc private func handleTermsTap(_ gesture: UITapGestureRecognizer) {
+        guard let label = gesture.view as? UILabel,
+              let attributedText = label.attributedText else { return }
+        
+        let layoutManager = NSLayoutManager()
+        let textContainer = NSTextContainer(size: label.bounds.size)
+        let textStorage = NSTextStorage(attributedString: attributedText)
+        
+        textContainer.lineFragmentPadding = 0
+        textContainer.maximumNumberOfLines = label.numberOfLines
+        textContainer.size = label.bounds.size
+        
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+        
+        let location = gesture.location(in: label)
+        let characterIndex = layoutManager.characterIndex(
+            for: location,
+            in: textContainer,
+            fractionOfDistanceBetweenInsertionPoints: nil
+        )
+        
+        if let termsRange = termsRange, NSLocationInRange(characterIndex, termsRange) {
+            if let url = URL(string: "https://note-share-web.vercel.app/terms") {
+                let safariVC = SFSafariViewController(url: url)
+                present(safariVC, animated: true)
+            }
+        } else if let privacyRange = privacyRange, NSLocationInRange(characterIndex, privacyRange) {
+            if let url = URL(string: "https://note-share-web.vercel.app/privacy") {
+                let safariVC = SFSafariViewController(url: url)
+                present(safariVC, animated: true)
+            }
+        }
+    }
+    
     @objc private func signInWithAppleTapped() {
         let provider = OAuthProvider(providerID: "apple.com")
         provider.getCredentialWith(nil) { [weak self] credential, error in
@@ -233,13 +299,11 @@ class RegistrationViewController: UIViewController {
                     return
                 }
                 
-                // Navigate to the next screen
                 let collegeSelectionVC = CollegeSelectionViewController()
                 self.navigationController?.pushViewController(collegeSelectionVC, animated: true)
             }
         }
     }
-    */
     
     @objc private func loginPromptTapped() {
         let loginVC = LoginViewController()

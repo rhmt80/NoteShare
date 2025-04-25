@@ -483,13 +483,13 @@ class FirebaseService {
     // Fetch user data with caching
         func fetchUserData(completion: @escaping ([String], String) -> Void) {
         // Check if cache is valid
-//        if let cachedData = userDataCache,
-//           let lastFetch = lastUserDataFetchTime,
-//           Date().timeIntervalSince(lastFetch) < cacheInvalidationTime {
-//            print("Using cached user data")
-//            completion(cachedData.interests, cachedData.college)
-//            return
-//        }
+        if let cachedData = userDataCache,
+           let lastFetch = lastUserDataFetchTime,
+           Date().timeIntervalSince(lastFetch) < cacheInvalidationTime {
+            print("Using cached user data")
+            completion(cachedData.interests, cachedData.college)
+            return
+        }
         
             guard let userId = currentUserId else {
                 completion([], "")
@@ -524,7 +524,7 @@ class FirebaseService {
         }
     
     // Fetch recommended notes with caching
-    func fetchRecommendedNotes(islastday:Bool,completion: @escaping ([FireNote]) -> Void) {
+    func fetchRecommendedNotes(completion: @escaping ([FireNote]) -> Void) {
         fetchUserData { [weak self] interests, college in
             guard let self = self else { return }
             
@@ -541,12 +541,10 @@ class FirebaseService {
             } else if !college.isEmpty {
                 query = query.whereField("collegeName", isEqualTo: college)
             }
-            if(islastday){
-                query = query.whereField("uploadDate", isGreaterThan: Timestamp(date: oneDayAgo))
-            }
             
             // Try fetching recent notes first
             query
+                .whereField("uploadDate", isGreaterThan: Timestamp(date: oneDayAgo))
                 .limit(to: 5)
                 .getDocuments { snapshot, error in
                     if let error = error {
@@ -556,7 +554,7 @@ class FirebaseService {
                         return
                     }
                     
-                    guard let documents = snapshot?.documents else {
+                    guard let documents = snapshot?.documents, !documents.isEmpty else {
                         print("No recent notes found within 24 hours. Falling back to broader query.")
                         self.fetchFallbackRecommendedNotes(completion: completion)
                         return
@@ -564,10 +562,6 @@ class FirebaseService {
                     
                     var recommendedNotes: [FireNote] = []
                     let group = DispatchGroup()
-                    if(documents.count < 5 && islastday){
-                        self.fetchRecommendedNotes(islastday: false, completion: completion)
-                        return
-                    }
                     
                     documents.forEach { document in
                         group.enter()
@@ -1989,7 +1983,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSourcePrefetchin
             print("No valid cached recommended notes found")
         }
 
-        FirebaseService.shared.fetchRecommendedNotes(islastday: true) { [weak self] recommendedNotes in
+        FirebaseService.shared.fetchRecommendedNotes { [weak self] recommendedNotes in
             guard let self = self else { return }
             
             DispatchQueue.main.async {

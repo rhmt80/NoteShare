@@ -254,16 +254,22 @@
 				INFOPLIST_FILE = NoteShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NoteShare;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to allow you to take photos of your notes.";
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "We need access to your documents folder to save and retrieve your notes.";
+				INFOPLIST_KEY_NSDownloadsFolderUsageDescription = "We need access to your downloads folder to save and retrieve your notes.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use Face ID to securely sign you in with your Apple ID.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "We use your email and name for account creation and personalization, not for tracking purposes.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.NoteShare;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ios.noteshare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -283,16 +289,22 @@
 				INFOPLIST_FILE = NoteShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NoteShare;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to allow you to take photos of your notes.";
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "We need access to your documents folder to save and retrieve your notes.";
+				INFOPLIST_KEY_NSDownloadsFolderUsageDescription = "We need access to your downloads folder to save and retrieve your notes.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use Face ID to securely sign you in with your Apple ID.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "We use your email and name for account creation and personalization, not for tracking purposes.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.NoteShare;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ios.noteshare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
