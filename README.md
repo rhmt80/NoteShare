@@ -73,9 +73,9 @@ NoteShare is a student-focused iOS app built to revolutionize the way notes are 
 
 ---
 
-## 📂 Repo Links
+## 📂 Webiste Link
 
-- [NoteShare App (Main Repo)](https://github.com/rhmt80/NoteShare)
+- [NoteShare App (Website)](https://note-share-web.vercel.app)
 
 ---
 
